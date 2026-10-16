@@ -34,6 +34,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}
 th,td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--bd)}
 th:first-child,td:first-child{text-align:left}
 th{font-weight:600;color:var(--mut)}
+.srow{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;text-align:left;font-weight:500;font-size:14px;padding:11px 12px}
 .wrap{overflow-x:auto}
 label.chk{display:flex;gap:8px;align-items:center}
 </style>
@@ -51,7 +52,6 @@ label.chk{display:flex;gap:8px;align-items:center}
   <button id="btnWarm">Riscaldamento (5 rep)</button>
   <button id="btnStart">Avvia serie</button>
 </div>
-<button id="btnReset" class="sec" style="margin-top:10px">Nuova serie</button>
 <div class="card mut" id="calInfo" style="margin-top:12px"></div>
 
 <div class="card" style="margin-top:12px">
@@ -83,7 +83,9 @@ label.chk{display:flex;gap:8px;align-items:center}
 </div>
 
 <div class="card">
-  <div class="row"><span>Grafico ultimi 5 s</span><span class="mut">grigio: accelerazione, blu: velocità</span></div>
+  <div class="row"><span>Grafico <span id="cvlab" class="mut"></span></span>
+    <select id="tw" aria-label="Tempo di scorrimento"><option value="5">5 s</option><option value="10">10 s</option><option value="30">30 s</option><option value="60">60 s</option></select></div>
+  <div class="mut" style="margin-top:6px">grigio: accelerazione · blu: velocità · linee verdi/rosse: rep valida/non valida</div>
   <canvas id="cv" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
 </div>
 
@@ -94,6 +96,16 @@ label.chk{display:flex;gap:8px;align-items:center}
   </table>
 </div>
 
+<div class="card" id="sessCard">
+  <div class="row"><b>Serie della sessione</b><button class="sec" id="btnSess" style="width:auto;padding:8px 12px">Nuova sessione</button></div>
+  <div id="sessList" style="margin-top:10px"></div>
+  <div id="sessDet" style="display:none;margin-top:6px">
+    <div class="row"><b id="detT"></b><button class="sec" id="btnClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
+    <canvas id="cv2" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
+    <div class="wrap"><table><thead><tr><th>Rep</th><th>Media m/s</th><th>Picco m/s</th><th>Corsa cm</th><th>Perdita</th></tr></thead><tbody id="detTb"></tbody></table></div>
+  </div>
+</div>
+
 <div class="mut">Prototipo: i valori sono indicativi e vanno bene per confrontare le rep tra loro. Per provare la direzione, solleva il telefono in verticale: la velocità live deve diventare positiva. Se è negativa, attiva «Inverti direzione».</div>
 </main>
 
@@ -101,7 +113,7 @@ label.chk{display:flex;gap:8px;align-items:center}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const WARM_N=5;let wasStill=true,hist=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
+const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
 const t0=store('thr'); if(t0)$('thr').value=t0;
@@ -110,9 +122,22 @@ $('thr').onchange=()=>{store('thr',$('thr').value);ui()};
 $('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
 const mr=store('minrom');if(mr)$('minrom').value=mr;
 $('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
+const tw0=store('tw');if(tw0)$('tw').value=tw0;
+$('tw').onchange=()=>store('tw',$('tw').value);
+try{sess=JSON.parse(localStorage.getItem('sess'))||[]}catch(e){sess=[]}
 
 function msg(s,h){$('status').textContent=s;if(h!==undefined)$('hint').textContent=h}
-function beep(f,d){try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;g.gain.value=.25;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+d)}catch(e){}}
+function tone(f,at,d,type,vol){
+  try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+at;
+  o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(vol||.25,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+d+.02)}catch(e){}
+}
+function beep(f,d){tone(f,0,d,'sine',.25)}
+const snd={
+  ok:()=>tone(880,0,.12,'sine',.3),
+  bad:()=>{tone(180,0,.15,'square',.2);tone(180,.2,.15,'square',.2)},
+  limit:()=>[0,.32,.64].forEach(t=>{tone(1046,t,.15,'triangle',.4);tone(698,t+.16,.15,'triangle',.4)})
+};
 
 async function start(m){
   if(state!=='off'){stop();return}
@@ -127,6 +152,7 @@ async function start(m){
   try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){}
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
   mode=m;warm=[];lastEcc=0;eseg=null;applyCal();
+  if(m==='set'){reps=[];alarmed=false;document.body.classList.remove('alarm');ui()}
   calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
   window.addEventListener('devicemotion',onMotion);
   (m==='warm'?$('btnWarm'):$('btnStart')).textContent='Ferma';
@@ -134,14 +160,17 @@ async function start(m){
   setTimeout(()=>{if(!gotEvt&&state!=='off'){stop();msg('Nessun dato dai sensori','Il browser non invia i dati di movimento. Prova da Safari su iPhone o Chrome su Android.')}},2500);
 }
 function stop(){
+  endSeries('manual');halt();msg('Fermo','Premi un pulsante per ricominciare.');
+}
+function halt(){
   state='off';window.removeEventListener('devicemotion',onMotion);
-  $('btnStart').textContent='Avvia serie';$('btnWarm').textContent='Riscaldamento (5 rep)';msg('Fermo','Premi un pulsante per ricominciare.');
+  $('btnStart').textContent='Avvia serie';$('btnWarm').textContent='Riscaldamento (5 rep)';
   try{wake&&wake.release()}catch(e){}wake=null;
 }
 function finishCal(){
   let s=[0,0,0];calBuf.forEach(a=>{s[0]+=a[0];s[1]+=a[1];s[2]+=a[2]});
   const n=calBuf.length||1,g=[s[0]/n,s[1]/n,s[2]/n],m=Math.hypot(g[0],g[1],g[2])||1;
-  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';wasStill=true;hist=[];
+  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';wasStill=true;rec=newRec();shown=null;
   beep(660,.15);if(mode==='warm')updWarm();else msg('Pronto: fai la rep',cal?'Uso la calibrazione del riscaldamento.':'Nessun riscaldamento fatto: uso soglie standard.');
 }
 function onMotion(e){
@@ -183,20 +212,21 @@ function step(a,now){
     if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
     if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
   }
-  hist.push([now,a,v]);if(hist.length>800)hist.shift();
+  if(rec)rec.pts.push([Math.round(now-rec.t0),a,v]);
   $('live').textContent=v.toFixed(2);
 }
 function endSeg(){
   const s=seg;seg=null;v=0;if(!s)return;
   const dur=(performance.now()-s.t)/1000;
-  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n)return;
-  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;beep(880,.08);updWarm();if(warm.length>=WARM_N)finishWarm();return}
-  if(cal&&lastEcc<cal.ecc*0.6)return;
+  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n){if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}return}
+  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(cal&&lastEcc<cal.ecc*0.6){lastEcc=0;mark(0);snd.bad();return}
   lastEcc=0;
   const mcv=s.sum/s.n,best=Math.max(mcv,...reps.map(r=>r.mcv)),loss=(best-mcv)/best*100;
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
   ui();
-  if(loss>=+$('thr').value){alarm()}else beep(880,.08);
+  mark(1);
+  if(loss>=+$('thr').value){alarm()}else snd.ok();
 }
 function applyCal(){
   if(mode==='set'&&cal){MIN_ROM=cal.rom*(+$('minrom').value/100);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
@@ -207,7 +237,7 @@ function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a b
 function finishWarm(){
   cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
   store('cal',JSON.stringify(cal));
-  mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];ui();showCal();
+  mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];rec=newRec();ui();showCal();
   $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
   beep(660,.12);setTimeout(()=>beep(990,.2),180);
   msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Puoi iniziare la serie: conto da ora.');
@@ -215,23 +245,60 @@ function finishWarm(){
 function showCal(){
   $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
 }
-function drawChart(){
-  const c=$('cv');if(!c)return;
+function newRec(){return{t0:performance.now(),pts:[],ev:[]}}
+function mark(ok){if(rec)rec.ev.push([Math.round(performance.now()-rec.t0),ok])}
+function drawSeries(c,pts,ev,t0,t1){
   const w=c.clientWidth,h=c.clientHeight,d=window.devicePixelRatio||1;
   if(!w||!h)return;
   if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
   const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);
-  const cs=getComputedStyle(document.documentElement),now=performance.now(),T=5000;
-  while(hist.length&&now-hist[0][0]>T)hist.shift();
-  x.lineWidth=1;x.strokeStyle=cs.getPropertyValue('--bd').trim();x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
-  const line=(k,col,sc)=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();hist.forEach((p,i)=>{const X=w-(now-p[0])/T*w,Y=h/2-p[k]*sc;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()};
-  line(1,cs.getPropertyValue('--mut').trim(),h/2/12);
-  line(2,cs.getPropertyValue('--ac').trim(),h/2/1.6);
+  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim(),span=Math.max(1,t1-t0),X=t=>(t-t0)/span*w;
+  x.lineWidth=1;x.strokeStyle=col('--bd');x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
+  (ev||[]).forEach(e=>{if(e[0]<t0||e[0]>t1)return;x.strokeStyle=col(e[1]?'--ok':'--bad');x.beginPath();x.moveTo(X(e[0]),0);x.lineTo(X(e[0]),h);x.stroke()});
+  const line=(k,cc,sc)=>{x.strokeStyle=cc;x.lineWidth=2;x.beginPath();let f=1;for(const p of pts){if(p[0]<t0)continue;if(p[0]>t1)break;const Y=h/2-p[k]*sc;f?x.moveTo(X(p[0]),Y):x.lineTo(X(p[0]),Y);f=0}x.stroke()};
+  line(1,col('--mut'),h/2/12);line(2,col('--ac'),h/2/1.6);
+}
+function drawChart(){
+  const c=$('cv');if(!c)return;
+  const T=+$('tw').value*1000;
+  if(rec){const t1=performance.now()-rec.t0;$('cvlab').textContent='ultimi '+T/1000+' s';drawSeries(c,rec.pts,rec.ev,t1-T,t1)}
+  else if(shown){$('cvlab').textContent='serie completa';drawSeries(c,shown.pts,shown.ev,0,shown.dur)}
+  else{$('cvlab').textContent='in attesa';drawSeries(c,[],[],0,T)}
+}
+function endSeries(why){
+  if(!rec)return;
+  const r=rec;rec=null;r.dur=performance.now()-r.t0;shown=r;
+  if(mode!=='set'||!reps.length)return;
+  sess.push({ts:Date.now(),why:why,thr:+$('thr').value,dur:Math.round(r.dur),
+    reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1)})),
+    ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
+  if(sess.length>60)sess.shift();
+  saveSess();renderSess();
+}
+function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
+function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
+function renderSess(){
+  const L=$('sessList');
+  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>Serie '+(i+1)+' · '+fmt(s.ts)+'</span><span>'+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
+  L.querySelectorAll('button').forEach(b=>b.onclick=()=>openSer(+b.dataset.i));
+}
+function openSer(i){
+  const s=sess[i];if(!s)return;
+  $('sessDet').style.display='block';
+  $('detT').textContent='Serie '+(i+1)+' · '+fmt(s.ts)+(s.why==='limit'?' · fermata dal limite':'');
+  $('detTb').innerHTML=s.reps.map((x,k)=>'<tr><td>'+(k+1)+'</td><td>'+x.mcv.toFixed(2)+'</td><td>'+x.peak.toFixed(2)+'</td><td>'+x.rom+'</td><td>'+x.loss.toFixed(0)+'%</td></tr>').join('');
+  requestAnimationFrame(()=>{drawSeries($('cv2'),s.pts,s.ev,0,s.dur);$('sessDet').scrollIntoView({behavior:'smooth',block:'nearest'})});
+}
+function newSess(){
+  if(sess.length&&!confirm('Cancellare le serie salvate di questa sessione?'))return;
+  sess=[];try{localStorage.removeItem('sess')}catch(e){}
+  $('sessDet').style.display='none';renderSess();
 }
 function alarm(){
   alarmed=true;document.body.classList.add('alarm');
-  msg('STOP: serie finita','Perdita di velocità oltre la soglia.');
-  [0,300,600].forEach(t=>setTimeout(()=>beep(520,.22),t));
+  endSeries('limit');halt();
+  msg('STOP: serie finita','Perdita di velocità oltre la soglia. La serie è salvata nella sessione.');
+  snd.limit();
   try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}
 }
 function ui(){
@@ -250,7 +317,7 @@ function reset(){
   reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
   if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
 }
-$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnReset').onclick=reset;ui();showCal();setInterval(drawChart,100);
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};ui();showCal();renderSess();setInterval(drawChart,100);
 })();
 </script>
 </body>

@@ -44,7 +44,7 @@ label.chk{display:flex;gap:8px;align-items:center}
 
 <div class="card" id="stCard">
   <div class="mid" id="status">Pronto</div>
-  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep a bilanciere vuoto. Poi premi Avvia serie.</div>
+  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep a bilanciere vuoto, con pausa in basso e in alto. Poi premi Avvia serie: nelle serie basta fermarsi circa 1 secondo in alto prima di partire.</div>
 </div>
 
 <div class="grid">
@@ -171,8 +171,13 @@ function step(a,now){
     if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
     v+=a*dt;
   }
-  if(!eseg&&v<-0.08)eseg={d:0,low:0};
-  if(eseg){if(v<0)eseg.d+=-v*dt;if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0}
+  if(!eseg&&v<-0.08)eseg={d:0,low:0,mn:0};
+  if(eseg){
+    if(v<0)eseg.d+=-v*dt;
+    if(v<eseg.mn)eseg.mn=v;
+    if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
+    else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
+  }
   if(!seg&&v>0.08)seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};
   if(seg){
     if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
@@ -198,7 +203,7 @@ function applyCal(){
   else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
-function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a bilanciere vuoto: scendi in basso, fermati un attimo, risali in alto e fermati un attimo.')}
+function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a bilanciere vuoto: scendi, fai una breve pausa in basso, risali e fai una pausa in alto. La pausa in basso serve solo ora, per calibrare.')}
 function finishWarm(){
   cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
   store('cal',JSON.stringify(cal));

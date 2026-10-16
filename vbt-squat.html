@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VBT Squat</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eceef1;--card:#fff;--tx:#161a20;--mut:#5f6876;--bd:#d9dde3;--ac:#1f4fd8;--ok:#14803c;--bad:#d7263d;--on:#fff}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101318;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--bd:#2c333e;--ac:#6b93ff;--ok:#3ddc84;--bad:#ff6b7d}}
+:root[data-theme="dark"]{--bg:#101318;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--bd:#2c333e;--ac:#6b93ff;--ok:#3ddc84;--bad:#ff6b7d}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:16px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;transition:background .15s}
+body.alarm{background:var(--bad);color:#fff}
+body.alarm .card{background:transparent;border-color:#ffffff88}
+body.alarm .mut{color:#ffffffcc}
+main{max-width:560px;margin:0 auto;padding:14px 14px 28px}
+h1{font-size:20px;margin:4px 0 12px;font-weight:700;letter-spacing:-.01em}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.mut{color:var(--mut);font-size:14px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.big{font-size:64px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.mid{font-size:34px;font-weight:750;line-height:1.1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{font:inherit;font-weight:650;border:0;border-radius:12px;padding:14px 16px;background:var(--ac);color:var(--on);width:100%}
+button.sec{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.gauge{height:18px;border-radius:9px;background:var(--bd);position:relative;overflow:hidden;margin-top:10px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ok);transition:width .2s,background .2s}
+.gauge b{position:absolute;top:0;bottom:0;width:3px;background:var(--tx)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--bd)}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--mut)}
+.wrap{overflow-x:auto}
+label.chk{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<main>
+<h1>VBT Squat</h1>
+
+<div class="card" id="stCard">
+  <div class="mid" id="status">Pronto</div>
+  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep a bilanciere vuoto. Poi premi Avvia serie.</div>
+</div>
+
+<div class="grid">
+  <button id="btnWarm">Riscaldamento (5 rep)</button>
+  <button id="btnStart">Avvia serie</button>
+</div>
+<button id="btnReset" class="sec" style="margin-top:10px">Nuova serie</button>
+<div class="card mut" id="calInfo" style="margin-top:12px"></div>
+
+<div class="card" style="margin-top:12px">
+  <div class="row">
+    <div><div class="mut">Ripetizioni</div><div class="big" id="reps">0</div></div>
+    <div style="text-align:right"><div class="mut">Ultima rep (m/s)</div><div class="big" id="last">–</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row"><span>Perdita di velocità</span><span class="mid" id="loss">0%</span></div>
+  <div class="gauge"><i id="gfill"></i><b id="gthr"></b></div>
+  <div class="mut" style="margin-top:8px">Si calcola rispetto alla rep più veloce della serie.</div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <label for="thr">Ferma la serie oltre</label>
+    <select id="thr"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option><option>40</option></select>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
+    <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
+  </div>
+</div>
+
+<div class="card wrap">
+  <table>
+    <thead><tr><th>Rep</th><th>Media m/s</th><th>Picco m/s</th><th>Corsa cm</th><th>Perdita</th></tr></thead>
+    <tbody id="tb"><tr><td colspan="5" class="mut" style="text-align:left">Nessuna ripetizione. Dopo la calibrazione fai la prima rep.</td></tr></tbody>
+  </table>
+</div>
+
+<div class="mut">Prototipo: i valori sono indicativi e vanno bene per confrontare le rep tra loro. Per provare la direzione, solleva il telefono in verticale: la velocità live deve diventare positiva. Se è negativa, attiva «Inverti direzione».</div>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
+const WARM_N=5;let MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
+
+function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
+const t0=store('thr'); if(t0)$('thr').value=t0;
+if(store('inv')==='1')$('inv').checked=true;
+$('thr').onchange=()=>{store('thr',$('thr').value);ui()};
+$('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
+
+function msg(s,h){$('status').textContent=s;if(h!==undefined)$('hint').textContent=h}
+function beep(f,d){try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;g.gain.value=.25;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+d)}catch(e){}}
+
+async function start(m){
+  if(state!=='off'){stop();return}
+  if(typeof DeviceMotionEvent==='undefined'){msg('Sensori non disponibili','Apri questa pagina dal telefono, in Safari o Chrome.');return}
+  const emb=(function(){try{return window.top!==window}catch(e){return true}})();
+  try{
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      const r=await DeviceMotionEvent.requestPermission();
+      if(r!=='granted'){msg('Permesso negato','Chiudi del tutto questa scheda di Safari, riapri il link e premi di nuovo il pulsante: quando compare la richiesta tocca Consenti.');return}
+    }
+  }catch(e){msg('Permesso non concesso',emb?'La pagina è aperta dentro un\'altra app o finestra, che blocca i sensori. Copia il link e aprilo direttamente in Safari.':'Chiudi la scheda, riapri il link in Safari e premi di nuovo il pulsante.');return}
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){}
+  try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
+  mode=m;warm=[];lastEcc=0;eseg=null;applyCal();
+  calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
+  window.addEventListener('devicemotion',onMotion);
+  (m==='warm'?$('btnWarm'):$('btnStart')).textContent='Ferma';
+  msg('Calibrazione…','Tieni il bilanciere fermo per 2 secondi.');
+  setTimeout(()=>{if(!gotEvt&&state!=='off'){stop();msg('Nessun dato dai sensori','Il browser non invia i dati di movimento. Prova da Safari su iPhone o Chrome su Android.')}},2500);
+}
+function stop(){
+  state='off';window.removeEventListener('devicemotion',onMotion);
+  $('btnStart').textContent='Avvia serie';$('btnWarm').textContent='Riscaldamento (5 rep)';msg('Fermo','Premi un pulsante per ricominciare.');
+  try{wake&&wake.release()}catch(e){}wake=null;
+}
+function finishCal(){
+  let s=[0,0,0];calBuf.forEach(a=>{s[0]+=a[0];s[1]+=a[1];s[2]+=a[2]});
+  const n=calBuf.length||1,g=[s[0]/n,s[1]/n,s[2]/n],m=Math.hypot(g[0],g[1],g[2])||1;
+  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';
+  beep(660,.15);if(mode==='warm')updWarm();else msg('Pronto: fai la rep',cal?'Uso la calibrazione del riscaldamento.':'Nessun riscaldamento fatto: uso soglie standard.');
+}
+function onMotion(e){
+  const ag=e.accelerationIncludingGravity;if(!ag||ag.x==null)return;
+  gotEvt=true;const now=performance.now();
+  if(state==='cal'){calBuf.push([ag.x,ag.y,ag.z]);if(now-calStart>2000&&calBuf.length>10)finishCal();return}
+  if(state!=='run')return;
+  const al=e.acceleration;let lx,ly,lz;
+  if(al&&al.x!=null){lx=al.x;ly=al.y;lz=al.z}
+  else{lx=ag.x-u[0]*9.81;ly=ag.y-u[1]*9.81;lz=ag.z-u[2]*9.81}
+  let a=lx*u[0]+ly*u[1]+lz*u[2];
+  if($('inv').checked)a=-a;
+  step(a,now);
+}
+function still(now,a){
+  win.push([now,Math.abs(a)]);
+  while(win.length&&now-win[0][0]>250)win.shift();
+  if(!win.length||now-win[0][0]<200)return false;
+  for(const w of win)if(w[1]>0.35)return false;
+  return true;
+}
+function step(a,now){
+  const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;
+  if(still(now,a)){v=0;if(seg)endSeg()}
+  else v+=a*dt;
+  if(!eseg&&v<-0.08)eseg={d:0,low:0};
+  if(eseg){if(v<0)eseg.d+=-v*dt;if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0}
+  if(!seg&&v>0.08)seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};
+  if(seg){
+    if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
+    if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
+  }
+  $('live').textContent=v.toFixed(2);
+}
+function endSeg(){
+  const s=seg;seg=null;v=0;if(!s)return;
+  const dur=(performance.now()-s.t)/1000;
+  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n)return;
+  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;beep(880,.08);updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(cal&&lastEcc<cal.ecc*0.6)return;
+  lastEcc=0;
+  const mcv=s.sum/s.n,best=Math.max(mcv,...reps.map(r=>r.mcv)),loss=(best-mcv)/best*100;
+  reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
+  ui();
+  if(loss>=+$('thr').value){alarm()}else beep(880,.08);
+}
+function applyCal(){
+  if(mode==='set'&&cal){MIN_ROM=cal.rom*0.6;MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
+  else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
+}
+function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
+function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a bilanciere vuoto: scendi in basso, fermati un attimo, risali in alto e fermati un attimo.')}
+function finishWarm(){
+  cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
+  store('cal',JSON.stringify(cal));
+  mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];ui();showCal();
+  $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
+  beep(660,.12);setTimeout(()=>beep(990,.2),180);
+  msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Puoi iniziare la serie: conto da ora.');
+}
+function showCal(){
+  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il 60% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
+}
+function alarm(){
+  alarmed=true;document.body.classList.add('alarm');
+  msg('STOP: serie finita','Perdita di velocità oltre la soglia.');
+  [0,300,600].forEach(t=>setTimeout(()=>beep(520,.22),t));
+  try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}
+}
+function ui(){
+  const thr=+$('thr').value;
+  $('reps').textContent=reps.length;
+  const r=reps[reps.length-1];
+  $('last').textContent=r?r.mcv.toFixed(2):'–';
+  const loss=r?Math.max(0,r.loss):0;
+  $('loss').textContent=loss.toFixed(0)+'%';
+  const g=$('gfill');g.style.width=Math.min(100,loss/(thr*1.5)*100)+'%';
+  g.style.background=loss>=thr?'var(--bad)':(loss>=thr*.7?'#e0a100':'var(--ok)');
+  $('gthr').style.left=(thr/(thr*1.5)*100)+'%';
+  $('tb').innerHTML=reps.length?reps.map((x,i)=>`<tr><td>${i+1}</td><td>${x.mcv.toFixed(2)}</td><td>${x.peak.toFixed(2)}</td><td>${x.rom.toFixed(0)}</td><td>${Math.max(0,x.loss).toFixed(0)}%</td></tr>`).join(''):'<tr><td colspan="5" class="mut" style="text-align:left">Nessuna ripetizione. Dopo la calibrazione fai la prima rep.</td></tr>';
+}
+function reset(){
+  reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
+  if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
+}
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnReset').onclick=reset;ui();showCal();
+})();
+</script>
+</body>
+</html>

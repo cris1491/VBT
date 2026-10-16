@@ -73,9 +73,18 @@ label.chk{display:flex;gap:8px;align-items:center}
     <select id="thr"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option><option>40</option></select>
   </div>
   <div class="row" style="margin-top:10px">
+    <label for="minrom">Rep valida se la corsa supera</label>
+    <select id="minrom"><option>60</option><option>70</option><option>75</option><option>80</option><option selected>85</option><option>90</option><option>95</option><option>100</option></select>
+  </div>
+  <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
     <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
   </div>
+</div>
+
+<div class="card">
+  <div class="row"><span>Grafico ultimi 5 s</span><span class="mut">grigio: accelerazione, blu: velocità</span></div>
+  <canvas id="cv" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
 </div>
 
 <div class="card wrap">
@@ -92,13 +101,15 @@ label.chk{display:flex;gap:8px;align-items:center}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const WARM_N=5;let MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
+const WARM_N=5;let wasStill=true,hist=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
 const t0=store('thr'); if(t0)$('thr').value=t0;
 if(store('inv')==='1')$('inv').checked=true;
 $('thr').onchange=()=>{store('thr',$('thr').value);ui()};
 $('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
+const mr=store('minrom');if(mr)$('minrom').value=mr;
+$('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
 
 function msg(s,h){$('status').textContent=s;if(h!==undefined)$('hint').textContent=h}
 function beep(f,d){try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;g.gain.value=.25;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+d)}catch(e){}}
@@ -130,7 +141,7 @@ function stop(){
 function finishCal(){
   let s=[0,0,0];calBuf.forEach(a=>{s[0]+=a[0];s[1]+=a[1];s[2]+=a[2]});
   const n=calBuf.length||1,g=[s[0]/n,s[1]/n,s[2]/n],m=Math.hypot(g[0],g[1],g[2])||1;
-  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';
+  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';wasStill=true;hist=[];
   beep(660,.15);if(mode==='warm')updWarm();else msg('Pronto: fai la rep',cal?'Uso la calibrazione del riscaldamento.':'Nessun riscaldamento fatto: uso soglie standard.');
 }
 function onMotion(e){
@@ -146,16 +157,20 @@ function onMotion(e){
   step(a,now);
 }
 function still(now,a){
-  win.push([now,Math.abs(a)]);
+  win.push([now,a]);
   while(win.length&&now-win[0][0]>250)win.shift();
   if(!win.length||now-win[0][0]<200)return false;
-  for(const w of win)if(w[1]>0.35)return false;
+  for(const w of win)if(Math.abs(w[1])>0.35)return false;
   return true;
 }
 function step(a,now){
   const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;
-  if(still(now,a)){v=0;if(seg)endSeg()}
-  else v+=a*dt;
+  const s=still(now,a);
+  if(s){v=0;wasStill=true;if(seg)endSeg()}
+  else{
+    if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
+    v+=a*dt;
+  }
   if(!eseg&&v<-0.08)eseg={d:0,low:0};
   if(eseg){if(v<0)eseg.d+=-v*dt;if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0}
   if(!seg&&v>0.08)seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};
@@ -163,6 +178,7 @@ function step(a,now){
     if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
     if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
   }
+  hist.push([now,a,v]);if(hist.length>800)hist.shift();
   $('live').textContent=v.toFixed(2);
 }
 function endSeg(){
@@ -178,7 +194,7 @@ function endSeg(){
   if(loss>=+$('thr').value){alarm()}else beep(880,.08);
 }
 function applyCal(){
-  if(mode==='set'&&cal){MIN_ROM=cal.rom*0.6;MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
+  if(mode==='set'&&cal){MIN_ROM=cal.rom*(+$('minrom').value/100);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
   else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
@@ -192,7 +208,20 @@ function finishWarm(){
   msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Puoi iniziare la serie: conto da ora.');
 }
 function showCal(){
-  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il 60% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
+  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
+}
+function drawChart(){
+  const c=$('cv');if(!c)return;
+  const w=c.clientWidth,h=c.clientHeight,d=window.devicePixelRatio||1;
+  if(!w||!h)return;
+  if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
+  const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);
+  const cs=getComputedStyle(document.documentElement),now=performance.now(),T=5000;
+  while(hist.length&&now-hist[0][0]>T)hist.shift();
+  x.lineWidth=1;x.strokeStyle=cs.getPropertyValue('--bd').trim();x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
+  const line=(k,col,sc)=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();hist.forEach((p,i)=>{const X=w-(now-p[0])/T*w,Y=h/2-p[k]*sc;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()};
+  line(1,cs.getPropertyValue('--mut').trim(),h/2/12);
+  line(2,cs.getPropertyValue('--ac').trim(),h/2/1.6);
 }
 function alarm(){
   alarmed=true;document.body.classList.add('alarm');
@@ -216,7 +245,7 @@ function reset(){
   reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
   if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
 }
-$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnReset').onclick=reset;ui();showCal();
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnReset').onclick=reset;ui();showCal();setInterval(drawChart,100);
 })();
 </script>
 </body>

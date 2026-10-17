@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VTB 20% by cr</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eceef1;--card:#fff;--tx:#161a20;--mut:#5f6876;--bd:#d9dde3;--ac:#1f4fd8;--ok:#14803c;--bad:#d7263d;--on:#fff}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101318;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--bd:#2c333e;--ac:#6b93ff;--ok:#3ddc84;--bad:#ff6b7d}}
+:root[data-theme="dark"]{--bg:#101318;--card:#1a1f27;--tx:#f1f3f6;--mut:#9aa3b2;--bd:#2c333e;--ac:#6b93ff;--ok:#3ddc84;--bad:#ff6b7d}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:16px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;transition:background .15s}
+body.alarm{background:var(--bad);color:#fff}
+body.alarm .card{background:transparent;border-color:#ffffff88}
+body.alarm .mut{color:#ffffffcc}
+main{max-width:560px;margin:0 auto;padding:14px 14px 28px}
+h1{font-size:20px;margin:4px 0 12px;font-weight:700;letter-spacing:-.01em}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.mut{color:var(--mut);font-size:14px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.big{font-size:64px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.mid{font-size:34px;font-weight:750;line-height:1.1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{font:inherit;font-weight:650;border:0;border-radius:12px;padding:14px 16px;background:var(--ac);color:var(--on);width:100%}
+button.sec{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+select{font:inherit;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.gauge{height:18px;border-radius:9px;background:var(--bd);position:relative;overflow:hidden;margin-top:10px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ok);transition:width .2s,background .2s}
+.gauge b{position:absolute;top:0;bottom:0;width:3px;background:var(--tx)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--bd)}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--mut)}
+.srow{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;text-align:left;font-weight:500;font-size:14px;padding:11px 12px}
+.wrap{overflow-x:auto}
+label.chk{display:flex;gap:8px;align-items:center}
+[hidden]{display:none!important}
+input[readonly]{opacity:.6}
+#ov{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));background:radial-gradient(circle at 50% 0,#12406a,#07182b 70%);color:#eaf6ff;overflow:hidden;font-weight:650}
+body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
+#ov button{width:auto;font-family:inherit}
+#ov button:disabled{opacity:.35}
+.ovHead{display:flex;align-items:center;gap:12px;border-bottom:1px solid #2a6a96;padding-bottom:8px}
+.ovHead b{font-size:20px;letter-spacing:.03em;text-transform:uppercase}
+.ovHead span{font-size:16px;color:#9fd3ef}
+.ovLoad{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:15px}
+.ovLoad .lb2{color:#9fd3ef;white-space:nowrap}
+.ovLoad .ctl{display:flex;align-items:center;gap:16px}
+#ov .st{width:46px;height:46px;padding:0;font-size:26px;border-radius:12px;background:#0d3a5c;border:1px solid #2a8fc0;color:#eaf6ff}
+#ov .kgb{white-space:nowrap;min-width:110px;font-size:28px;font-weight:800;background:none;color:#eaf6ff;border:0;border-bottom:2px dashed #19c3e6;border-radius:0;padding:0 6px}
+.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ovP{display:flex;flex-direction:column;min-height:0;border:1px solid #2a8fc0;border-radius:16px;background:#0a2d4acc;padding:10px;text-align:center}
+.ovP .lb{font-size:13px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
+.ovBig{font-size:clamp(34px,10vw,56px);font-weight:800;line-height:1.05}
+.trk{position:relative;flex:1;min-height:50px;background:#06213a;border:1px solid #2a6a96;border-radius:12px;overflow:hidden}
+.trk .fill{position:absolute;left:0;right:0;bottom:0;height:0}
+.trk .zone{position:absolute;left:0;right:0;bottom:0;height:0;background:rgba(255,74,90,.28);pointer-events:none}
+.lim{position:absolute;left:0;right:0;height:3px;background:#ffd23f}
+.lim span{position:absolute;right:5px;bottom:5px;font-size:12px;color:#ffd23f;white-space:nowrap}
+.ph{display:flex;flex:1;min-height:0;gap:10px;margin-top:8px}
+.ph .trk{flex:none;width:46px}
+.dfill{position:absolute;left:0;right:0;top:0;height:0;opacity:.92}
+.vz{position:absolute;left:0;right:0;bottom:0;background:rgba(46,226,125,.16);pointer-events:none}
+.vl{position:absolute;left:0;right:0;height:2px;background:#ffd23f}
+.vl span{position:absolute;left:3px;font-size:11px;color:#ffd23f}
+.endl{position:absolute;right:3px;bottom:2px;font-size:10px;color:#7fb2d0}
+.bxs{display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:flex-start}
+.bx{width:58px;height:58px;flex:none;border:1px solid #2a6a96;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;letter-spacing:.02em;color:#7fb2d0;text-transform:uppercase}
+.bx i{font-style:normal;font-size:24px;line-height:1}
+.bx.on{border-color:#2ee27d;color:#2ee27d;background:#0f3b2f;box-shadow:0 0 14px #2ee27d88}
+.bx.dn.on{border-color:#19c3e6;color:#19c3e6;background:#0b3550;box-shadow:0 0 14px #19c3e688}
+.ovStats{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ovRep{font-size:clamp(44px,14vw,84px);font-weight:800;line-height:1}
+.ovS{font-size:14px;line-height:1.7;text-align:right}
+.ovS b{font-size:17px}
+.ovBtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#ov .ovBtns button,#ov .ovClose{width:100%;font-size:18px;text-transform:uppercase}
+#ov .go{background:#0d3b2a;border:2px solid #2ee27d;color:#eaffee}
+#ov .no{background:#3b0d15;border:2px solid #ff4a5a;color:#ffeaee}
+#ov .ovClose{background:#0a2d4a;border:1px solid #2a8fc0;color:#eaf6ff;font-size:15px;padding:11px}
+.ovP.vp{flex-direction:row;gap:12px;text-align:left}
+.ovP.vp .vtrk{flex:none;width:30px;min-height:0}
+.vside{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.logo{flex:none;width:56px;height:56px;border-radius:12px;border:1px solid #2a8fc0;box-shadow:0 0 10px rgba(25,195,230,.25);background:#000 url(data:image/png;base64,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) center/cover no-repeat}
+.logo.sm{width:44px;height:44px;border-radius:10px}
+.ovHead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+input[type=text],input[type=number]{font:inherit;padding:9px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;min-width:0}
+button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
+.fld{flex:1;min-width:130px}
+.fld label{display:block;margin-bottom:4px}
+.info h3{font-size:15px;margin:14px 0 4px}
+.info p{margin:0 0 6px;font-size:14px}
+.info td:last-child,.info th:last-child{text-align:left}
+</style>
+</head>
+<body>
+<main>
+<div class="row"><div style="display:flex;align-items:center;gap:10px"><div class="logo sm" role="img" aria-label="Logo VTB 20% by cr"></div><h1>VTB 20% by cr</h1></div><button class="sec ib" id="btnInfo" aria-expanded="false" hidden>ⓘ Info</button></div>
+
+<div class="card info" id="info" hidden>
+  <h3 style="margin-top:0">Velocità media concentrica (MV)</h3>
+  <p>L'app misura la velocità media della fase di salita (m/s). Negli studi VBT sullo squat è il riferimento per stimare la percentuale del massimale e l'intenzione neurale.</p>
+  <div class="wrap"><table>
+    <thead><tr><th>%1RM</th><th>MV (m/s)</th><th>Salita</th><th>Zona</th></tr></thead>
+    <tbody>
+    <tr><td>50%</td><td>0.85–0.95</td><td>&lt; 0.7 s</td><td>Forza veloce</td></tr>
+    <tr><td>60%</td><td>0.75–0.85</td><td>~0.8–0.9 s</td><td>Potenza</td></tr>
+    <tr><td>70%</td><td>0.65–0.70</td><td>~1.0–1.2 s</td><td>Forza dinamica</td></tr>
+    <tr><td>80%</td><td>0.50–0.55</td><td>~1.5–1.8 s</td><td>Forza massima</td></tr>
+    <tr><td>90%</td><td>0.38–0.42</td><td>~2.0–2.5 s</td><td>Forza massima</td></tr>
+    <tr><td>100%</td><td>~0.30 (MVT)</td><td>≥ 3 s</td><td>Massimale</td></tr>
+    </tbody></table></div>
+  <p style="margin-top:6px">MVT = velocità minima con cui si completa l'1RM: circa 0.30 m/s (0.28–0.32). Sotto 0.25–0.28 m/s la rep fallisce.</p>
+  <h3>Intenzione massima</h3>
+  <p>Con qualsiasi carico spingi il bilanciere alla massima velocità possibile: con l'85% salirà piano (~0.45 m/s), ma lo sforzo neurale deve essere quello di un 50%.</p>
+  <h3>Perdita di velocità (VL)</h3>
+  <p>È il calo percentuale tra la rep più veloce e l'ultima. Una VL del 10–20% dà guadagni di forza pari o superiori a una VL del 40%, con molta meno fatica. Con «Limite automatico» l'app imposta 20% fino all'80% dell'1RM e 15% oltre (forza massima: 10–15%).</p>
+  <h3>Come si usano i target</h3>
+  <p>50–65%: 0.70–0.85 m/s (velocità). 70–80%: 0.50–0.65 m/s, stop a VL 20%. 80–90%+: 0.35–0.50 m/s, stop a VL 10–15%. Se la rep supera il target inferiore il numero diventa verde, altrimenti giallo.</p>
+  <h3>Autoregolazione</h3>
+  <p>La forza cambia di giorno in giorno (sonno, stress, recupero). A fine serie l'app mostra a quale % dell'1RM corrisponde la velocità della tua prima rep: se è più alta del previsto sei in giornata buona, se è più bassa sei affaticato. Il carico della serie successiva lo decidi tu, seguendo la tua scheda.</p>
+  <h3>Profilo individuale</h3>
+  <p>Non tutti hanno MVT 0.30: i powerlifter esperti completano squat a 0.24–0.26 m/s, gli atleti meno esperti falliscono sotto 0.32–0.35. Lo studio consiglia un test incrementale (45, 60, 75, 85%) per tracciare il proprio profilo.</p>
+  <p class="mut">I valori del telefono sono indicativi: servono soprattutto a confrontare le rep tra loro.</p>
+</div>
+
+<div class="card" id="stCard">
+  <div class="mid" id="status">Pronto</div>
+  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep a bilanciere vuoto, con pausa in basso e in alto. Poi premi Avvia serie: nelle serie basta fermarsi circa 1 secondo in alto prima di partire.</div>
+</div>
+
+<div class="grid">
+  <button id="btnWarm">Riscaldamento (5 rep)</button>
+  <button id="btnStart">Avvia serie</button>
+</div>
+<button id="btnOv" hidden style="margin-top:12px">Avvia interfaccia</button>
+<div class="card mut" id="calInfo" style="margin-top:12px"></div>
+
+<div class="card" id="loadCard">
+  <div class="row" style="align-items:flex-end;flex-wrap:nowrap">
+    <div class="fld" style="flex:1"><label class="mut" for="athSel">Atleta</label><select id="athSel" style="width:100%;padding:10px"></select></div>
+    <button class="sec" id="btnAddAth" aria-label="Aggiungi atleta" style="width:auto;padding:8px 18px;font-size:22px;line-height:1.2">+</button>
+  </div>
+  <div class="row" style="margin-top:12px;align-items:flex-end">
+    <div class="fld"><label class="mut" for="ath">Nome</label><input type="text" id="ath" autocomplete="name" placeholder="Nome"></div>
+    <div class="fld"><label class="mut" for="rm">Massimale 1RM (kg)</label><input type="number" id="rm" inputmode="decimal" min="0" step="2.5" placeholder="es. 140"></div>
+  </div>
+  <div style="margin-top:16px"><b>Prossima serie</b>
+    <div class="mut">Scegli cosa inserire: l'altro valore lo calcola l'app.</div>
+    <div class="grid" style="margin-top:8px"><button id="mKg">Inserisco il peso</button><button class="sec" id="mPct">Inserisco la %</button></div>
+  </div>
+  <div class="row" style="margin-top:12px;align-items:flex-end">
+    <div class="fld"><label class="mut" for="pct">% 1RM</label><input type="number" id="pct" inputmode="decimal" min="0" max="105" step="1" placeholder="es. 80"></div>
+    <div class="fld"><label class="mut" for="kg">Peso (kg)</label><input type="number" id="kg" inputmode="decimal" min="0" step="2.5" placeholder="kg"></div>
+  </div>
+  <div style="margin-top:12px">
+    <div class="mut" id="zone"></div>
+    <div class="mid" id="tgt">–</div>
+    <div class="mut" id="tgtSub"></div>
+  </div>
+  <label class="chk" style="margin-top:10px"><input type="checkbox" id="auto" checked> Limite di perdita automatico dal carico</label>
+  <button class="sec" id="btnDelAth" style="margin-top:12px">Elimina atleta</button>
+  <div id="sugg" hidden style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
+    <div id="suggT" class="mut"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="row">
+    <div><div class="mut">Ripetizioni</div><div class="big" id="reps">0</div></div>
+    <div style="text-align:right"><div class="mut">Ultima rep (m/s)</div><div class="big" id="last">–</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row"><span>Perdita di velocità</span><span class="mid" id="loss">0%</span></div>
+  <div class="gauge"><i id="gfill"></i><b id="gthr"></b></div>
+  <div class="mut" style="margin-top:8px">Si calcola rispetto alla rep più veloce della serie.</div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <label for="thr">Ferma la serie oltre</label>
+    <select id="thr"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option><option>40</option></select>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label for="minrom">Rep valida se la corsa supera</label>
+    <select id="minrom"><option>60</option><option>70</option><option>75</option><option>80</option><option selected>85</option><option>90</option><option>95</option><option>100</option></select>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
+    <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row"><span>Grafico <span id="cvlab" class="mut"></span></span>
+    <select id="tw" aria-label="Tempo di scorrimento"><option value="5">5 s</option><option value="10">10 s</option><option value="30">30 s</option><option value="60">60 s</option></select></div>
+  <div class="mut" style="margin-top:6px">grigio: accelerazione · blu: velocità · linee verdi/rosse: rep valida/non valida</div>
+  <canvas id="cv" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
+</div>
+
+<div class="card wrap">
+  <table>
+    <thead><tr><th>Rep</th><th>Media m/s</th><th>Picco m/s</th><th>Corsa cm</th><th>Perdita</th></tr></thead>
+    <tbody id="tb"><tr><td colspan="5" class="mut" style="text-align:left">Nessuna ripetizione. Dopo la calibrazione fai la prima rep.</td></tr></tbody>
+  </table>
+</div>
+
+<div class="card" id="sessCard">
+  <div class="row"><b>Serie della sessione</b><button class="sec" id="btnSess" style="width:auto;padding:8px 12px">Nuova sessione</button></div>
+  <div id="sessList" style="margin-top:10px"></div>
+  <button id="btnSave">Salva allenamento di oggi</button>
+  <div class="mut" id="wkMsg" style="margin-top:8px"></div>
+  <div id="sessDet" style="display:none;margin-top:6px">
+    <div class="row"><b id="detT"></b><button class="sec" id="btnClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
+    <canvas id="cv2" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
+    <div class="wrap"><table><thead><tr><th>Rep</th><th>Media m/s</th><th>Picco m/s</th><th>Corsa cm</th><th>Perdita</th></tr></thead><tbody id="detTb"></tbody></table></div>
+  </div>
+</div>
+
+<div class="card" id="wkCard">
+  <b id="wkHead">Allenamenti passati</b>
+  <div id="wkList" style="margin-top:10px"></div>
+  <div id="wkDet" hidden style="margin-top:6px">
+    <div class="row"><b id="wkT"></b><button class="sec" id="btnWkClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
+    <div class="wrap" style="margin-top:6px"><table><thead><tr><th>Serie</th><th>kg</th><th>%1RM</th><th>Rep</th><th>Velocità rep (m/s)</th><th>Perdita</th></tr></thead><tbody id="wkTb"></tbody></table></div>
+    <button class="sec" id="btnWkDel" style="margin-top:10px">Elimina allenamento</button>
+  </div>
+</div>
+
+<div class="mut">Prototipo: i valori sono indicativi e vanno bene per confrontare le rep tra loro. Per provare la direzione, solleva il telefono in verticale: la velocità live deve diventare positiva. Se è negativa, attiva «Inverti direzione».</div>
+</main>
+
+<div id="ov" hidden>
+  <div class="ovHead"><div class="logo" role="img" aria-label="Logo VTB 20% by cr"></div><div style="flex:1;min-width:0"><b id="ovAth"></b><span id="ovRm"></span></div></div>
+  <div class="ovLoad">
+    <div class="lb2"><span>CARICO IN USO</span> <span id="ovPct"></span></div>
+    <div class="ctl">
+      <button class="st" id="ovMinus" aria-label="Meno 2,5 kg">−</button>
+      <button class="kgb" id="ovKg" aria-label="Modifica peso"></button>
+      <button class="st" id="ovPlus" aria-label="Più 2,5 kg">+</button>
+    </div>
+  </div>
+  <div class="ovMid">
+    <div class="ovP vp">
+      <div class="trk vtrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div></div>
+      <div class="vside">
+        <div><div class="lb">Velocità (m/s)</div><div class="ovBig" id="ovVal">0.00</div></div>
+        <div class="lb" style="color:#ffd23f">Limite rep lenta<br><b id="ovLimTxt" style="font-size:20px"></b></div>
+      </div>
+    </div>
+    <div class="ovP">
+      <div class="lb">Corsa · valida oltre <b id="ovMin" style="color:#ffd23f"></b></div>
+      <div class="ph">
+        <div class="trk"><div class="vz" id="ovVz"></div><div class="dfill" id="ovDf"></div><div class="vl" id="ovVl"><span id="ovVlTxt"></span></div><span class="endl">100%</span></div>
+        <div class="bxs"><div class="bx dn" id="ovDn"><i>↓</i>Discesa</div><div class="bx" id="ovUp"><i>↑</i>Risalita</div></div>
+      </div>
+      <div class="lb" style="margin-top:8px">Corsa stimata <b id="ovRom" style="color:#eaf6ff"></b></div>
+    </div>
+  </div>
+  <div class="ovStats">
+    <div class="ovRep" id="ovRep">REP #0</div>
+    <div class="ovS">Ultima rep: <b id="ovLast">–</b> m/s<br>Media serie: <b id="ovAvg">–</b> m/s<br>Perdita: <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
+  </div>
+  <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef;min-height:20px"></div>
+  <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Stop</button></div>
+  <button class="ovClose" id="ovClose">Chiudi interfaccia</button>
+</div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
+const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
+
+function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
+let pos=0,tLo=0,ats=[],cur='',wk=[],prof;
+try{ats=JSON.parse(localStorage.getItem('ats'))||[]}catch(e){ats=[]}
+try{wk=JSON.parse(localStorage.getItem('wk'))||[]}catch(e){wk=[]}
+cur=store('athCur')||'';
+(function(){
+  if(!ats.length){let o={};try{o=JSON.parse(localStorage.getItem('prof'))||{}}catch(e){}
+    ats.push({id:'a1',name:o.name||'',rm:o.rm||0,pct:o.pct||80,kg:o.kg||0,mode:'pct'})}
+  wk.forEach(w=>{if(!w.aid){let a=ats.find(x=>x.name===(w.ath||''))||(!w.ath?ats[0]:null);
+    if(!a){a={id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:w.ath,rm:w.rm||0,pct:80,kg:0,mode:'pct'};ats.push(a)}w.aid=a.id}});
+})();
+if(!ats.some(a=>a.id===cur))cur=ats[0].id;
+prof=ats.find(a=>a.id===cur);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r25=x=>Math.round(x/2.5)*2.5;
+/* Tabella carico-velocità dagli studi (squat) */
+const PV=[[50,.90],[60,.80],[70,.675],[80,.525],[90,.40],[100,.30]];
+const HW=[[50,.05],[60,.05],[70,.025],[80,.025],[90,.02],[100,.02]];
+const VP=[[.30,100],[.40,90],[.525,80],[.675,70],[.80,60],[.90,50]];
+function interp(a,x){if(x<=a[0][0])return a[0][1];for(let i=1;i<a.length;i++){if(x<=a[i][0]){const p=a[i-1],q=a[i];return p[1]+(q[1]-p[1])*(x-p[0])/(q[0]-p[0])}}return a[a.length-1][1]}
+const mvAt=p=>p<50?null:interp(PV,Math.min(p,100));
+const pctAt=mv=>mv>.92?null:interp(VP,mv);
+function saveAts(){store('ats',JSON.stringify(ats));store('athCur',cur)}
+function renderAth(){$('athSel').innerHTML=ats.map(a=>'<option value="'+a.id+'">'+esc(a.name||'Senza nome')+'</option>').join('');$('athSel').value=cur}
+function applyMode(){const k=prof.mode==='kg';$('kg').readOnly=!k;$('pct').readOnly=k;$('mKg').className=k?'':'sec';$('mPct').className=k?'sec':''}
+function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode()}
+function recompute(){
+  if(prof.mode==='kg'){
+    if(prof.rm&&prof.kg)prof.pct=Math.round(prof.kg/prof.rm*1000)/10;else prof.pct=0;
+    $('pct').value=prof.pct||'';
+  }else{
+    if(prof.rm&&prof.pct)prof.kg=r25(prof.rm*prof.pct/100);else prof.kg=0;
+    $('kg').value=prof.kg||'';
+  }
+}
+function calcLoad(){
+  updOvBtn();
+  const p=prof.pct,m=p?mvAt(p):null;
+  if(m==null){tLo=0;$('zone').textContent=p?'Sotto il 50%: fuori dalla tabella degli studi':'Imposta massimale e carico';$('tgt').textContent='–';$('tgtSub').textContent='';ui();return}
+  const hw=p>=100?0:interp(HW,p),lo=m-hw,hi=m+hw,vl=p>80?15:20;
+  tLo=lo;
+  $('zone').textContent=p<=65?'Zona: velocità / potenza':p<=80?'Zona: forza base / ipertrofia':'Zona: forza massima / peaking';
+  $('tgt').textContent=hw?lo.toFixed(2)+'–'+hi.toFixed(2)+' m/s':m.toFixed(2)+' m/s';
+  $('tgtSub').textContent='Velocità media target · limite di perdita consigliato '+vl+'%';
+  if($('auto').checked){$('thr').value=String(vl);store('thr',String(vl))}
+  ui();
+}
+function selectAth(id){
+  cur=id;prof=ats.find(a=>a.id===id)||ats[0];saveAts();renderAth();fillLoad();calcLoad();
+  $('sugg').hidden=true;$('wkDet').hidden=true;renderWk();
+}
+$('athSel').onchange=()=>selectAth($('athSel').value);
+$('btnDelAth').onclick=()=>{
+  if(ats.length<2){alert('Deve restare almeno un atleta.');return}
+  const n=wk.filter(w=>w.aid===cur).length;
+  if(!confirm('Eliminare '+(prof.name||'questo atleta')+', i suoi '+n+' allenamenti salvati e le sue serie della sessione? Non si può annullare.'))return;
+  const id=cur;
+  wk=wk.filter(w=>w.aid!==id);saveWk();
+  sess=sess.filter(s=>s.aid!==id);try{localStorage.setItem('sess',JSON.stringify(sess))}catch(e){}
+  $('sessDet').style.display='none';renderSess();
+  ats=ats.filter(a=>a.id!==id);selectAth(ats[0].id);
+};
+$('btnAddAth').onclick=()=>{
+  const n=prompt('Nome del nuovo atleta');if(n===null||!n.trim())return;
+  const a={id:'a'+Date.now().toString(36),name:n.trim(),rm:0,pct:80,kg:0,mode:'pct'};
+  ats.push(a);selectAth(a.id);
+};
+$('ath').oninput=()=>{prof.name=$('ath').value.trim();saveAts();renderAth()};
+$('rm').oninput=()=>{prof.rm=+$('rm').value||0;recompute();saveAts();calcLoad()};
+$('pct').oninput=()=>{prof.pct=+$('pct').value||0;recompute();saveAts();calcLoad()};
+$('kg').oninput=()=>{prof.kg=+$('kg').value||0;recompute();saveAts();calcLoad()};
+$('mKg').onclick=()=>{prof.mode='kg';applyMode();saveAts()};
+$('mPct').onclick=()=>{prof.mode='pct';applyMode();saveAts()};
+$('auto').checked=store('auto')!=='0';
+$('auto').onchange=()=>{store('auto',$('auto').checked?'1':'0');calcLoad()};
+$('btnInfo').onclick=()=>{const h=$('info').hidden;$('info').hidden=!h;$('btnInfo').setAttribute('aria-expanded',h?'true':'false')};
+
+/* Indicazione a fine serie (solo informativa: il carico lo decide l'atleta) */
+function suggest(rs){
+  $('sugg').hidden=true;
+  if(!prof.pct||!rs.length)return;
+  const best=Math.max(...rs.map(r=>r.mcv)),pa=pctAt(best);if(pa==null)return;
+  $('suggT').textContent='Prima rep '+best.toFixed(2)+' m/s'+(prof.kg?' con '+prof.kg+' kg':'')+": velocità tipica del "+Math.round(pa)+"% dell'1RM (carico pianificato: "+prof.pct+'%).';
+  $('sugg').hidden=false;
+}
+
+/* Allenamenti salvati */
+function dayKey(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDay(k){return new Date(k+'T12:00:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
+function saveWk(){let n=wk.length;while(n>=0){try{localStorage.setItem('wk',JSON.stringify(n?wk.slice(-n):[]));return}catch(e){n=Math.floor(n/2);if(n<1)return}}}
+function saveWorkout(){
+  const todo=sess.filter(s=>!s.saved);
+  if(!todo.length){$('wkMsg').textContent=sess.length?'Tutte le serie sono già salvate.':'Nessuna serie da salvare.';return}
+  todo.forEach(s=>{
+    const day=dayKey(s.ts),at=ats.find(x=>x.id===s.aid)||ats.find(x=>x.name===(s.ath||''))||prof;
+    let w=wk.find(x=>x.day===day&&x.aid===at.id);
+    if(!w){w={day:day,aid:at.id,ath:at.name,rm:at.rm||0,sets:[]};wk.push(w)}
+    w.sets.push({ts:s.ts,kg:s.kg||0,pct:s.pct||0,thr:s.thr,why:s.why,reps:s.reps.map(r=>({mcv:r.mcv,peak:r.peak,rom:r.rom,loss:r.loss}))});
+    s.saved=true;
+  });
+  saveSess();saveWk();renderSess();renderWk();
+  $('wkMsg').textContent='Salvate '+todo.length+' serie nello storico.';
+}
+function renderWk(){
+  $('wkHead').textContent='Allenamenti passati'+(prof.name?' · '+prof.name:'');
+  const L=$('wkList');
+  const idx=wk.map((w,i)=>i).filter(i=>wk[i].aid===cur).sort((a,b)=>wk[a].day<wk[b].day?1:wk[a].day>wk[b].day?-1:0);
+  L.innerHTML=idx.length?idx.map(i=>{const w=wk[i],mx=Math.max(0,...w.sets.map(s=>s.kg||0));return '<button class="sec srow" data-i="'+i+'"><span>'+fmtDay(w.day)+'</span><span>'+w.sets.length+' serie'+(mx?' · max '+mx+' kg':'')+'</span></button>'}).join(''):'<div class="mut">Nessun allenamento salvato per questo atleta.</div>';
+  L.querySelectorAll('button').forEach(b=>b.onclick=()=>openWk(+b.dataset.i));
+}
+function openWk(i){
+  const w=wk[i];if(!w)return;
+  $('wkDet').hidden=false;
+  $('wkT').textContent=fmtDay(w.day)+(w.ath?' · '+w.ath:'')+(w.rm?' · 1RM '+w.rm+' kg':'');
+  $('wkTb').innerHTML=w.sets.map((s,k)=>{const ml=s.reps.length?Math.max(...s.reps.map(r=>r.loss)):0;return '<tr><td>'+(k+1)+'</td><td>'+(s.kg||'–')+'</td><td>'+(s.pct?s.pct+'%':'–')+'</td><td>'+s.reps.length+'</td><td>'+s.reps.map(r=>r.mcv.toFixed(2)).join(' · ')+'</td><td>'+ml.toFixed(0)+'%</td></tr>'}).join('');
+  $('btnWkDel').onclick=()=>{if(confirm('Eliminare questo allenamento?')){wk.splice(i,1);saveWk();$('wkDet').hidden=true;renderWk()}};
+  $('wkDet').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+$('btnSave').onclick=saveWorkout;
+$('btnWkClose').onclick=()=>{$('wkDet').hidden=true};
+
+/* Interfaccia live a schermo intero */
+function updOvBtn(){$('btnOv').hidden=!(cal&&prof.rm>0&&prof.pct>0)}
+function ovEditable(){return state==='off'||!reps.length}
+function setKg(k){
+  if(!ovEditable()||!(k>0))return;
+  prof.mode='kg';prof.kg=Math.round(k*10)/10;recompute();fillLoad();saveAts();calcLoad();ovUpdate();
+}
+$('ovMinus').onclick=()=>setKg((prof.kg||0)-2.5);
+$('ovPlus').onclick=()=>setKg((prof.kg||0)+2.5);
+$('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilanciere (kg)',prof.kg||'');if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(k>0)setKg(k)};
+function ovUpdate(){
+  const o=$('ov');if(o.hidden)return;
+  const R=cal?cal.rom:0.5,run=state==='run',mov=run&&Math.abs(v)>0.05,lr=reps[reps.length-1];
+  const thr=+$('thr').value,SM=1.2;
+  const ref=reps.length?Math.max(...reps.map(r=>r.mcv)):(mvAt(Math.max(prof.pct||0,50))||0.5);
+  const lim=ref*(1-thr/100),val=mov?Math.max(0,v):(lr?lr.mcv:0);
+  $('ovAth').textContent=prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
+  $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'';
+  $('ovVal').textContent=val.toFixed(2);
+  const f=$('ovFill');f.style.height=Math.min(100,val/SM*100)+'%';
+  f.style.background=(mov||!lr)?'linear-gradient(#27e0f0,#1470e0)':(lr.mcv>=lim?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#ff7a86,#d7263d)');
+  const lp=Math.min(100,lim/SM*100)+'%';
+  $('ovZone').style.height=lp;$('ovLim').style.bottom=lp;$('ovLimTxt').textContent=lim.toFixed(2)+' m/s';
+  const mn=(+$('minrom').value)/100,dep=Math.max(0,Math.min(1.1,R?(R-pos)/R:0));
+  $('ovDf').style.height=Math.min(100,dep*100)+'%';
+  $('ovDf').style.background=dep>=mn?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#27e0f0,#1470e0)';
+  $('ovVl').style.top=(mn*100)+'%';$('ovVz').style.top=(mn*100)+'%';
+  const sp=$('ovVlTxt');sp.textContent=Math.round(mn*100)+'%';sp.style.top=mn>0.8?'auto':'3px';sp.style.bottom=mn>0.8?'3px':'auto';
+  $('ovMin').textContent=Math.round(mn*100)+'%';
+  $('ovDn').classList.toggle('on',run&&v<-0.05);$('ovUp').classList.toggle('on',run&&v>0.05);
+  $('ovRom').textContent=cal?Math.round(cal.rom*100)+' cm':'–';
+  $('ovRep').textContent='REP #'+reps.length;
+  $('ovLast').textContent=lr?lr.mcv.toFixed(2):'–';
+  $('ovAvg').textContent=reps.length?(reps.reduce((a,r)=>a+r.mcv,0)/reps.length).toFixed(2):'–';
+  const loss=lr?Math.max(0,lr.loss):0;
+  $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=loss>=thr?'#ff7a86':'';
+  $('ovThr').textContent='(limite '+thr+'%)';
+  const ed=ovEditable();$('ovMinus').disabled=!ed;$('ovPlus').disabled=!ed;$('ovKg').disabled=!ed;
+  $('ovStart').disabled=state!=='off';$('ovStop').disabled=state==='off';
+}
+$('btnOv').onclick=()=>{if(state==='off'&&cal)pos=cal.rom;$('ov').hidden=false;document.documentElement.style.overflow='hidden';$('ovMsg').textContent=state==='off'?'Premi Avvia serie e tieni il bilanciere fermo 2 secondi.':$('status').textContent;ovUpdate()};
+$('ovClose').onclick=()=>{if(state!=='off')stop();$('ov').hidden=true;document.documentElement.style.overflow=''};
+$('ovStart').onclick=()=>{if(state==='off'){if(cal)pos=cal.rom;start('set')}};
+$('ovStop').onclick=()=>{if(state!=='off')stop()};
+setInterval(ovUpdate,50);
+
+const t0=store('thr'); if(t0)$('thr').value=t0;
+if(store('inv')==='1')$('inv').checked=true;
+$('thr').onchange=()=>{$('auto').checked=false;store('auto','0');store('thr',$('thr').value);ui()};
+$('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
+const mr=store('minrom');if(mr)$('minrom').value=mr;
+$('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
+const tw0=store('tw');if(tw0)$('tw').value=tw0;
+$('tw').onchange=()=>store('tw',$('tw').value);
+try{sess=JSON.parse(localStorage.getItem('sess'))||[]}catch(e){sess=[]}
+
+function msg(s,h){$('status').textContent=s;$('ovMsg').textContent=s;if(h!==undefined)$('hint').textContent=h}
+function tone(f,at,d,type,vol){
+  try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+at;
+  o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(vol||.25,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+d+.02)}catch(e){}
+}
+function beep(f,d){tone(f,0,d,'sine',.25)}
+const snd={
+  ok:()=>tone(880,0,.12,'sine',.3),
+  bad:()=>{tone(180,0,.15,'square',.2);tone(180,.2,.15,'square',.2)},
+  limit:()=>[0,.32,.64].forEach(t=>{tone(1046,t,.15,'triangle',.4);tone(698,t+.16,.15,'triangle',.4)})
+};
+
+async function start(m){
+  if(state!=='off'){stop();return}
+  if(typeof DeviceMotionEvent==='undefined'){msg('Sensori non disponibili','Apri questa pagina dal telefono, in Safari o Chrome.');return}
+  const emb=(function(){try{return window.top!==window}catch(e){return true}})();
+  try{
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      const r=await DeviceMotionEvent.requestPermission();
+      if(r!=='granted'){msg('Permesso negato','Chiudi del tutto questa scheda di Safari, riapri il link e premi di nuovo il pulsante: quando compare la richiesta tocca Consenti.');return}
+    }
+  }catch(e){msg('Permesso non concesso',emb?'La pagina è aperta dentro un\'altra app o finestra, che blocca i sensori. Copia il link e aprilo direttamente in Safari.':'Chiudi la scheda, riapri il link in Safari e premi di nuovo il pulsante.');return}
+  try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){}
+  try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
+  mode=m;warm=[];lastEcc=0;eseg=null;applyCal();
+  if(m==='set'){reps=[];alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
+  calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
+  window.addEventListener('devicemotion',onMotion);
+  (m==='warm'?$('btnWarm'):$('btnStart')).textContent='Ferma';
+  msg('Calibrazione…','Tieni il bilanciere fermo per 2 secondi.');
+  setTimeout(()=>{if(!gotEvt&&state!=='off'){stop();msg('Nessun dato dai sensori','Il browser non invia i dati di movimento. Prova da Safari su iPhone o Chrome su Android.')}},2500);
+}
+function stop(){
+  endSeries('manual');halt();msg('Fermo','Premi un pulsante per ricominciare.');
+}
+function halt(){
+  state='off';window.removeEventListener('devicemotion',onMotion);
+  $('btnStart').textContent='Avvia serie';$('btnWarm').textContent='Riscaldamento (5 rep)';
+  try{wake&&wake.release()}catch(e){}wake=null;
+}
+function finishCal(){
+  let s=[0,0,0];calBuf.forEach(a=>{s[0]+=a[0];s[1]+=a[1];s[2]+=a[2]});
+  const n=calBuf.length||1,g=[s[0]/n,s[1]/n,s[2]/n],m=Math.hypot(g[0],g[1],g[2])||1;
+  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';wasStill=true;rec=newRec();shown=null;
+  beep(660,.15);if(mode==='warm')updWarm();else msg('Pronto: fai la rep',cal?'Uso la calibrazione del riscaldamento.':'Nessun riscaldamento fatto: uso soglie standard.');
+}
+function onMotion(e){
+  const ag=e.accelerationIncludingGravity;if(!ag||ag.x==null)return;
+  gotEvt=true;const now=performance.now();
+  if(state==='cal'){calBuf.push([ag.x,ag.y,ag.z]);if(now-calStart>2000&&calBuf.length>10)finishCal();return}
+  if(state!=='run')return;
+  const al=e.acceleration;let lx,ly,lz;
+  if(al&&al.x!=null){lx=al.x;ly=al.y;lz=al.z}
+  else{lx=ag.x-u[0]*9.81;ly=ag.y-u[1]*9.81;lz=ag.z-u[2]*9.81}
+  let a=lx*u[0]+ly*u[1]+lz*u[2];
+  if($('inv').checked)a=-a;
+  step(a,now);
+}
+function still(now,a){
+  win.push([now,a]);
+  while(win.length&&now-win[0][0]>250)win.shift();
+  if(!win.length||now-win[0][0]<200)return false;
+  for(const w of win)if(Math.abs(w[1])>0.35)return false;
+  return true;
+}
+function step(a,now){
+  const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;
+  const s=still(now,a);
+  if(s){v=0;wasStill=true;if(seg)endSeg()}
+  else{
+    if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
+    v+=a*dt;
+  }
+  {const R=cal?cal.rom:0.5;if(s){if(pos>R/2)pos=R}else pos=Math.max(-0.05,Math.min(R*1.15,pos+v*dt))}
+  if(!eseg&&v<-0.08)eseg={d:0,low:0,mn:0};
+  if(eseg){
+    if(v<0)eseg.d+=-v*dt;
+    if(v<eseg.mn)eseg.mn=v;
+    if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
+    else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
+  }
+  if(!seg&&v>0.08)seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};
+  if(seg){
+    if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
+    if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
+  }
+  if(rec)rec.pts.push([Math.round(now-rec.t0),a,v]);
+  $('live').textContent=v.toFixed(2);
+}
+function endSeg(){
+  const s=seg;seg=null;v=0;if(!s)return;
+  const dur=(performance.now()-s.t)/1000;
+  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n){if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}return}
+  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(cal&&lastEcc<cal.ecc*0.6){lastEcc=0;mark(0);snd.bad();return}
+  lastEcc=0;
+  const mcv=s.sum/s.n,best=Math.max(mcv,...reps.map(r=>r.mcv)),loss=(best-mcv)/best*100;
+  reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
+  ui();
+  mark(1);
+  if(loss>=+$('thr').value){alarm()}else snd.ok();
+}
+function applyCal(){
+  if(mode==='set'&&cal){MIN_ROM=cal.rom*(+$('minrom').value/100);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
+  else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
+}
+function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
+function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a bilanciere vuoto: scendi, fai una breve pausa in basso, risali e fai una pausa in alto. La pausa in basso serve solo ora, per calibrare.')}
+function finishWarm(){
+  cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
+  store('cal',JSON.stringify(cal));
+  mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];rec=newRec();ui();showCal();
+  $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
+  beep(660,.12);setTimeout(()=>beep(990,.2),180);
+  msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Puoi iniziare la serie: conto da ora.');
+}
+function showCal(){updOvBtn();$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
+  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
+}
+function newRec(){return{t0:performance.now(),pts:[],ev:[]}}
+function mark(ok){if(rec)rec.ev.push([Math.round(performance.now()-rec.t0),ok])}
+function drawSeries(c,pts,ev,t0,t1){
+  const w=c.clientWidth,h=c.clientHeight,d=window.devicePixelRatio||1;
+  if(!w||!h)return;
+  if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
+  const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);
+  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim(),span=Math.max(1,t1-t0),X=t=>(t-t0)/span*w;
+  x.lineWidth=1;x.strokeStyle=col('--bd');x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
+  (ev||[]).forEach(e=>{if(e[0]<t0||e[0]>t1)return;x.strokeStyle=col(e[1]?'--ok':'--bad');x.beginPath();x.moveTo(X(e[0]),0);x.lineTo(X(e[0]),h);x.stroke()});
+  const line=(k,cc,sc)=>{x.strokeStyle=cc;x.lineWidth=2;x.beginPath();let f=1;for(const p of pts){if(p[0]<t0)continue;if(p[0]>t1)break;const Y=h/2-p[k]*sc;f?x.moveTo(X(p[0]),Y):x.lineTo(X(p[0]),Y);f=0}x.stroke()};
+  line(1,col('--mut'),h/2/12);line(2,col('--ac'),h/2/1.6);
+}
+function drawChart(){
+  const c=$('cv');if(!c)return;
+  const T=+$('tw').value*1000;
+  if(rec){const t1=performance.now()-rec.t0;$('cvlab').textContent='ultimi '+T/1000+' s';drawSeries(c,rec.pts,rec.ev,t1-T,t1)}
+  else if(shown){$('cvlab').textContent='serie completa';drawSeries(c,shown.pts,shown.ev,0,shown.dur)}
+  else{$('cvlab').textContent='in attesa';drawSeries(c,[],[],0,T)}
+}
+function endSeries(why){
+  if(!rec)return;
+  const r=rec;rec=null;r.dur=performance.now()-r.t0;shown=r;
+  if(mode!=='set'||!reps.length)return;
+  sess.push({ts:Date.now(),why:why,thr:+$('thr').value,dur:Math.round(r.dur),kg:prof.kg||0,pct:prof.pct||0,aid:prof.id,an:prof.name||'',saved:false,
+    reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1)})),
+    ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
+  if(sess.length>60)sess.shift();
+  saveSess();renderSess();suggest(reps);
+}
+function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
+function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
+function renderSess(){
+  const L=$('sessList');
+  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>Serie '+(i+1)+' · '+fmt(s.ts)+(ats.length>1&&s.an?' · '+esc(s.an):'')+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
+  L.querySelectorAll('button').forEach(b=>b.onclick=()=>openSer(+b.dataset.i));
+}
+function openSer(i){
+  const s=sess[i];if(!s)return;
+  $('sessDet').style.display='block';
+  $('detT').textContent='Serie '+(i+1)+' · '+fmt(s.ts)+(s.why==='limit'?' · fermata dal limite':'');
+  $('detTb').innerHTML=s.reps.map((x,k)=>'<tr><td>'+(k+1)+'</td><td>'+x.mcv.toFixed(2)+'</td><td>'+x.peak.toFixed(2)+'</td><td>'+x.rom+'</td><td>'+x.loss.toFixed(0)+'%</td></tr>').join('');
+  requestAnimationFrame(()=>{drawSeries($('cv2'),s.pts,s.ev,0,s.dur);$('sessDet').scrollIntoView({behavior:'smooth',block:'nearest'})});
+}
+function newSess(){
+  if(sess.length&&!confirm(sess.some(s=>!s.saved)?'Ci sono serie non salvate nello storico. Cancellarle comunque?':'Cancellare le serie di questa sessione?'))return;
+  sess=[];try{localStorage.removeItem('sess')}catch(e){}
+  $('sessDet').style.display='none';renderSess();
+}
+function alarm(){
+  alarmed=true;document.body.classList.add('alarm');
+  endSeries('limit');halt();
+  msg('STOP: serie finita','Perdita di velocità oltre la soglia. La serie è salvata nella sessione.');
+  snd.limit();
+  try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}
+}
+function ui(){
+  const thr=+$('thr').value;
+  $('reps').textContent=reps.length;
+  const r=reps[reps.length-1];
+  $('last').textContent=r?r.mcv.toFixed(2):'–';
+  $('last').style.color=(r&&tLo&&!alarmed)?(r.mcv>=tLo?'var(--ok)':'#e0a100'):'';
+  const loss=r?Math.max(0,r.loss):0;
+  $('loss').textContent=loss.toFixed(0)+'%';
+  const g=$('gfill');g.style.width=Math.min(100,loss/(thr*1.5)*100)+'%';
+  g.style.background=loss>=thr?'var(--bad)':(loss>=thr*.7?'#e0a100':'var(--ok)');
+  $('gthr').style.left=(thr/(thr*1.5)*100)+'%';
+  $('tb').innerHTML=reps.length?reps.map((x,i)=>`<tr><td>${i+1}</td><td>${x.mcv.toFixed(2)}</td><td>${x.peak.toFixed(2)}</td><td>${x.rom.toFixed(0)}</td><td>${Math.max(0,x.loss).toFixed(0)}%</td></tr>`).join(''):'<tr><td colspan="5" class="mut" style="text-align:left">Nessuna ripetizione. Dopo la calibrazione fai la prima rep.</td></tr>';
+}
+function reset(){
+  reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
+  if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
+}
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};renderAth();fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);
+})();
+</script>
+</body>
+</html>

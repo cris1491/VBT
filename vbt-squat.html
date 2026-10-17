@@ -39,6 +39,42 @@ th{font-weight:600;color:var(--mut)}
 label.chk{display:flex;gap:8px;align-items:center}
 [hidden]{display:none!important}
 input[readonly]{opacity:.6}
+#ov{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));background:radial-gradient(circle at 50% 0,#12406a,#07182b 70%);color:#eaf6ff;overflow:hidden;font-weight:650}
+body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
+#ov button{width:auto;font-family:inherit}
+#ov button:disabled{opacity:.35}
+.ovHead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid #2a6a96;padding-bottom:8px}
+.ovHead b{font-size:20px;letter-spacing:.03em;text-transform:uppercase}
+.ovHead span{font-size:16px;color:#9fd3ef}
+.ovLoad{display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px}
+#ov .st{width:46px;height:46px;padding:0;font-size:26px;border-radius:12px;background:#0d3a5c;border:1px solid #2a8fc0;color:#eaf6ff}
+#ov .kgb{font-size:28px;font-weight:800;background:none;color:#eaf6ff;border:0;border-bottom:2px dashed #19c3e6;border-radius:0;padding:0 6px}
+.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ovP{display:flex;flex-direction:column;min-height:0;border:1px solid #2a8fc0;border-radius:16px;background:#0a2d4acc;padding:10px;text-align:center}
+.ovP .lb{font-size:13px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
+.ovBig{font-size:clamp(34px,10vw,56px);font-weight:800;line-height:1.05}
+.trk{position:relative;flex:1;min-height:50px;background:#06213a;border:1px solid #2a6a96;border-radius:12px;overflow:hidden}
+.trk .fill{position:absolute;left:0;right:0;bottom:0;height:0}
+.trk .zone{position:absolute;left:0;right:0;bottom:0;height:0;background:rgba(255,74,90,.28);pointer-events:none}
+.lim{position:absolute;left:0;right:0;height:3px;background:#ffd23f}
+.lim span{position:absolute;right:5px;bottom:5px;font-size:12px;color:#ffd23f;white-space:nowrap}
+.ph{display:flex;flex:1;min-height:0;gap:10px;margin-top:8px}
+.ph .trk{flex:none;width:38px}
+.hdl{position:absolute;left:3px;right:3px;height:14px;border-radius:7px;background:#dfe8f0;transform:translateY(50%)}
+.bxs{flex:1;display:flex;flex-direction:column;gap:8px}
+.bx{flex:1;border:1px solid #2a6a96;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;color:#7fb2d0;text-transform:uppercase}
+.bx i{font-style:normal;font-size:28px;line-height:1}
+.bx.on{border-color:#2ee27d;color:#2ee27d;background:#0f3b2f;box-shadow:0 0 14px #2ee27d88}
+.bx.dn.on{border-color:#19c3e6;color:#19c3e6;background:#0b3550;box-shadow:0 0 14px #19c3e688}
+.ovStats{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ovRep{font-size:clamp(44px,14vw,84px);font-weight:800;line-height:1}
+.ovS{font-size:14px;line-height:1.7;text-align:right}
+.ovS b{font-size:17px}
+.ovBtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#ov .ovBtns button,#ov .ovClose{width:100%;font-size:18px;text-transform:uppercase}
+#ov .go{background:#0d3b2a;border:2px solid #2ee27d;color:#eaffee}
+#ov .no{background:#3b0d15;border:2px solid #ff4a5a;color:#ffeaee}
+#ov .ovClose{background:#0a2d4a;border:1px solid #2a8fc0;color:#eaf6ff;font-size:15px;padding:11px}
 input[type=text],input[type=number]{font:inherit;padding:9px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;min-width:0}
 button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .fld{flex:1;min-width:130px}
@@ -88,6 +124,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <button id="btnWarm">Riscaldamento (5 rep)</button>
   <button id="btnStart">Avvia serie</button>
 </div>
+<button id="btnOv" hidden style="margin-top:12px">Avvia interfaccia</button>
 <div class="card mut" id="calInfo" style="margin-top:12px"></div>
 
 <div class="card" id="loadCard">
@@ -186,6 +223,38 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 <div class="mut">Prototipo: i valori sono indicativi e vanno bene per confrontare le rep tra loro. Per provare la direzione, solleva il telefono in verticale: la velocità live deve diventare positiva. Se è negativa, attiva «Inverti direzione».</div>
 </main>
 
+<div id="ov" hidden>
+  <div class="ovHead"><b id="ovAth"></b><span id="ovRm"></span></div>
+  <div class="ovLoad">
+    <span>CARICO IN USO</span>
+    <button class="st" id="ovMinus" aria-label="Meno 2,5 kg">−</button>
+    <button class="kgb" id="ovKg" aria-label="Modifica peso"></button>
+    <button class="st" id="ovPlus" aria-label="Più 2,5 kg">+</button>
+    <span id="ovPct"></span>
+  </div>
+  <div class="ovMid">
+    <div class="ovP">
+      <div class="lb">Velocità (m/s)</div>
+      <div class="ovBig" id="ovVal">0.00</div>
+      <div class="trk" style="margin-top:8px"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"><span id="ovLimTxt"></span></div></div>
+    </div>
+    <div class="ovP">
+      <div class="lb">Fase</div>
+      <div class="ph">
+        <div class="trk"><div class="hdl" id="ovHandle"></div></div>
+        <div class="bxs"><div class="bx dn" id="ovDn"><i>↓</i>Discesa</div><div class="bx" id="ovUp"><i>↑</i>Risalita</div></div>
+      </div>
+      <div class="lb" style="margin-top:8px">Corsa stimata <b id="ovRom" style="color:#eaf6ff"></b></div>
+    </div>
+  </div>
+  <div class="ovStats">
+    <div class="ovRep" id="ovRep">REP #0</div>
+    <div class="ovS">Ultima rep: <b id="ovLast">–</b> m/s<br>Media serie: <b id="ovAvg">–</b> m/s<br>Perdita: <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
+  </div>
+  <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef;min-height:20px"></div>
+  <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Stop</button></div>
+  <button class="ovClose" id="ovClose">Chiudi interfaccia</button>
+</div>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
@@ -193,7 +262,7 @@ let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
-let tLo=0,ats=[],cur='',wk=[],prof;
+let pos=0,tLo=0,ats=[],cur='',wk=[],prof;
 try{ats=JSON.parse(localStorage.getItem('ats'))||[]}catch(e){ats=[]}
 try{wk=JSON.parse(localStorage.getItem('wk'))||[]}catch(e){wk=[]}
 cur=store('athCur')||'';
@@ -228,6 +297,7 @@ function recompute(){
   }
 }
 function calcLoad(){
+  updOvBtn();
   const p=prof.pct,m=p?mvAt(p):null;
   if(m==null){tLo=0;$('zone').textContent=p?'Sotto il 50%: fuori dalla tabella degli studi':'Imposta massimale e carico';$('tgt').textContent='–';$('tgtSub').textContent='';ui();return}
   const hw=p>=100?0:interp(HW,p),lo=m-hw,hi=m+hw,vl=p>80?15:20;
@@ -312,6 +382,47 @@ function openWk(i){
 $('btnSave').onclick=saveWorkout;
 $('btnWkClose').onclick=()=>{$('wkDet').hidden=true};
 
+/* Interfaccia live a schermo intero */
+function updOvBtn(){$('btnOv').hidden=!(cal&&prof.rm>0&&prof.pct>0)}
+function ovEditable(){return state==='off'||!reps.length}
+function setKg(k){
+  if(!ovEditable()||!(k>0))return;
+  prof.mode='kg';prof.kg=Math.round(k*10)/10;recompute();fillLoad();saveAts();calcLoad();ovUpdate();
+}
+$('ovMinus').onclick=()=>setKg((prof.kg||0)-2.5);
+$('ovPlus').onclick=()=>setKg((prof.kg||0)+2.5);
+$('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilanciere (kg)',prof.kg||'');if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(k>0)setKg(k)};
+function ovUpdate(){
+  const o=$('ov');if(o.hidden)return;
+  const R=cal?cal.rom:0.5,run=state==='run',mov=run&&Math.abs(v)>0.05,lr=reps[reps.length-1];
+  const thr=+$('thr').value,SM=1.2;
+  const ref=reps.length?Math.max(...reps.map(r=>r.mcv)):(mvAt(Math.max(prof.pct||0,50))||0.5);
+  const lim=ref*(1-thr/100),val=mov?Math.max(0,v):(lr?lr.mcv:0);
+  $('ovAth').textContent=prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
+  $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'';
+  $('ovVal').textContent=val.toFixed(2);
+  const f=$('ovFill');f.style.height=Math.min(100,val/SM*100)+'%';
+  f.style.background=(mov||!lr)?'linear-gradient(#27e0f0,#1470e0)':(lr.mcv>=lim?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#ff7a86,#d7263d)');
+  const lp=Math.min(100,lim/SM*100)+'%';
+  $('ovZone').style.height=lp;$('ovLim').style.bottom=lp;$('ovLimTxt').textContent='limite '+lim.toFixed(2);
+  const pp=Math.max(0,Math.min(1,R?pos/R:0));$('ovHandle').style.bottom=(2+pp*96)+'%';
+  $('ovDn').classList.toggle('on',run&&v<-0.05);$('ovUp').classList.toggle('on',run&&v>0.05);
+  $('ovRom').textContent=cal?Math.round(cal.rom*100)+' cm':'–';
+  $('ovRep').textContent='REP #'+reps.length;
+  $('ovLast').textContent=lr?lr.mcv.toFixed(2):'–';
+  $('ovAvg').textContent=reps.length?(reps.reduce((a,r)=>a+r.mcv,0)/reps.length).toFixed(2):'–';
+  const loss=lr?Math.max(0,lr.loss):0;
+  $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=loss>=thr?'#ff7a86':'';
+  $('ovThr').textContent='(limite '+thr+'%)';
+  const ed=ovEditable();$('ovMinus').disabled=!ed;$('ovPlus').disabled=!ed;$('ovKg').disabled=!ed;
+  $('ovStart').disabled=state!=='off';$('ovStop').disabled=state==='off';
+}
+$('btnOv').onclick=()=>{$('ov').hidden=false;document.documentElement.style.overflow='hidden';$('ovMsg').textContent=state==='off'?'Premi Avvia serie e tieni il bilanciere fermo 2 secondi.':$('status').textContent;ovUpdate()};
+$('ovClose').onclick=()=>{if(state!=='off')stop();$('ov').hidden=true;document.documentElement.style.overflow=''};
+$('ovStart').onclick=()=>{if(state==='off')start('set')};
+$('ovStop').onclick=()=>{if(state!=='off')stop()};
+setInterval(ovUpdate,50);
+
 const t0=store('thr'); if(t0)$('thr').value=t0;
 if(store('inv')==='1')$('inv').checked=true;
 $('thr').onchange=()=>{$('auto').checked=false;store('auto','0');store('thr',$('thr').value);ui()};
@@ -322,7 +433,7 @@ const tw0=store('tw');if(tw0)$('tw').value=tw0;
 $('tw').onchange=()=>store('tw',$('tw').value);
 try{sess=JSON.parse(localStorage.getItem('sess'))||[]}catch(e){sess=[]}
 
-function msg(s,h){$('status').textContent=s;if(h!==undefined)$('hint').textContent=h}
+function msg(s,h){$('status').textContent=s;$('ovMsg').textContent=s;if(h!==undefined)$('hint').textContent=h}
 function tone(f,at,d,type,vol){
   try{if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+at;
   o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(vol||.25,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
@@ -396,6 +507,7 @@ function step(a,now){
     if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
     v+=a*dt;
   }
+  {const R=cal?cal.rom:0.5;if(s)pos=pos>R/2?R:0;else pos=Math.max(-0.05,Math.min(R*1.15,pos+v*dt))}
   if(!eseg&&v<-0.08)eseg={d:0,low:0,mn:0};
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
@@ -438,7 +550,7 @@ function finishWarm(){
   beep(660,.12);setTimeout(()=>beep(990,.2),180);
   msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Puoi iniziare la serie: conto da ora.');
 }
-function showCal(){$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
+function showCal(){updOvBtn();$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
   $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
 }
 function newRec(){return{t0:performance.now(),pts:[],ev:[]}}

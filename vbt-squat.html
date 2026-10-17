@@ -38,6 +38,7 @@ th{font-weight:600;color:var(--mut)}
 .wrap{overflow-x:auto}
 label.chk{display:flex;gap:8px;align-items:center}
 [hidden]{display:none!important}
+input[readonly]{opacity:.6}
 input[type=text],input[type=number]{font:inherit;padding:9px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:100%;min-width:0}
 button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .fld{flex:1;min-width:130px}
@@ -71,8 +72,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <p>È il calo percentuale tra la rep più veloce e l'ultima. Una VL del 10–20% dà guadagni di forza pari o superiori a una VL del 40%, con molta meno fatica. Con «Limite automatico» l'app imposta 20% fino all'80% dell'1RM e 15% oltre (forza massima: 10–15%).</p>
   <h3>Come si usano i target</h3>
   <p>50–65%: 0.70–0.85 m/s (velocità). 70–80%: 0.50–0.65 m/s, stop a VL 20%. 80–90%+: 0.35–0.50 m/s, stop a VL 10–15%. Se la rep supera il target inferiore il numero diventa verde, altrimenti giallo.</p>
-  <h3>Autoregolazione e carico successivo</h3>
-  <p>Finita la serie l'app confronta la tua prima rep con la velocità prevista per quel carico, ricava a quale % dell'1RM corrisponde oggi e stima l'1RM del giorno. Se oggi sei più veloce puoi caricare, se sei più lento il carico per la stessa % scende. La variazione proposta è limitata a ±15% ed è una stima: vale solo se hai spinto alla massima intenzione.</p>
+  <h3>Autoregolazione</h3>
+  <p>La forza cambia di giorno in giorno (sonno, stress, recupero). A fine serie l'app mostra a quale % dell'1RM corrisponde la velocità della tua prima rep: se è più alta del previsto sei in giornata buona, se è più bassa sei affaticato. Il carico della serie successiva lo decidi tu, seguendo la tua scheda.</p>
   <h3>Profilo individuale</h3>
   <p>Non tutti hanno MVT 0.30: i powerlifter esperti completano squat a 0.24–0.26 m/s, gli atleti meno esperti falliscono sotto 0.32–0.35. Lo studio consiglia un test incrementale (45, 60, 75, 85%) per tracciare il proprio profilo.</p>
   <p class="mut">I valori del telefono sono indicativi: servono soprattutto a confrontare le rep tra loro.</p>
@@ -90,13 +91,21 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 <div class="card mut" id="calInfo" style="margin-top:12px"></div>
 
 <div class="card" id="loadCard">
-  <div class="row" style="align-items:flex-end">
-    <div class="fld"><label class="mut" for="ath">Atleta</label><input type="text" id="ath" autocomplete="name" placeholder="Nome"></div>
-    <div class="fld"><label class="mut" for="rm">Massimale 1RM (kg)</label><input type="number" id="rm" inputmode="decimal" min="0" step="2.5" placeholder="es. 140"></div>
+  <div class="row" style="align-items:flex-end;flex-wrap:nowrap">
+    <div class="fld" style="flex:1"><label class="mut" for="athSel">Atleta</label><select id="athSel" style="width:100%;padding:10px"></select></div>
+    <button class="sec" id="btnAddAth" aria-label="Aggiungi atleta" style="width:auto;padding:8px 18px;font-size:22px;line-height:1.2">+</button>
   </div>
   <div class="row" style="margin-top:12px;align-items:flex-end">
-    <div class="fld"><label class="mut" for="pct">Carico (% 1RM)</label><input type="number" id="pct" inputmode="decimal" min="0" max="105" step="1" placeholder="es. 80"></div>
-    <div class="fld"><label class="mut" for="kg">Carico prossima serie (kg)</label><input type="number" id="kg" inputmode="decimal" min="0" step="2.5" placeholder="kg"></div>
+    <div class="fld"><label class="mut" for="ath">Nome</label><input type="text" id="ath" autocomplete="name" placeholder="Nome"></div>
+    <div class="fld"><label class="mut" for="rm">Massimale 1RM (kg)</label><input type="number" id="rm" inputmode="decimal" min="0" step="2.5" placeholder="es. 140"></div>
+  </div>
+  <div style="margin-top:16px"><b>Prossima serie</b>
+    <div class="mut">Scegli cosa inserire: l'altro valore lo calcola l'app.</div>
+    <div class="grid" style="margin-top:8px"><button id="mKg">Inserisco il peso</button><button class="sec" id="mPct">Inserisco la %</button></div>
+  </div>
+  <div class="row" style="margin-top:12px;align-items:flex-end">
+    <div class="fld"><label class="mut" for="pct">% 1RM</label><input type="number" id="pct" inputmode="decimal" min="0" max="105" step="1" placeholder="es. 80"></div>
+    <div class="fld"><label class="mut" for="kg">Peso (kg)</label><input type="number" id="kg" inputmode="decimal" min="0" step="2.5" placeholder="kg"></div>
   </div>
   <div style="margin-top:12px">
     <div class="mut" id="zone"></div>
@@ -104,9 +113,9 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <div class="mut" id="tgtSub"></div>
   </div>
   <label class="chk" style="margin-top:10px"><input type="checkbox" id="auto" checked> Limite di perdita automatico dal carico</label>
+  <button class="sec" id="btnDelAth" style="margin-top:12px">Elimina atleta</button>
   <div id="sugg" hidden style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
-    <div id="suggT"></div>
-    <button id="btnApply" style="margin-top:10px"></button>
+    <div id="suggT" class="mut"></div>
   </div>
 </div>
 
@@ -165,7 +174,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 </div>
 
 <div class="card" id="wkCard">
-  <b>Allenamenti passati</b>
+  <b id="wkHead">Allenamenti passati</b>
   <div id="wkList" style="margin-top:10px"></div>
   <div id="wkDet" hidden style="margin-top:6px">
     <div class="row"><b id="wkT"></b><button class="sec" id="btnWkClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
@@ -184,9 +193,18 @@ let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
-let tLo=0,prof={name:'',rm:0,pct:80,kg:0},wk=[];
-try{prof=Object.assign(prof,JSON.parse(localStorage.getItem('prof')))}catch(e){}
+let tLo=0,ats=[],cur='',wk=[],prof;
+try{ats=JSON.parse(localStorage.getItem('ats'))||[]}catch(e){ats=[]}
 try{wk=JSON.parse(localStorage.getItem('wk'))||[]}catch(e){wk=[]}
+cur=store('athCur')||'';
+(function(){
+  if(!ats.length){let o={};try{o=JSON.parse(localStorage.getItem('prof'))||{}}catch(e){}
+    ats.push({id:'a1',name:o.name||'',rm:o.rm||0,pct:o.pct||80,kg:o.kg||0,mode:'pct'})}
+  wk.forEach(w=>{if(!w.aid){let a=ats.find(x=>x.name===(w.ath||''))||(!w.ath?ats[0]:null);
+    if(!a){a={id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:w.ath,rm:w.rm||0,pct:80,kg:0,mode:'pct'};ats.push(a)}w.aid=a.id}});
+})();
+if(!ats.some(a=>a.id===cur))cur=ats[0].id;
+prof=ats.find(a=>a.id===cur);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const r25=x=>Math.round(x/2.5)*2.5;
 /* Tabella carico-velocità dagli studi (squat) */
@@ -196,8 +214,19 @@ const VP=[[.30,100],[.40,90],[.525,80],[.675,70],[.80,60],[.90,50]];
 function interp(a,x){if(x<=a[0][0])return a[0][1];for(let i=1;i<a.length;i++){if(x<=a[i][0]){const p=a[i-1],q=a[i];return p[1]+(q[1]-p[1])*(x-p[0])/(q[0]-p[0])}}return a[a.length-1][1]}
 const mvAt=p=>p<50?null:interp(PV,Math.min(p,100));
 const pctAt=mv=>mv>.92?null:interp(VP,mv);
-function saveProf(){store('prof',JSON.stringify(prof))}
-function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||''}
+function saveAts(){store('ats',JSON.stringify(ats));store('athCur',cur)}
+function renderAth(){$('athSel').innerHTML=ats.map(a=>'<option value="'+a.id+'">'+esc(a.name||'Senza nome')+'</option>').join('');$('athSel').value=cur}
+function applyMode(){const k=prof.mode==='kg';$('kg').readOnly=!k;$('pct').readOnly=k;$('mKg').className=k?'':'sec';$('mPct').className=k?'sec':''}
+function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode()}
+function recompute(){
+  if(prof.mode==='kg'){
+    if(prof.rm&&prof.kg)prof.pct=Math.round(prof.kg/prof.rm*1000)/10;else prof.pct=0;
+    $('pct').value=prof.pct||'';
+  }else{
+    if(prof.rm&&prof.pct)prof.kg=r25(prof.rm*prof.pct/100);else prof.kg=0;
+    $('kg').value=prof.kg||'';
+  }
+}
 function calcLoad(){
   const p=prof.pct,m=p?mvAt(p):null;
   if(m==null){tLo=0;$('zone').textContent=p?'Sotto il 50%: fuori dalla tabella degli studi':'Imposta massimale e carico';$('tgt').textContent='–';$('tgtSub').textContent='';ui();return}
@@ -209,45 +238,56 @@ function calcLoad(){
   if($('auto').checked){$('thr').value=String(vl);store('thr',String(vl))}
   ui();
 }
-function setKgFromPct(){if(prof.rm&&prof.pct){prof.kg=r25(prof.rm*prof.pct/100);$('kg').value=prof.kg}}
-$('ath').oninput=()=>{prof.name=$('ath').value.trim();saveProf()};
-$('rm').oninput=()=>{prof.rm=+$('rm').value||0;setKgFromPct();saveProf();calcLoad()};
-$('pct').oninput=()=>{prof.pct=+$('pct').value||0;setKgFromPct();saveProf();calcLoad()};
-$('kg').oninput=()=>{prof.kg=+$('kg').value||0;if(prof.rm&&prof.kg){prof.pct=Math.round(prof.kg/prof.rm*1000)/10;$('pct').value=prof.pct}saveProf();calcLoad()};
+function selectAth(id){
+  cur=id;prof=ats.find(a=>a.id===id)||ats[0];saveAts();renderAth();fillLoad();calcLoad();
+  $('sugg').hidden=true;$('wkDet').hidden=true;renderWk();
+}
+$('athSel').onchange=()=>selectAth($('athSel').value);
+$('btnDelAth').onclick=()=>{
+  if(ats.length<2){alert('Deve restare almeno un atleta.');return}
+  const n=wk.filter(w=>w.aid===cur).length;
+  if(!confirm('Eliminare '+(prof.name||'questo atleta')+', i suoi '+n+' allenamenti salvati e le sue serie della sessione? Non si può annullare.'))return;
+  const id=cur;
+  wk=wk.filter(w=>w.aid!==id);saveWk();
+  sess=sess.filter(s=>s.aid!==id);try{localStorage.setItem('sess',JSON.stringify(sess))}catch(e){}
+  $('sessDet').style.display='none';renderSess();
+  ats=ats.filter(a=>a.id!==id);selectAth(ats[0].id);
+};
+$('btnAddAth').onclick=()=>{
+  const n=prompt('Nome del nuovo atleta');if(n===null||!n.trim())return;
+  const a={id:'a'+Date.now().toString(36),name:n.trim(),rm:0,pct:80,kg:0,mode:'pct'};
+  ats.push(a);selectAth(a.id);
+};
+$('ath').oninput=()=>{prof.name=$('ath').value.trim();saveAts();renderAth()};
+$('rm').oninput=()=>{prof.rm=+$('rm').value||0;recompute();saveAts();calcLoad()};
+$('pct').oninput=()=>{prof.pct=+$('pct').value||0;recompute();saveAts();calcLoad()};
+$('kg').oninput=()=>{prof.kg=+$('kg').value||0;recompute();saveAts();calcLoad()};
+$('mKg').onclick=()=>{prof.mode='kg';applyMode();saveAts()};
+$('mPct').onclick=()=>{prof.mode='pct';applyMode();saveAts()};
 $('auto').checked=store('auto')!=='0';
 $('auto').onchange=()=>{store('auto',$('auto').checked?'1':'0');calcLoad()};
 $('btnInfo').onclick=()=>{const h=$('info').hidden;$('info').hidden=!h;$('btnInfo').setAttribute('aria-expanded',h?'true':'false')};
 
-/* Carico consigliato per la prossima serie */
+/* Indicazione a fine serie (solo informativa: il carico lo decide l'atleta) */
 function suggest(rs){
   $('sugg').hidden=true;
-  if(!prof.rm||!prof.kg||!prof.pct||!rs.length)return;
+  if(!prof.pct||!rs.length)return;
   const best=Math.max(...rs.map(r=>r.mcv)),pa=pctAt(best);if(pa==null)return;
-  const today=prof.kg/(pa/100);
-  let kg2=r25(today*prof.pct/100);
-  kg2=Math.min(Math.max(kg2,r25(prof.kg*.85)),r25(prof.kg*1.15));
-  const diff=kg2-prof.kg;
-  let s='Prima rep '+best.toFixed(2)+' m/s con '+prof.kg+' kg: corrisponde a circa il '+Math.round(pa)+'% (previsto '+prof.pct+'%). ';
-  if(Math.abs(diff)<2.5)s+='Il carico è in linea con il previsto.';
-  else s+=diff>0?'Oggi sei più veloce del previsto: per restare al '+prof.pct+'% puoi salire a circa '+kg2+' kg.':'Oggi sei più lento del previsto: per restare al '+prof.pct+'% scendi a circa '+kg2+' kg.';
-  s+=' 1RM stimato oggi: ~'+Math.round(today)+' kg.';
-  $('suggT').textContent=s;
-  const b=$('btnApply');b.hidden=Math.abs(diff)<2.5;b.textContent='Usa '+kg2+' kg per la prossima serie';
-  b.onclick=()=>{prof.kg=kg2;prof.pct=Math.round(kg2/prof.rm*1000)/10;fillLoad();saveProf();calcLoad();$('sugg').hidden=true};
+  $('suggT').textContent='Prima rep '+best.toFixed(2)+' m/s'+(prof.kg?' con '+prof.kg+' kg':'')+": velocità tipica del "+Math.round(pa)+"% dell'1RM (carico pianificato: "+prof.pct+'%).';
   $('sugg').hidden=false;
 }
 
 /* Allenamenti salvati */
 function dayKey(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmtDay(k){return new Date(k+'T12:00:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
-function saveWk(){let n=wk.length;while(n>=0){try{localStorage.setItem('wk',JSON.stringify(wk.slice(-n||undefined)));return}catch(e){n=Math.floor(n/2);if(n<1)return}}}
+function saveWk(){let n=wk.length;while(n>=0){try{localStorage.setItem('wk',JSON.stringify(n?wk.slice(-n):[]));return}catch(e){n=Math.floor(n/2);if(n<1)return}}}
 function saveWorkout(){
   const todo=sess.filter(s=>!s.saved);
   if(!todo.length){$('wkMsg').textContent=sess.length?'Tutte le serie sono già salvate.':'Nessuna serie da salvare.';return}
   todo.forEach(s=>{
-    const day=dayKey(s.ts),a=s.ath||'';
-    let w=wk.find(x=>x.day===day&&x.ath===a);
-    if(!w){w={day:day,ath:a,rm:prof.rm||0,sets:[]};wk.push(w)}
+    const day=dayKey(s.ts),at=ats.find(x=>x.id===s.aid)||ats.find(x=>x.name===(s.ath||''))||prof;
+    let w=wk.find(x=>x.day===day&&x.aid===at.id);
+    if(!w){w={day:day,aid:at.id,ath:at.name,rm:at.rm||0,sets:[]};wk.push(w)}
     w.sets.push({ts:s.ts,kg:s.kg||0,pct:s.pct||0,thr:s.thr,why:s.why,reps:s.reps.map(r=>({mcv:r.mcv,peak:r.peak,rom:r.rom,loss:r.loss}))});
     s.saved=true;
   });
@@ -255,9 +295,10 @@ function saveWorkout(){
   $('wkMsg').textContent='Salvate '+todo.length+' serie nello storico.';
 }
 function renderWk(){
+  $('wkHead').textContent='Allenamenti passati'+(prof.name?' · '+prof.name:'');
   const L=$('wkList');
-  const idx=wk.map((w,i)=>i).sort((a,b)=>wk[a].day<wk[b].day?1:wk[a].day>wk[b].day?-1:0);
-  L.innerHTML=idx.length?idx.map(i=>{const w=wk[i],mx=Math.max(0,...w.sets.map(s=>s.kg||0));return '<button class="sec srow" data-i="'+i+'"><span>'+fmtDay(w.day)+(w.ath?' · '+esc(w.ath):'')+'</span><span>'+w.sets.length+' serie'+(mx?' · max '+mx+' kg':'')+'</span></button>'}).join(''):'<div class="mut">Nessun allenamento salvato.</div>';
+  const idx=wk.map((w,i)=>i).filter(i=>wk[i].aid===cur).sort((a,b)=>wk[a].day<wk[b].day?1:wk[a].day>wk[b].day?-1:0);
+  L.innerHTML=idx.length?idx.map(i=>{const w=wk[i],mx=Math.max(0,...w.sets.map(s=>s.kg||0));return '<button class="sec srow" data-i="'+i+'"><span>'+fmtDay(w.day)+'</span><span>'+w.sets.length+' serie'+(mx?' · max '+mx+' kg':'')+'</span></button>'}).join(''):'<div class="mut">Nessun allenamento salvato per questo atleta.</div>';
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>openWk(+b.dataset.i));
 }
 function openWk(i){
@@ -424,7 +465,7 @@ function endSeries(why){
   if(!rec)return;
   const r=rec;rec=null;r.dur=performance.now()-r.t0;shown=r;
   if(mode!=='set'||!reps.length)return;
-  sess.push({ts:Date.now(),why:why,thr:+$('thr').value,dur:Math.round(r.dur),kg:prof.kg||0,pct:prof.pct||0,ath:prof.name||'',saved:false,
+  sess.push({ts:Date.now(),why:why,thr:+$('thr').value,dur:Math.round(r.dur),kg:prof.kg||0,pct:prof.pct||0,aid:prof.id,an:prof.name||'',saved:false,
     reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1)})),
     ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
   if(sess.length>60)sess.shift();
@@ -434,7 +475,7 @@ function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess'
 function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
 function renderSess(){
   const L=$('sessList');
-  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>Serie '+(i+1)+' · '+fmt(s.ts)+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
+  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>Serie '+(i+1)+' · '+fmt(s.ts)+(ats.length>1&&s.an?' · '+esc(s.an):'')+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>openSer(+b.dataset.i));
 }
 function openSer(i){
@@ -473,7 +514,7 @@ function reset(){
   reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
   if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
 }
-$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};renderAth();fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);
 })();
 </script>
 </body>

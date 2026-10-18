@@ -97,7 +97,7 @@ body{overflow:hidden}
 #ov .lnk{background:none;border:0;border-bottom:1px dashed #19c3e6;border-radius:0;padding:0 2px;color:#eaf6ff;font-size:inherit;font-weight:700;width:auto}
 .ovTbl{flex:0 0 auto;border:1px solid #2a8fc0;border-radius:14px;background:#0a2d4acc;padding:6px 10px 4px}
 .ovTbl .lb{font-size:11px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
-.ovTbl .tw{overflow-y:auto;max-height:clamp(64px,12.5vh,108px);-webkit-overflow-scrolling:touch}
+.ovTbl .tw{overflow-y:auto;max-height:clamp(52px,10.5vh,100px);-webkit-overflow-scrolling:touch}
 .ovTbl table{width:100%;border-collapse:collapse;font-size:14px}
 .ovTbl th{position:sticky;top:0;background:#0a2d4a;font-size:11px;color:#7fb2d0;font-weight:600;text-align:center;padding:2px 4px}
 .ovTbl td{text-align:center;padding:2px 4px;border-top:1px solid #1f4a6c}
@@ -110,9 +110,25 @@ body{overflow:hidden}
 .wBig{text-align:center;font-size:clamp(52px,19vw,104px);font-weight:800;line-height:1.05;margin:6px 0}
 .wList{margin:0;padding-left:22px;font-size:15px;line-height:1.5;flex:1;min-height:0;overflow:auto}
 .wMsg{text-align:center;min-height:34px;font-size:14px;color:#9fd3ef;display:flex;align-items:center;justify-content:center}
-#welcome{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
-#welcome .gBox{border-radius:18px;max-height:none;padding:18px;gap:10px;align-items:stretch}
-@media (max-width:340px),(max-height:620px){.vside .lb{font-size:11px;line-height:1.2}.vside .ovBig{font-size:30px}.vside{gap:2px}#ovThr{display:none}#ovRun #ovMsg{min-height:18px!important;font-size:12px!important}}
+#welcome,#resume{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
+#welcome .gBox,#resume .gBox{border-radius:18px;max-height:none;padding:18px;gap:10px;align-items:stretch}
+@media (max-width:340px),(max-height:620px),(orientation:landscape) and (max-height:520px){.vside>div:first-child .lb,.lg{display:none}.vside .lb{font-size:11px;line-height:1.2}.vside .ovBig{font-size:30px}#ovRep{font-size:42px}.vside{gap:2px}#ovThr{display:none}#ovRun #ovMsg{min-height:18px!important;font-size:12px!important}}
+#ovRep{font-size:clamp(44px,13vw,64px);line-height:1}
+.vside .lb{font-size:10.5px;letter-spacing:.02em}
+.vside .ovBig{font-size:clamp(28px,8vw,40px)}
+#ovThr{display:none}
+#ov .ovSq.gearBtn{width:56px;height:56px;padding:0;border-radius:14px;border:1px solid #2a8fc0;background:#000 url(data:image/jpeg;base64,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) center/cover no-repeat}
+.ovBot{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 auto}
+.ovBot .ovTbl{min-width:0}
+.ovTbl td,.ovTbl th{padding:2px 2px}
+.ovTbl table{font-size:13px}
+.ovTimer{border:1px solid #2a8fc0;border-radius:14px;background:#0a2d4acc;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;min-width:0}
+.ovTimer .lb{font-size:11px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
+.ovTimer .tm{font-size:clamp(28px,9vw,42px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.ovTimer .sub{font-size:11px;color:#7fb2d0}
+#scarso{position:fixed;inset:0;z-index:320;background:#000;display:flex;align-items:center;justify-content:center;color:#ff3b4a;font-weight:900;font-size:clamp(48px,17vw,120px);letter-spacing:.04em;text-align:center;animation:scr 2s ease forwards}
+@keyframes scr{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0;visibility:hidden}}
+#ov .endbtn{width:100%;padding:9px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;background:#0a2d4a;border:1px solid #2a8fc0;color:#eaf6ff;flex:none}
 /* compatto per schermi piccoli */
 #ov{gap:8px}
 .ovHead b{font-size:18px}
@@ -140,17 +156,22 @@ body{overflow:hidden}
 .ovP.bad{background:#c2192d;border-color:#ffb3bb;box-shadow:0 0 20px #ff6b7bcc}
 #ovLimTxt{font-size:clamp(14px,4.6vw,20px)!important;white-space:nowrap}
 @media (orientation:landscape) and (max-height:520px){
-  #ovRun{display:grid;grid-template-columns:1fr 1.1fr;grid-template-rows:auto 1fr auto auto;gap:6px 12px}
+  #ovRun{display:grid;grid-template-columns:1fr 1.1fr;grid-template-rows:auto 1fr auto auto auto;gap:6px 12px}
   .ovLoad{grid-column:1;grid-row:1}
-  .ovTbl{grid-column:1;grid-row:2;min-height:0}
+  .ovBot{grid-column:1;grid-row:2;min-height:0}
   .ovTbl .tw{max-height:none}
   .ovMid{grid-column:2;grid-row:1/3}
   #ovRun #ovMsg{grid-column:1/3;grid-row:3;min-height:0!important}
   #ovRun .ovBtns{grid-column:1/3;grid-row:4}
+  #ovRun #ovEnd{grid-column:1/3;grid-row:5;padding:6px}
   #ov .logo{width:38px;height:38px}
   #ov .ovSq{height:38px;width:38px}
+  #ov .ovSq.gearBtn{width:46px;height:46px}
   .wList{font-size:13px}
   .wBig{font-size:44px;margin:0}
+  #ovRep{font-size:32px}
+  .vside .ovBig{font-size:26px}
+  .vside{gap:0}
 }
 /* guide */
 #guide,#train{position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
@@ -389,12 +410,22 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <button id="wGo">Inizia</button>
   </div>
 </div>
+<div id="resume" hidden>
+  <div class="gBox" role="dialog" aria-modal="true">
+    <div style="text-align:center;font-size:20px;font-weight:800">Allenamento in corso</div>
+    <p id="rsTxt" style="margin:0;text-align:center;font-size:15px"></p>
+    <p class="mut" style="margin:0;text-align:center">«Nuovo allenamento» salva quello in corso e riparte dal riscaldamento.</p>
+    <button id="rsGo">Continua allenamento</button>
+    <button class="sec" id="rsNew">Nuovo allenamento</button>
+  </div>
+</div>
+<div id="scarso" hidden>SCARSO!</div>
 <div id="ov">
   <div class="ovHead">
     <div class="logo" role="img" aria-label="Logo VBT 20% by cr"></div>
     <div style="flex:1;min-width:0"><b id="ovAth"></b><span id="ovRm"></span></div>
     <button class="ovSq wide" id="ovWhat">Cos'è la<br>VBT</button>
-    <button class="ovSq" id="ovGear" aria-label="Impostazioni">⚙︎</button>
+    <button class="ovSq gearBtn" id="ovGear" aria-label="Impostazioni"></button>
   </div>
 
   <div id="ovWarm" hidden>
@@ -425,7 +456,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         <div class="trk vtrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
         <div class="vside">
           <div><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
-          <div class="lb" style="color:#ffd23f">Limite rep lenta<br><b id="ovLimTxt"></b></div>
+          <div class="lb" style="color:#ffd23f">Limite<span class="lg"> rep lenta</span><br><b id="ovLimTxt"></b></div>
           <div><div class="lb">N. rep</div><div class="ovBig" id="ovRep">0</div></div>
           <div class="lb">Perdita <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
         </div>
@@ -439,12 +470,20 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         </div>
       </div>
     </div>
-    <div class="ovTbl">
-      <div class="lb">Allenamento di oggi</div>
-      <div class="tw" id="ovTw"><table><thead><tr><th>Serie</th><th>Peso</th><th>Rep</th></tr></thead><tbody id="ovTb"></tbody></table></div>
+    <div class="ovBot">
+      <div class="ovTbl">
+        <div class="lb">Allenamento</div>
+        <div class="tw" id="ovTw"><table><thead><tr><th>Serie</th><th>kg</th><th>Rep</th></tr></thead><tbody id="ovTb"></tbody></table></div>
+      </div>
+      <div class="ovTimer">
+        <div class="lb">Recupero</div>
+        <div class="tm" id="ovTimer">0:00</div>
+        <div class="sub" id="ovTimerSub">dalla fine serie</div>
+      </div>
     </div>
     <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef;min-height:20px"></div>
-    <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Stop</button></div>
+    <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Fine serie</button></div>
+    <button class="endbtn" id="ovEnd">Termina e salva sessione</button>
   </div>
 </div>
 <script>
@@ -592,7 +631,7 @@ function setKg(k){
 $('ovMinus').onclick=()=>setKg((prof.kg||0)-2.5);
 $('ovPlus').onclick=()=>setKg((prof.kg||0)+2.5);
 $('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilanciere (kg)',prof.kg||'');if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(k>0)setKg(k)};
-let tbKey='',limStart=0,segWas=false;
+let tbKey='',limStart=0,segWas=false,restStart=+(localStorage.getItem('restStart')||0);
 function ovUpdate(){
   const run=state==='run',lr=reps[reps.length-1];
   $('ovAth').textContent=prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
@@ -625,16 +664,21 @@ function ovUpdate(){
   $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=loss>=thr?'#ff7a86':'';
   $('ovThr').textContent='(max '+thr+'%)';
   const ed=ovEditable();$('ovMinus').disabled=!ed;$('ovPlus').disabled=!ed;$('ovKg').disabled=!ed;$('ovPct').disabled=!ed;
+  $('ovEnd').disabled=state!=='off';
+  {let tt='0:00',sub='dalla fine serie';
+   if(state!=='off'){tt='IN SERIE';sub=''}
+   else if(restStart){const s=Math.max(0,Math.floor((Date.now()-restStart)/1000));tt=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+   else sub='parte alla fine serie';
+   $('ovTimer').textContent=tt;$('ovTimerSub').textContent=sub}
   $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep);
   /* tabella dell'allenamento di oggi */
-  const today=dayKey(Date.now());
-  const rows=sess.filter(s=>dayKey(s.ts)===today).map(s=>[s.kg||0,s.reps.length]);
+  const rows=sess.map(s=>[s.kg||0,s.reps.length]);
   const live=state!=='off'?[prof.kg||0,reps.length]:null;
   const key=JSON.stringify([rows,live]);
   if(key!==tbKey){
     tbKey=key;
-    let h=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r[0]+' kg</td><td>'+r[1]+'</td></tr>').join('');
-    if(live)h+='<tr class="live"><td>'+(rows.length+1)+'</td><td>'+live[0]+' kg</td><td>'+live[1]+'</td></tr>';
+    let h=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
+    if(live)h+='<tr class="live"><td>'+(rows.length+1)+'</td><td>'+live[0]+'</td><td>'+live[1]+'</td></tr>';
     if(!h)h='<tr><td colspan="3" style="color:#7fb2d0">Nessuna serie ancora</td></tr>';
     $('ovTb').innerHTML=h;$('ovTw').scrollTop=$('ovTw').scrollHeight;
   }
@@ -670,7 +714,7 @@ $('wGo').onclick=()=>{
   if(!n){$('wErr').textContent='Inserisci il tuo nome.';return}
   if(!(r>0)){$('wErr').textContent='Inserisci il tuo massimale in kg.';return}
   prof.name=n;prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
-  $('welcome').hidden=true;unlockAudio();ovUpdate();
+  $('welcome').hidden=true;unlockAudio();ovUpdate();showResume();
 };
 $('ovStart').onclick=()=>{if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
@@ -699,38 +743,31 @@ const G_WHAT=`
 <p class="mut">I valori misurati con il telefono sono indicativi: sono uno strumento di supporto, non sostituiscono un allenatore.</p>`;
 
 const G_HOW=`
-<h3>1 · Prepara l'atleta</h3>
-<p>In «Atleta» tocca <b>+</b> per aggiungerne uno, poi inserisci nome e <b>massimale 1RM</b>. Tenendo premuto il nome puoi rinominarlo o eliminarlo. Ogni atleta ha dati e storico propri.</p>
-<h3>2 · Scegli il carico</h3>
-<p>In «Prossima serie» tocca <b>Inserisco il peso</b> oppure <b>Inserisco la %</b>: l'altro valore lo calcola l'app (kg arrotondati a 2,5). Vedi anche zona di lavoro e velocità target per quel carico.</p>
-<h3>3 · Riscaldamento (la prima volta)</h3>
+<h3>1 · Primo avvio</h3>
+<p>Inserisci il tuo <b>nome</b> e il tuo <b>massimale 1RM</b>. Puoi cambiarli in Impostazioni, con l'ingranaggio in alto a destra.</p>
+<h3>2 · Riscaldamento (a ogni nuovo allenamento)</h3>
 <ol>
 <li>Fissa bene il telefono al bilanciere e tienilo sempre nella stessa posizione.</li>
-<li>Premi <b>Riscaldamento (5 rep)</b> e tieni fermo il bilanciere 2 secondi.</li>
+<li>Premi <b>Avvia riscaldamento</b> e tieni fermo il bilanciere 2 secondi.</li>
 <li>Fai 5 rep a bilanciere vuoto: scendi, breve pausa in basso, risali, breve pausa in alto.</li>
 </ol>
-<p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita e le salva. Falla alla stessa profondità delle serie vere: è il riferimento per stabilire se una rep è valida. Dopo il riscaldamento compare il tasto ⓘ Info con le spiegazioni.</p>
-<h3>4 · Imposta le soglie</h3>
-<ul>
-<li><b>Ferma la serie oltre</b>: perdita di velocità massima. Con «Limite automatico» è 20% fino all'80% dell'1RM e 15% oltre.</li>
-<li><b>Rep valida se la corsa supera</b>: quanta parte della corsa del riscaldamento devi percorrere (di base 85%).</li>
-<li><b>Inverti direzione</b>: da usare solo se in salita la velocità live risulta negativa.</li>
-</ul>
-<h3>5 · Fai la serie</h3>
+<p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono il riferimento per decidere se una rep è valida. Fai il riscaldamento alla stessa profondità delle serie vere.</p>
+<h3>3 · Scegli il carico</h3>
+<p>Nella schermata della serie usa − e + (passi da 2,5 kg) oppure tocca il peso o la % per scriverli: l'altro valore lo calcola l'app. Si cambia tra una serie e l'altra.</p>
+<h3>4 · Fai la serie</h3>
 <ol>
-<li>Premi <b>Avvia interfaccia</b> (compare dopo riscaldamento e dati dell'atleta).</li>
 <li>Premi <b>Avvia serie</b> e tieni fermo 2 secondi fino al segnale.</li>
 <li>Ferma il bilanciere circa 1 secondo in alto e fai la prima rep. Spingi sempre alla massima velocità.</li>
-<li>Con <b>Stop</b> chiudi la serie quando vuoi; altrimenti si ferma da sola al limite di perdita.</li>
+<li>Con <b>Fine serie</b> chiudi la serie quando vuoi; altrimenti si ferma da sola al limite di perdita. Parte il timer del <b>recupero</b>.</li>
 </ol>
-<h3>6 · Leggere lo schermo</h3>
+<h3>5 · Leggere lo schermo</h3>
 <ul>
-<li><b>Barra velocità</b>: mostra la velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
+<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
+<li><b>N. rep</b>: ripetizioni della serie; sotto, la perdita di velocità.</li>
 <li><b>Barra corsa</b>: parte dall'alto e si riempie in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi. I quadrati Discesa e Risalita si illuminano in base al movimento.</li>
-<li>In basso: numero rep, ultima rep, media della serie e perdita di velocità.</li>
-<li><b>Peso</b>: con − e + (2,5 kg) o toccando il valore, tra una serie e l'altra.</li>
+<li><b>Tabella</b> (sotto la velocità): serie, peso e rep dell'allenamento attuale. <b>Recupero</b> (sotto la corsa): tempo dalla fine dell'ultima serie.</li>
 </ul>
-<h3>7 · Suoni e colori</h3>
+<h3>6 · Suoni e colori</h3>
 <ul>
 <li>Tono acuto: rep valida.</li>
 <li>Doppio tono grave: rep scartata.</li>
@@ -738,10 +775,11 @@ const G_HOW=`
 <li>Riquadro <b>velocità</b> rosso: rep troppo lenta.</li>
 <li>Triplo allarme e sfondo rosso: limite di perdita superato, serie finita.</li>
 </ul>
-<h3>8 · Salva e rivedi</h3>
-<p>Le serie finiscono in «Serie della sessione». Premi <b>Salva allenamento di oggi</b> per archiviarle: le ritrovi in «Allenamenti passati» dell'atleta, con kg, %, velocità di ogni rep e perdita. «Nuova sessione» svuota solo le serie non più necessarie.</p>
-<h3>9 · Condividi i tuoi dati (facoltativo)</h3>
-<p>In Impostazioni, <b>Condividi</b> crea un file con nome, massimale, calibrazione e serie. Invialo a chi gestisce l'app: serve a migliorarla con i dati di chi la usa.</p>
+<h3>7 · Termina e salva</h3>
+<p>Finito l'allenamento premi <b>Termina e salva sessione</b> in fondo alla schermata (a serie ferma): le serie finiscono nello storico («Allenamenti passati» in Impostazioni) e al prossimo allenamento si riparte dal riscaldamento.</p>
+<p>Se l'app si chiude a metà allenamento, alla riapertura scegli <b>Continua allenamento</b> per riprendere da dove eri, oppure <b>Nuovo allenamento</b> per salvare quello in corso e ripartire dal riscaldamento.</p>
+<h3>8 · Impostazioni e dati</h3>
+<p>Dall'ingranaggio trovi nome e massimale, soglie (limite di perdita e corsa minima), grafico dell'ultima serie, storico e guide. <b>Condividi</b> crea un file con i tuoi dati da inviare a chi gestisce l'app (facoltativo).</p>
 <p class="mut">I valori del telefono sono indicativi: usali soprattutto per confrontare le rep tra loro.</p>`;
 
 function openGuide(title,html){$('gT').textContent=title;$('gB').innerHTML=html;$('gB').scrollTop=0;$('guide').hidden=false}
@@ -847,6 +885,46 @@ $('btnShare').onclick=()=>{
   shareJson(data,name);
 };
 
+/* Fine allenamento e ripresa dopo la chiusura */
+function endWorkout(){
+  if(state!=='off')stop();
+  saveWorkout();
+  sess=[];try{localStorage.removeItem('sess')}catch(e){}
+  cal=null;try{localStorage.removeItem('cal');localStorage.removeItem('wkStart')}catch(e){}
+  warm=[];reps=[];tbKey='';badVel=false;badDep=false;limStart=0;dpt=0;topLock=true;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}
+  renderSess();renderWk();showCal();ui();
+  msg('Allenamento salvato','Premi Avvia riscaldamento per iniziare un nuovo allenamento.');
+  ovUpdate();
+}
+$('ovEnd').onclick=()=>{
+  if(state!=='off')return;
+  if(!confirm("Terminare l'allenamento? Le serie vengono salvate nello storico e per il prossimo allenamento rifarai il riscaldamento."))return;
+  endWorkout();
+};
+function whenTxt(ts){
+  const d=new Date(ts),hm=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  if(dayKey(ts)===dayKey(Date.now()))return 'oggi alle '+hm;
+  if(dayKey(ts)===dayKey(Date.now()-864e5))return 'ieri alle '+hm;
+  return 'il '+d.toLocaleDateString('it-IT',{day:'numeric',month:'long'})+' alle '+hm;
+}
+function showResume(){
+  if(!cal||!(prof.name&&prof.rm>0)||state!=='off'||!$('welcome').hidden)return;
+  const ws=+localStorage.getItem('wkStart')||0,n=sess.length;
+  $('rsTxt').textContent='Hai un allenamento'+(ws?' iniziato '+whenTxt(ws):' in corso')+', con '+n+' serie. Vuoi continuare da dove eri o iniziarne uno nuovo?';
+  $('resume').hidden=false;
+}
+$('rsGo').onclick=()=>{$('resume').hidden=true;ovUpdate()};
+$('rsNew').onclick=()=>{$('resume').hidden=true;endWorkout()};
+
+/* Schermo sempre acceso mentre l'app è aperta */
+let wl=null;
+async function keepAwake(){
+  try{if(navigator.wakeLock&&document.visibilityState==='visible'&&(!wl||wl.released)){wl=await navigator.wakeLock.request('screen')}}catch(e){}
+}
+['touchend','click'].forEach(ev=>document.addEventListener(ev,keepAwake,{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)keepAwake()});
+keepAwake();
+
 /* Audio: sblocco al primo tocco (iOS/Android bloccano i suoni senza un gesto) */
 function unlockAudio(){
   try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume();
@@ -919,7 +997,7 @@ async function start(m){
   try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){}
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
   mode=m;warm=[];lastEcc=0;eseg=null;applyCal();
-  if(m==='set'){reps=[];badVel=false;badDep=false;alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
+  if(m==='set'){reps=[];badVel=false;badDep=false;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
   calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
   window.addEventListener('devicemotion',onMotion);
   (m==='warm'?$('btnWarm'):$('btnStart')).textContent='Ferma';
@@ -1014,6 +1092,7 @@ function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a b
 function finishWarm(){
   cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
   store('cal',JSON.stringify(cal));
+  try{if(!localStorage.getItem('wkStart'))localStorage.setItem('wkStart',String(Date.now()))}catch(e){}
   mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];rec=newRec();ui();showCal();
   $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
   beep(660,.12);setTimeout(()=>beep(990,.2),180);
@@ -1052,6 +1131,7 @@ function endSeries(why){
     ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
   if(sess.length>60)sess.shift();
   saveSess();renderSess();suggest(reps);
+  restStart=Date.now();try{localStorage.setItem('restStart',String(restStart))}catch(e){}
 }
 function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
 function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
@@ -1096,7 +1176,11 @@ function reset(){
   reps=[];alarmed=false;document.body.classList.remove('alarm');ui();
   if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
 }
-$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};renderAth();fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);ovUpdate();setTimeout(showWelcome,3150);
+$('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};renderAth();fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);ovUpdate();{
+    const fed=String(prof.name||'').trim().toLowerCase()==='federico rigo';
+    if(fed){setTimeout(()=>{$('scarso').hidden=false},3100);setTimeout(()=>{$('scarso').hidden=true},5150)}
+    setTimeout(()=>{showWelcome();showResume()},fed?5250:3150);
+  }
 })();
 </script>
 <script>setTimeout(function(){var s=document.getElementById("splash");if(s)s.remove()},3100);var _s=document.getElementById("splash");if(_s)_s.onclick=function(){_s.remove()};</script>

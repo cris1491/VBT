@@ -127,7 +127,7 @@ body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
   #ov .ovBtns button,#ov .ovClose{padding:9px}
 }
 /* guide */
-#guide{position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+#guide,#train{position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .gBox{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column}
 .gHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--bd)}
 .gHead b{font-size:17px}
@@ -228,6 +228,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <div class="mut" id="tgtSub"></div>
   </div>
   <label class="chk" style="margin-top:10px"><input type="checkbox" id="auto" checked> Limite di perdita automatico dal carico</label>
+  <button class="sec" id="btnTrain" hidden style="margin-top:12px">Addestra</button>
   <button class="sec" id="btnDelAth" style="margin-top:12px">Elimina atleta</button>
   <div id="sugg" hidden style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
     <div id="suggT" class="mut"></div>
@@ -307,9 +308,34 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <div class="gBody" id="gB"></div>
   </div>
 </div>
+<div id="train" hidden>
+  <div class="gBox" role="dialog" aria-modal="true">
+    <div class="gHead"><b>Addestra · raccolta dati</b><button class="sec" id="trX" style="width:auto;padding:8px 14px">Chiudi</button></div>
+    <div class="gBody">
+      <p>Registra i movimenti reali di una serie completa (stacco dal rack, passo indietro, rep, passo avanti, riappoggio): servono per insegnare all'app a ignorare i movimenti che non sono rep.</p>
+      <ol>
+        <li>Fissa il telefono al bilanciere come in allenamento.</li>
+        <li>Scegli rep e durata, poi premi <b>Registra</b>: parte un conto alla rovescia di 10 secondi.</li>
+        <li>Esegui tutto in ordine, con gli stessi gesti di una serie vera.</li>
+        <li>La registrazione si ferma da sola (con 3 bip). Poi condividi il file.</li>
+      </ol>
+      <div class="row" style="margin:10px 0">
+        <div class="fld"><label class="mut" for="trN">Rep previste</label><input type="number" id="trN" inputmode="numeric" min="0" value="5"></div>
+        <div class="fld"><label class="mut" for="trDur">Durata</label><select id="trDur" style="width:100%;padding:10px"><option value="30">30 s</option><option value="45" selected>45 s</option><option value="60">60 s</option><option value="90">90 s</option></select></div>
+      </div>
+      <div class="fld" style="margin-bottom:10px"><label class="mut" for="trNote">Note (facoltative)</label><input type="text" id="trNote" placeholder="es. 100 kg, 5 passi indietro"></div>
+      <div id="trStat" style="font-size:18px;font-weight:700;margin:10px 0">Pronto</div>
+      <button id="trRec">Registra</button>
+      <div class="grid" style="margin-top:10px"><button class="sec" id="trMark" hidden>Segna evento</button><button class="sec" id="trStop" hidden>Stop</button></div>
+      <h3>Registrazioni salvate</h3>
+      <div id="trList"></div>
+    </div>
+  </div>
+</div>
 <div id="sheet" hidden>
   <div class="shBox">
     <div class="shT" id="shT"></div>
+    <div id="shN" hidden style="text-align:center;font-size:14px;color:#9fd3ef">Atleta protetto: non si può rinominare né eliminare.</div>
     <button id="shRen">Rinomina</button>
     <button id="shDel" class="dl">Elimina atleta</button>
     <button id="shCancel">Annulla</button>
@@ -362,12 +388,14 @@ let badVel=false,badDep=false,dpt=0,topLock=true,tLo=0,ats=[],cur='',wk=[],prof;
 try{ats=JSON.parse(localStorage.getItem('ats'))||[]}catch(e){ats=[]}
 try{wk=JSON.parse(localStorage.getItem('wk'))||[]}catch(e){wk=[]}
 cur=store('athCur')||'';
+const PROT='Cristian Rigo',isProt=a=>!!a&&String(a.name||'').trim().toLowerCase()===PROT.toLowerCase();
 (function(){
-  if(!ats.length){let o={};try{o=JSON.parse(localStorage.getItem('prof'))||{}}catch(e){}
-    ats.push({id:'a1',name:o.name||'',rm:o.rm||0,pct:o.pct||80,kg:o.kg||0,mode:'pct'})}
+  if(!ats.length){let o=null;try{o=JSON.parse(localStorage.getItem('prof'))}catch(e){}
+    if(o&&(o.name||o.rm))ats.push({id:'a1',name:o.name||'',rm:o.rm||0,pct:o.pct||80,kg:o.kg||0,mode:'pct'})}
   wk.forEach(w=>{if(!w.aid){let a=ats.find(x=>x.name===(w.ath||''))||(!w.ath?ats[0]:null);
     if(!a){a={id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:w.ath,rm:w.rm||0,pct:80,kg:0,mode:'pct'};ats.push(a)}w.aid=a.id}});
 })();
+if(!ats.some(isProt))ats.unshift({id:'prot',name:PROT,rm:0,pct:80,kg:0,mode:'pct'});
 if(!ats.some(a=>a.id===cur))cur=ats[0].id;
 prof=ats.find(a=>a.id===cur);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -382,7 +410,8 @@ const pctAt=mv=>mv>.92?null:interp(VP,mv);
 function saveAts(){store('ats',JSON.stringify(ats));store('athCur',cur)}
 function renderAth(){$('athSel').innerHTML=ats.map(a=>'<option value="'+a.id+'">'+esc(a.name||'Senza nome')+'</option>').join('');$('athSel').value=cur}
 function applyMode(){const k=prof.mode==='kg';$('kg').readOnly=!k;$('pct').readOnly=k;$('mKg').className=k?'':'sec';$('mPct').className=k?'sec':''}
-function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode()}
+function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode();
+  const pr=isProt(prof);$('ath').readOnly=pr;$('btnDelAth').hidden=pr;$('btnTrain').hidden=!pr}
 function recompute(){
   if(prof.mode==='kg'){
     if(prof.rm&&prof.kg)prof.pct=Math.round(prof.kg/prof.rm*1000)/10;else prof.pct=0;
@@ -410,6 +439,7 @@ function selectAth(id){
 }
 $('athSel').onchange=()=>selectAth($('athSel').value);
 $('btnDelAth').onclick=()=>{
+  if(isProt(prof)){alert('Atleta protetto: non può essere eliminato.');return}
   if(ats.length<2){alert('Deve restare almeno un atleta.');return}
   const n=wk.filter(w=>w.aid===cur).length;
   if(!confirm('Eliminare '+(prof.name||'questo atleta')+', i suoi '+n+' allenamenti salvati e le sue serie della sessione? Non si può annullare.'))return;
@@ -421,10 +451,15 @@ $('btnDelAth').onclick=()=>{
 };
 $('btnAddAth').onclick=()=>{
   const n=prompt('Nome del nuovo atleta');if(n===null||!n.trim())return;
+  if(n.trim().toLowerCase()===PROT.toLowerCase()){alert('Nome riservato.');return}
   const a={id:'a'+Date.now().toString(36),name:n.trim(),rm:0,pct:80,kg:0,mode:'pct'};
   ats.push(a);selectAth(a.id);
 };
-$('ath').oninput=()=>{prof.name=$('ath').value.trim();saveAts();renderAth()};
+$('ath').oninput=()=>{
+  if(isProt(prof))return;
+  const n=$('ath').value.trim();
+  if(n.toLowerCase()===PROT.toLowerCase()){$('ath').value=prof.name||'';alert('Nome riservato.');return}
+  prof.name=n;saveAts();renderAth()};
 $('rm').oninput=()=>{prof.rm=+$('rm').value||0;recompute();saveAts();calcLoad()};
 $('pct').oninput=()=>{prof.pct=+$('pct').value||0;recompute();saveAts();calcLoad()};
 $('kg').oninput=()=>{prof.kg=+$('kg').value||0;recompute();saveAts();calcLoad()};
@@ -598,6 +633,81 @@ $('btnHow').onclick=()=>openGuide('Come funziona VBT20%',G_HOW);
 $('gX').onclick=()=>{$('guide').hidden=true};
 $('guide').onclick=e=>{if(e.target===$('guide'))$('guide').hidden=true};
 
+/* Addestra: registrazione dei dati grezzi del sensore (solo atleta protetto) */
+let trOn=false,trBusy=false,trRows=[],trMarks=[],trT0=0,trInt=null,trAuto=null,trCd=null,trSaved=[];
+try{trSaved=JSON.parse(localStorage.getItem('trainRec'))||[]}catch(e){trSaved=[]}
+function saveTrain(){while(true){try{localStorage.setItem('trainRec',JSON.stringify(trSaved));return}catch(e){if(!trSaved.length)return;trSaved.shift()}}}
+function onRec(e){
+  if(!trOn)return;
+  const g=e.accelerationIncludingGravity||{},l=e.acceleration||{},r=e.rotationRate||{},R=x=>x==null?null:Math.round(x*1000)/1000;
+  trRows.push([Math.round(performance.now()-trT0),R(g.x),R(g.y),R(g.z),R(l.x),R(l.y),R(l.z),R(r.alpha),R(r.beta),R(r.gamma)]);
+}
+function trUi(){
+  $('trRec').hidden=trBusy;$('trMark').hidden=!trOn;$('trStop').hidden=!(trBusy);$('trX').disabled=trBusy;
+}
+function renderTrain(){
+  const L=$('trList');
+  L.innerHTML=trSaved.length?trSaved.slice().reverse().map(r=>{
+    const d=new Date(r.id),dur=r.rows.length?Math.round(r.rows[r.rows.length-1][0]/1000):0;
+    return '<div class="card" style="margin:8px 0;padding:10px"><div style="font-size:14px"><b>'+d.toLocaleDateString('it-IT')+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</b> · '+dur+' s · '+r.rows.length+' campioni · '+r.reps+' rep'+(r.note?'<br><span class="mut">'+esc(r.note)+'</span>':'')+'</div><div class="grid" style="margin-top:8px"><button data-sh="'+r.id+'" style="padding:9px;font-size:14px">Condividi file</button><button class="sec" data-dl="'+r.id+'" style="padding:9px;font-size:14px">Elimina</button></div></div>'
+  }).join(''):'<div class="mut">Nessuna registrazione.</div>';
+  L.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>shareRec(+b.dataset.sh));
+  L.querySelectorAll('[data-dl]').forEach(b=>b.onclick=()=>{if(confirm('Eliminare questa registrazione?')){trSaved=trSaved.filter(r=>r.id!==+b.dataset.dl);saveTrain();renderTrain()}});
+}
+function shareRec(id){
+  const r=trSaved.find(x=>x.id===id);if(!r)return;
+  const name='vbt-addestra-'+new Date(r.id).toISOString().slice(0,19).replace(/[:T]/g,'-')+'.json';
+  const blob=new Blob([JSON.stringify(r)],{type:'application/json'});
+  let file=null;try{file=new File([blob],name,{type:'application/json'})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:name}).catch(e=>{if(!e||e.name!=='AbortError')dl()});
+  }else dl();
+  function dl(){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+}
+function trFinish(){
+  if(!trBusy)return;
+  clearInterval(trInt);clearTimeout(trAuto);clearInterval(trCd);
+  const was=trOn;trOn=false;trBusy=false;window.removeEventListener('devicemotion',onRec);
+  try{wake&&wake.release();wake=null}catch(e){}
+  trUi();
+  if(!was){$('trStat').textContent='Annullata';return}
+  tone(990,0,.12,'sine',.3);tone(990,.2,.12,'sine',.3);tone(660,.4,.3,'sine',.3);
+  if(trRows.length<50){$('trStat').textContent='Nessun dato dal sensore: registrazione scartata.';return}
+  const n=prompt('Quante rep hai fatto davvero?',$('trN').value);
+  trSaved.push({id:Date.now(),v:1,athlete:prof.name,kg:prof.kg||0,pct:prof.pct||0,rm:prof.rm||0,cal:cal,reps:n===null||n===''?+$('trN').value||0:+n||0,note:$('trNote').value.trim(),markers:trMarks,ua:navigator.userAgent,cols:['t_ms','gx','gy','gz','ax','ay','az','rot_alpha','rot_beta','rot_gamma'],rows:trRows});
+  if(trSaved.length>6)trSaved=trSaved.slice(-6);
+  saveTrain();renderTrain();
+  $('trStat').textContent='Salvata: '+trRows.length+' campioni. Condividi il file qui sotto.';
+}
+$('btnTrain').onclick=()=>{if(!isProt(prof))return;renderTrain();$('train').hidden=false};
+$('trX').onclick=()=>{if(!trBusy)$('train').hidden=true};
+$('trRec').onclick=async()=>{
+  unlockAudio();
+  if(state!=='off'){$('trStat').textContent='Ferma prima la serie in corso.';return}
+  if(typeof DeviceMotionEvent==='undefined'){$('trStat').textContent='Sensori non disponibili: apri la pagina dal telefono.';return}
+  try{
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      const r=await DeviceMotionEvent.requestPermission();
+      if(r!=='granted'){$('trStat').textContent='Permesso negato: chiudi la scheda, riapri il link e riprova.';return}
+    }
+  }catch(e){$('trStat').textContent='Permesso non concesso: riapri il link in Safari.';return}
+  try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
+  trRows=[];trMarks=[];trBusy=true;trOn=false;trUi();
+  window.addEventListener('devicemotion',onRec);
+  let c=10;$('trStat').textContent='Si parte tra '+c+' s';
+  trCd=setInterval(()=>{
+    c--;
+    if(c>0){$('trStat').textContent='Si parte tra '+c+' s';if(c<=3)tone(660,0,.1,'sine',.3);return}
+    clearInterval(trCd);tone(990,0,.35,'sine',.35);
+    trT0=performance.now();trRows=[];trOn=true;trUi();
+    const dur=+$('trDur').value;
+    trInt=setInterval(()=>{$('trStat').textContent='● REGISTRO · '+Math.round((performance.now()-trT0)/1000)+' / '+dur+' s · '+trRows.length+' campioni'},250);
+    trAuto=setTimeout(trFinish,dur*1000);
+  },1000);
+};
+$('trMark').onclick=()=>{if(trOn){trMarks.push(Math.round(performance.now()-trT0));tone(1200,0,.06,'sine',.25)}};
+$('trStop').onclick=()=>{trFinish()};
+
 /* Audio: sblocco al primo tocco (iOS/Android bloccano i suoni senza un gesto) */
 function unlockAudio(){
   try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();if(ctx.state!=='running')ctx.resume();
@@ -607,7 +717,7 @@ function unlockAudio(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx&&ctx.state!=='running')try{ctx.resume()}catch(e){}});
 
 /* Pressione lunga sul nome atleta: rinomina / elimina */
-function openSheet(){$('shT').textContent=prof.name||'Atleta senza nome';$('sheet').hidden=false}
+function openSheet(){const lk=isProt(prof);$('shT').textContent=prof.name||'Atleta senza nome';$('shRen').hidden=lk;$('shDel').hidden=lk;$('shN').hidden=!lk;$('sheet').hidden=false}
 function closeSheet(){$('sheet').hidden=true}
 function longPress(el,fn,guard){
   let tm=null,fired=false;
@@ -623,7 +733,9 @@ $('shCancel').onclick=closeSheet;
 $('sheet').onclick=e=>{if(e.target===$('sheet'))closeSheet()};
 $('shRen').onclick=()=>{
   closeSheet();
+  if(isProt(prof))return;
   const n=prompt('Nuovo nome atleta',prof.name||'');if(n===null||!n.trim())return;
+  if(n.trim().toLowerCase()===PROT.toLowerCase()){alert('Nome riservato.');return}
   prof.name=n.trim();
   wk.forEach(w=>{if(w.aid===prof.id)w.ath=prof.name});saveWk();
   sess.forEach(s=>{if(s.aid===prof.id)s.an=prof.name});saveSess();
@@ -657,6 +769,7 @@ const snd={
 async function start(m){
   unlockAudio();
   if(state!=='off'){stop();return}
+  if(trOn){msg('Registrazione in corso','Fermala dal pannello Addestra.');return}
   if(typeof DeviceMotionEvent==='undefined'){msg('Sensori non disponibili','Apri questa pagina dal telefono, in Safari o Chrome.');return}
   const emb=(function(){try{return window.top!==window}catch(e){return true}})();
   try{
@@ -739,7 +852,12 @@ function step(a,now){
 function endSeg(){
   const s=seg;seg=null;v=0;topLock=true;if(!s)return;
   const dur=(performance.now()-s.t)/1000;
-  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n){if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad();if(mode==='set'){if(s.rom<MIN_ROM)badDep=true;if(s.peak<MIN_PEAK)badVel=true}}return}
+  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n){
+    /* in serie, un movimento senza una vera discesa prima (stacco dal rack, passi, riappoggio) viene ignorato in silenzio */
+    const real=mode!=='set'||!cal||lastEcc>=cal.ecc*0.6;
+    if(real&&s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad();if(mode==='set'){if(s.rom<MIN_ROM)badDep=true;if(s.peak<MIN_PEAK)badVel=true}}
+    if(mode==='set')lastEcc=0;
+    return}
   if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
   if(cal&&lastEcc<cal.ecc*0.6){lastEcc=0;badDep=true;mark(0);snd.bad();return}
   lastEcc=0;

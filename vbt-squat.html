@@ -296,7 +296,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 <div class="card" hidden>
   <div class="row"><span>Perdita di velocità</span><span class="mid" id="loss">0%</span></div>
   <div class="gauge"><i id="gfill"></i><b id="gthr"></b></div>
-  <div class="mut" style="margin-top:8px">Si calcola rispetto alla rep più veloce della serie.</div>
+  <div class="mut" style="margin-top:8px">Si calcola in base alla scelta nelle impostazioni.</div>
 </div>
 
 <div class="card">
@@ -308,6 +308,15 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <label for="minrom">Rep valida se la corsa supera</label>
     <select id="minrom"><option>60</option><option>70</option><option>75</option><option>80</option><option selected>85</option><option>90</option><option>95</option><option>100</option></select>
   </div>
+  <div class="row" style="margin-top:10px">
+    <label for="lossBase">Perdita di velocità calcolata su</label>
+    <select id="lossBase"><option value="first" selected>Prima rep della serie</option><option value="table">Tabella degli studi</option></select>
+  </div>
+  <div class="mut" style="margin-top:4px">Prima rep: la perdita si misura rispetto alla tua prima rep. Tabella: rispetto alla velocità prevista per il carico (% del massimale).</div>
+  <div class="row" style="margin-top:10px">
+    <label class="chk"><input type="checkbox" id="depAlarm" checked> Allarme profondità attivo</label>
+  </div>
+  <div class="mut" style="margin-top:4px">Se lo disattivi, la profondità non viene controllata: niente suono e niente rosso, e le rep poco profonde vengono contate.</div>
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
     <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
@@ -639,9 +648,9 @@ function ovUpdate(){
   $('wStart').disabled=state!=='off';$('wStop').disabled=state==='off';
   if(!cal){$('wCount').textContent=warm.length+' / '+WARM_N;return}
   const R=cal.rom,thr=+$('thr').value,SM=1.2;
-  const ref=reps.length?Math.max(...reps.map(r=>r.mcv)):(mvAt(Math.max(prof.pct||0,50))||0.5);
+  const ref=lossRef()||(mvAt(Math.max(prof.pct||0,50))||0.5);
   const lim=ref*(1-thr/100),val=(seg&&seg.n)?seg.sum/seg.n:(lr?lr.mcv:0);
-  if(seg&&!segWas)limStart=lim;segWas=!!seg;
+  if(seg&&!segWas)limStart=(reps.length||$('lossBase').value==='table')?lim:0;segWas=!!seg;
   const slow=!seg&&!!lr&&limStart>0&&lr.mcv<limStart-1e-6;
   const limS=slow?limStart:lim;
   $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'(imposta %)';
@@ -670,7 +679,7 @@ function ovUpdate(){
    else if(restStart){const s=Math.max(0,Math.floor((Date.now()-restStart)/1000));tt=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
    else sub='parte alla fine serie';
    $('ovTimer').textContent=tt;$('ovTimerSub').textContent=sub}
-  $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep);
+  $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep&&depOn());
   /* tabella dell'allenamento di oggi */
   const rows=sess.map(s=>[s.kg||0,s.reps.length]);
   const live=state!=='off'?[prof.kg||0,reps.length]:null;
@@ -754,6 +763,7 @@ const G_HOW=`
 </ol>
 <p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono il riferimento per decidere se una rep è valida. Fai il riscaldamento alla stessa profondità delle serie vere.</p>
 <h3>3 · Scegli il carico</h3>
+<p class="mut">In Impostazioni scegli se la perdita di velocità si calcola sulla tua prima rep o sulla tabella degli studi, e se tenere attivo l'allarme di profondità.</p>
 <p>Nella schermata della serie usa − e + (passi da 2,5 kg) oppure tocca il peso o la % per scriverli: l'altro valore lo calcola l'app. Si cambia tra una serie e l'altra.</p>
 <h3>4 · Fai la serie</h3>
 <ol>
@@ -770,11 +780,11 @@ const G_HOW=`
 </ul>
 <h3>6 · Suoni e colori</h3>
 <ul>
-<li>Tono acuto: rep valida.</li>
-<li>Doppio tono grave: rep scartata.</li>
-<li>Riquadro <b>corsa</b> rosso: rep troppo alta o discesa incompleta.</li>
-<li>Riquadro <b>velocità</b> rosso: rep troppo lenta.</li>
-<li>Triplo allarme e sfondo rosso: limite di perdita superato, serie finita.</li>
+<li><b>Due colpi gravi e ruvidi</b>: problema di <b>profondità</b> (rep troppo alta o discesa incompleta).</li>
+<li>Riquadro <b>corsa</b> rosso: rep troppo alta o discesa incompleta (si può disattivare in Impostazioni).</li>
+<li>Riquadro <b>velocità</b> rosso: rep troppo lenta, serie finita.</li>
+<li><b>Triplo allarme acuto</b> e sfondo rosso: problema di <b>velocità</b> (rep troppo lenta o perdita oltre il limite). La serie finisce.</li>
+<li>Tono acuto singolo: rep valida.</li>
 </ul>
 <h3>7 · Termina e salva</h3>
 <p>Finito l'allenamento premi <b>Termina e salva sessione</b> in fondo alla schermata (a serie ferma): le serie finiscono nello storico («Allenamenti passati» in Impostazioni) e al prossimo allenamento si riparte dal riscaldamento.</p>
@@ -877,7 +887,7 @@ $('btnShare').onclick=()=>{
   const mine=wk.filter(w=>w.aid===prof.id);
   const data={app:'VBT 20% by cr',format:2,exported:new Date().toISOString(),device:navigator.userAgent,
     athlete:{name:prof.name,rm:prof.rm,pct:prof.pct,kg:prof.kg},
-    settings:{thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
+    settings:{lossBase:$('lossBase').value,depAlarm:$('depAlarm').checked,thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
     calibration:cal,workouts:mine,session:sess};
   const slug=String(prof.name||'utente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'utente';
   const name='vbt-dati-'+slug+'-'+new Date().toISOString().slice(0,10)+'.json';
@@ -964,6 +974,15 @@ const t0=store('thr'); if(t0)$('thr').value=t0;
 if(store('inv')==='1')$('inv').checked=true;
 $('thr').onchange=()=>{$('auto').checked=false;store('auto','0');store('thr',$('thr').value);ui()};
 $('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
+const lb0=store('lossBase');if(lb0)$('lossBase').value=lb0;
+$('lossBase').onchange=()=>{store('lossBase',$('lossBase').value);limStart=0;ovUpdate()};
+$('depAlarm').checked=store('depAlarm')!=='0';
+$('depAlarm').onchange=()=>{store('depAlarm',$('depAlarm').checked?'1':'0');badDep=false;applyCal();ovUpdate()};
+const depOn=()=>$('depAlarm').checked;
+function lossRef(){
+  if($('lossBase').value==='table'){const m=prof.pct?mvAt(prof.pct):null;if(m)return m}
+  return reps.length?reps[0].mcv:null;
+}
 const mr=store('minrom');if(mr)$('minrom').value=mr;
 $('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
 const tw0=store('tw');if(tw0)$('tw').value=tw0;
@@ -979,7 +998,9 @@ function tone(f,at,d,type,vol){
 function beep(f,d){tone(f,0,d,'sine',.25)}
 const snd={
   ok:()=>tone(880,0,.12,'sine',.3),
-  bad:()=>{tone(180,0,.15,'square',.2);tone(180,.2,.15,'square',.2)},
+  /* PROFONDITÀ: due colpi gravi e ruvidi */
+  depth:()=>{tone(150,0,.18,'sawtooth',.22);tone(150,.24,.18,'sawtooth',.22)},
+  bad:()=>{tone(150,0,.18,'sawtooth',.22);tone(150,.24,.18,'sawtooth',.22)},
   limit:()=>[0,.32,.64].forEach(t=>{tone(1046,t,.15,'triangle',.4);tone(698,t+.16,.15,'triangle',.4)})
 };
 
@@ -1027,7 +1048,10 @@ function onMotion(e){
   const al=e.acceleration;let lx,ly,lz;
   if(al&&al.x!=null){lx=al.x;ly=al.y;lz=al.z}
   else{lx=ag.x-u[0]*9.81;ly=ag.y-u[1]*9.81;lz=ag.z-u[2]*9.81}
-  let a=lx*u[0]+ly*u[1]+lz*u[2];
+  let uu=u;
+  if(al&&al.x!=null){const gx=ag.x-al.x,gy=ag.y-al.y,gz=ag.z-al.z,gn=Math.hypot(gx,gy,gz);if(gn>8&&gn<11.5)uu=[gx/gn,gy/gn,gz/gn]}
+  let a=lx*uu[0]+ly*uu[1]+lz*uu[2];
+  if(a>10)a=10;else if(a<-10)a=-10;   /* urti del rack: non fanno parte del movimento */
   if($('inv').checked)a=-a;
   step(a,now);
 }
@@ -1038,6 +1062,7 @@ function still(now,a){
   for(const w of win)if(Math.abs(w[1])>0.35)return false;
   return true;
 }
+let lockT=0;
 function step(a,now){
   const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;
   const s=still(now,a);
@@ -1046,17 +1071,20 @@ function step(a,now){
     if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
     v+=a*dt;
   }
+  if(now<lockT)v=0;
   if(!eseg&&v<-0.08){eseg={d:0,low:0,mn:0};topLock=false;badDep=false}
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
     if(v<eseg.mn)eseg.mn=v;
-    if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
+    if(cal&&eseg.d>cal.rom*1.5){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
+    else if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
     else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
   }
   if(!seg&&v>0.08){seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};badVel=false}
   if(seg){
     if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
     if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
+    if(seg&&mode==='set'&&cal&&lastEcc>=0.10&&seg.n>5&&seg.rom>=lastEcc*0.98){endSeg();lockT=now+350}
   }
   /* profondità dall'alto (m): discesa misurata, poi salita sottratta; a fine rep torna in alto */
   if(eseg)dpt=Math.min((cal?cal.rom:0.5)*1.2,eseg.d);
@@ -1069,23 +1097,33 @@ function step(a,now){
 function endSeg(){
   const s=seg;seg=null;v=0;topLock=true;if(!s)return;
   const dur=(performance.now()-s.t)/1000;
-  if(s.peak<MIN_PEAK||s.rom<MIN_ROM||dur<MIN_DUR||!s.n){
-    /* in serie, un movimento senza una vera discesa prima (stacco dal rack, passi, riappoggio) viene ignorato in silenzio */
-    const real=mode!=='set'||!cal||lastEcc>=cal.ecc*0.6;
-    if(real&&s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad();if(mode==='set'){if(s.rom<MIN_ROM)badDep=true;if(s.peak<MIN_PEAK)badVel=true}}
-    if(mode==='set')lastEcc=0;
+  const setC=mode==='set'&&cal;
+  const need=setC?(depOn()?cal.rom*(+$('minrom').value/100):0.10):0;
+  const real=!setC||lastEcc>=(depOn()?cal.rom*0.3:0.10);
+  if(s.peak<MIN_PEAK||dur<MIN_DUR||!s.n||(!setC&&s.rom<MIN_ROM)){
+    if(setC){
+      /* senza una vera discesa (stacco, passi, riappoggio, rimbalzo) si ignora in silenzio */
+      if(real){
+        if(depOn()&&lastEcc<need){mark(0);badDep=true;snd.depth()}
+        else if(s.rom>=0.10){mark(0);badVel=true;alarm()}   /* rep bloccata/troppo lenta: la serie finisce */
+      }
+      lastEcc=0;
+    }else if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
     return}
   if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
-  if(cal&&lastEcc<cal.ecc*0.6){lastEcc=0;badDep=true;mark(0);snd.bad();return}
+  if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
+  if(setC&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
+  if(setC&&lastEcc<need){lastEcc=0;if(depOn()){badDep=true;mark(0);snd.depth()}return}
+  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;mark(0);badVel=true;alarm();return}   /* la salita non è tornata in alto: rep fallita, serie finita */
   lastEcc=0;
-  const mcv=s.sum/s.n,best=Math.max(mcv,...reps.map(r=>r.mcv)),loss=(best-mcv)/best*100;
+  const mcv=s.sum/s.n,ref=lossRef()||mcv,loss=Math.max(0,(ref-mcv)/ref*100);
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
   ui();
   mark(1);
   if(loss>=+$('thr').value){badVel=true;alarm()}else snd.ok();
 }
 function applyCal(){
-  if(mode==='set'&&cal){MIN_ROM=cal.rom*(+$('minrom').value/100);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
+  if(mode==='set'&&cal){MIN_ROM=depOn()?cal.rom*(+$('minrom').value/100):Math.max(0.15,cal.rom*0.4);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
   else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}

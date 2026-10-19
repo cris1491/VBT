@@ -1094,6 +1094,10 @@ function step(a,now){
   if(rec)rec.pts.push([Math.round(now-rec.t0),a,v]);
   $('live').textContent=v.toFixed(2);
 }
+function countRep(s,bad){   /* una rep fatta conta sempre, anche se non valida per velocità o profondità */
+  const mcv=s.n?s.sum/s.n:0,ref=lossRef()||mcv,loss=ref?Math.max(0,(ref-mcv)/ref*100):0;
+  reps.push({mcv,peak:s.peak,rom:s.rom*100,loss,bad:bad});ui();
+}
 function endSeg(){
   const s=seg;seg=null;v=0;topLock=true;if(!s)return;
   const dur=(performance.now()-s.t)/1000;
@@ -1104,8 +1108,8 @@ function endSeg(){
     if(setC){
       /* senza una vera discesa (stacco, passi, riappoggio, rimbalzo) si ignora in silenzio */
       if(real){
-        if(depOn()&&lastEcc<need){mark(0);badDep=true;snd.depth()}
-        else if(s.rom>=0.10){mark(0);badVel=true;alarm()}   /* rep bloccata/troppo lenta: la serie finisce */
+        if(depOn()&&lastEcc<need){countRep(s,'dep');mark(0);badDep=true;snd.depth()}
+        else if(s.rom>=0.10){countRep(s,'vel');mark(0);badVel=true;alarm()}   /* rep bloccata/troppo lenta: la serie finisce (mai alla prima rep: può essere lo stacco) */
       }
       lastEcc=0;
     }else if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
@@ -1113,8 +1117,8 @@ function endSeg(){
   if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
   if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
   if(setC&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
-  if(setC&&lastEcc<need){lastEcc=0;if(depOn()){badDep=true;mark(0);snd.depth()}return}
-  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;mark(0);badVel=true;alarm();return}   /* la salita non è tornata in alto: rep fallita, serie finita */
+  if(setC&&lastEcc<need){lastEcc=0;if(depOn()){countRep(s,'dep');badDep=true;mark(0);snd.depth()}return}
+  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;countRep(s,'vel');mark(0);badVel=true;alarm();return}   /* la salita non è tornata in alto: rep fallita, serie finita */
   lastEcc=0;
   const mcv=s.sum/s.n,ref=lossRef()||mcv,loss=Math.max(0,(ref-mcv)/ref*100);
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
@@ -1166,7 +1170,7 @@ function endSeries(why){
   const r=rec;rec=null;r.dur=performance.now()-r.t0;shown=r;
   if(mode!=='set'||!reps.length)return;
   sess.push({ts:Date.now(),why:why,thr:+$('thr').value,dur:Math.round(r.dur),kg:prof.kg||0,pct:prof.pct||0,aid:prof.id,an:prof.name||'',saved:false,
-    reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1)})),
+    reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1),bad:x.bad||''})),
     ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
   if(sess.length>60)sess.shift();
   saveSess();renderSess();suggest(reps);

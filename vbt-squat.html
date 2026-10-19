@@ -44,7 +44,7 @@ th{font-weight:600;color:var(--mut)}
 label.chk{display:flex;gap:8px;align-items:center}
 [hidden]{display:none!important}
 #ovPD.bad{background:#d9700f;border-color:#ffd29a;box-shadow:0 0 20px #ff9a3ccc}
-#ovBars{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:26px;margin:2px 0}
+.repRow{display:flex;align-items:flex-end;gap:8px;min-width:0}#ovBars{flex:1;min-width:0;display:flex;align-items:flex-end;justify-content:flex-start;gap:3px;height:32px;margin:0 0 6px;overflow:hidden}#ovBars:empty{display:none}
 #ovBars i{flex:0 1 9px;min-height:3px;border-radius:2px;background:#3ddc84}
 #ovBars i.v{background:#ff5c6c}#ovBars i.d{background:#ffa53c}
 .bdN{color:#ffb35c;font-size:.85em;margin-left:3px}
@@ -134,7 +134,7 @@ body{overflow:hidden}
 #welcome,#resume{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
 #welcome .gBox,#resume .gBox{border-radius:18px;max-height:none;padding:18px;gap:10px;align-items:stretch}
 @media (max-width:340px),(max-height:620px),(orientation:landscape) and (max-height:520px){.vside>div:first-child .lb,.lg{display:none}.vside .lb{font-size:11px;line-height:1.2}.vside .ovBig{font-size:30px}#ovRep{font-size:42px}.vside{gap:2px}#ovThr{display:none}#ovRun #ovMsg{min-height:18px!important;font-size:12px!important}}
-#ovRep{font-size:clamp(44px,13vw,64px);line-height:1}
+#ovRep{font-size:clamp(40px,12vw,60px);line-height:1}
 .vside .lb{font-size:10.5px;letter-spacing:.02em}
 .vside .ovBig{font-size:clamp(28px,8vw,40px)}
 #ovThr{display:none}
@@ -507,7 +507,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         <div class="vside">
           <div><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
           <div class="lb" style="color:#ffd23f">Limite<span class="lg"> rep lenta</span><br><b id="ovLimTxt"></b></div>
-          <div><div class="lb">N. rep</div><div class="ovBig" id="ovRep">0</div><div id="ovBars"></div></div>
+          <div><div class="lb">N. rep</div><div class="repRow"><div class="ovBig" id="ovRep">0</div><div id="ovBars"></div></div></div>
           <div class="lb">Perdita <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
         </div>
       </div>
@@ -563,7 +563,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.19-c';
+const APP_VER='2026.10.19-d';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}

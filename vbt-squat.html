@@ -223,6 +223,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .info h3{font-size:15px;margin:14px 0 4px}
 .info p{margin:0 0 6px;font-size:14px}
 .info td:last-child,.info th:last-child{text-align:left}
+.wkA{width:auto;padding:5px 8px;font-size:12px;margin:1px}
 </style>
 </head>
 <body>
@@ -372,6 +373,11 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <div class="row"><b id="detT"></b><button class="sec" id="btnClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
     <canvas id="cv2" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
     <div class="wrap"><table><thead><tr><th>Rep</th><th>Media m/s</th><th>Picco m/s</th><th>Corsa cm</th><th>Perdita</th></tr></thead><tbody id="detTb"></tbody></table></div>
+    <div class="grid" style="margin-top:8px;grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <button class="sec" id="detKg" style="padding:10px 4px;font-size:13px">Cambia kg</button>
+      <button class="sec" id="detRep" style="padding:10px 4px;font-size:13px">Elimina rep</button>
+      <button class="sec" id="detDel" style="padding:10px 4px;font-size:13px;color:var(--bad)">Elimina serie</button>
+    </div>
   </div>
 </div>
 
@@ -380,7 +386,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <div id="wkList" style="margin-top:10px"></div>
   <div id="wkDet" hidden style="margin-top:6px">
     <div class="row"><b id="wkT"></b><button class="sec" id="btnWkClose" style="width:auto;padding:8px 12px">Chiudi</button></div>
-    <div class="wrap" style="margin-top:6px"><table><thead><tr><th>Serie</th><th>kg</th><th>%1RM</th><th>Rep</th><th>Velocità rep (m/s)</th><th>Perdita</th></tr></thead><tbody id="wkTb"></tbody></table></div>
+    <div class="wrap" style="margin-top:6px"><table><thead><tr><th>Serie</th><th>kg</th><th>%1RM</th><th>Rep</th><th>Velocità rep (m/s)</th><th>Perdita</th><th>Modifica</th></tr></thead><tbody id="wkTb"></tbody></table></div>
     <button class="sec" id="btnWkDel" style="margin-top:10px">Elimina allenamento</button>
   </div>
 </div>
@@ -563,7 +569,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.19-d';
+const APP_VER='2026.10.19-e';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -714,7 +720,8 @@ function openWk(i){
   const w=wk[i];if(!w)return;
   $('wkDet').hidden=false;
   $('wkT').textContent=fmtDay(w.day)+(w.ath?' · '+w.ath:'')+(w.rm?' · 1RM '+w.rm+' kg':'');
-  $('wkTb').innerHTML=w.sets.map((s,k)=>{const ml=s.reps.length?Math.max(...s.reps.map(r=>r.loss)):0;return '<tr><td>'+(k+1)+'</td><td>'+(s.kg||'–')+'</td><td>'+(s.pct?s.pct+'%':'–')+'</td><td>'+s.reps.length+'</td><td>'+s.reps.map(r=>r.mcv.toFixed(2)).join(' · ')+'</td><td>'+ml.toFixed(0)+'%</td></tr>'}).join('');
+  $('wkTb').innerHTML=w.sets.map((s,k)=>{const ml=s.reps.length?Math.max(...s.reps.map(r=>r.loss)):0;return '<tr><td>'+(k+1)+'</td><td>'+(s.kg||'–')+'</td><td>'+(s.pct?s.pct+'%':'–')+'</td><td>'+s.reps.length+'</td><td>'+s.reps.map(r=>r.mcv.toFixed(2)).join(' · ')+'</td><td>'+ml.toFixed(0)+'%</td><td style="white-space:nowrap"><button class="sec wkA" data-a="kg" data-k="'+k+'">kg</button> <button class="sec wkA" data-a="rep" data-k="'+k+'">rep</button> <button class="sec wkA" data-a="del" data-k="'+k+'" style="color:var(--bad)">✕</button></td></tr>'}).join('');
+  $('wkTb').querySelectorAll('.wkA').forEach(b=>b.onclick=()=>{const k=+b.dataset.k,x=w.sets[k];if(!editSet(x,b.dataset.a,w.rm))return;if(b.dataset.a==='del'||!x.reps.length){w.sets.splice(k,1);delSess(x.ts)}else syncSess(x);if(!w.sets.length){wk.splice(i,1);saveWk();$('wkDet').hidden=true;renderWk();return}saveWk();renderWk();openWk(i)});
   $('btnWkDel').onclick=()=>{if(confirm('Eliminare questo allenamento?')){wk.splice(i,1);saveWk();$('wkDet').hidden=true;renderWk()}};
   $('wkDet').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -1358,15 +1365,28 @@ function showSum(x){
   $('sum').hidden=false;
 }
 $('sumOk').onclick=()=>{$('sum').hidden=true};
-function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
+function saveSess(){if(!sess.length){try{localStorage.removeItem('sess')}catch(e){}return}let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
 function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
 function renderSess(){
   const L=$('sessList');
   L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>'+(s.why==='warm'?'Riscaldamento':'Serie '+(i+1))+' · '+fmt(s.ts)+(ats.length>1&&s.an?' · '+esc(s.an):'')+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>openSer(+b.dataset.i));
 }
+/* modifica di una serie salvata: kg, elimina una rep, elimina la serie */
+function editSet(x,a,rm){
+  if(a==='kg'){const n=prompt('Peso della serie (kg)',x.kg||'');if(n===null)return false;const k=parseFloat(String(n).replace(',','.'));if(!(k>=0))return false;x.kg=Math.round(k*10)/10;x.pct=(rm||prof.rm)?+(x.kg/(rm||prof.rm)*100).toFixed(1):0;return true}
+  if(a==='rep'){if(!x.reps.length)return false;const n=prompt('Quale rep eliminare? (da 1 a '+x.reps.length+')\n'+x.reps.map((r,j)=>(j+1)+': '+r.mcv.toFixed(2)+' m/s').join('\n'),String(x.reps.length));if(n===null)return false;const j=parseInt(n,10)-1;if(!(j>=0&&j<x.reps.length))return false;x.reps.splice(j,1);
+    const r0=x.reps.find(r=>!r.bad);if(r0&&x.why!=='warm')x.reps.forEach(r=>r.loss=+Math.max(0,(r0.mcv-r.mcv)/r0.mcv*100).toFixed(1));return true}
+  if(a==='del')return confirm('Eliminare questa serie?');
+  return false;
+}
+function syncSess(x){const t=sess.find(q=>q.ts===x.ts);if(t){t.kg=x.kg;t.pct=x.pct;t.reps=x.reps.map(r=>Object.assign({},r))}saveSess();renderSess();tbKey='';ovUpdate()}
+function delSess(ts){const j=sess.findIndex(q=>q.ts===ts);if(j>=0)sess.splice(j,1);saveSess();renderSess();tbKey='';ovUpdate()}
+function syncWk(x,del){wk.forEach((w,wi)=>{const j=w.sets.findIndex(q=>q.ts===x.ts);if(j<0)return;if(del)w.sets.splice(j,1);else{w.sets[j].kg=x.kg;w.sets[j].pct=x.pct;w.sets[j].reps=x.reps.map(r=>({mcv:r.mcv,peak:r.peak,rom:r.rom,loss:r.loss,bad:r.bad||''}))}});wk=wk.filter(w=>w.sets.length);saveWk();renderWk()}
 function openSer(i){
   const s=sess[i];if(!s)return;
+  const act=a=>{if(!editSet(s,a))return;if(a==='del'||!s.reps.length){syncWk(s,true);sess.splice(i,1);saveSess();renderSess();tbKey='';ovUpdate();$('sessDet').style.display='none';return}syncWk(s);saveSess();renderSess();tbKey='';ovUpdate();openSer(i)};
+  $('detKg').onclick=()=>act('kg');$('detRep').onclick=()=>act('rep');$('detDel').onclick=()=>act('del');
   $('sessDet').style.display='block';
   $('detT').textContent='Serie '+(i+1)+' · '+fmt(s.ts)+(s.why==='limit'?' · fermata dal limite':'');
   $('detTb').innerHTML=s.reps.map((x,k)=>'<tr'+(x.bad?' style="color:'+(x.bad==='dep'?'#e07a00':'var(--bad)')+'"':'')+'><td>'+(k+1)+(x.bad?(x.bad==='dep'?' poco prof.':' lenta'):'')+'</td><td>'+x.mcv.toFixed(2)+'</td><td>'+x.peak.toFixed(2)+'</td><td>'+x.rom+'</td><td>'+x.loss.toFixed(0)+'%</td></tr>').join('');

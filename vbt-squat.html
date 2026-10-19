@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VBT 20% by cr</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VBT 20%">
+<meta name="theme-color" content="#07182b">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eceef1;--card:#fff;--tx:#161a20;--mut:#5f6876;--bd:#d9dde3;--ac:#1f4fd8;--ok:#14803c;--bad:#d7263d;--on:#fff}
@@ -38,13 +43,29 @@ th{font-weight:600;color:var(--mut)}
 .wrap{overflow-x:auto}
 label.chk{display:flex;gap:8px;align-items:center}
 [hidden]{display:none!important}
+#ovPD.bad{background:#d9700f;border-color:#ffd29a;box-shadow:0 0 20px #ff9a3ccc}
+#ovBars{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:26px;margin:2px 0}
+#ovBars i{flex:0 1 9px;min-height:3px;border-radius:2px;background:#3ddc84}
+#ovBars i.v{background:#ff5c6c}#ovBars i.d{background:#ffa53c}
+.bdN{color:#ffb35c;font-size:.85em;margin-left:3px}
+.mdl{position:fixed;inset:0;z-index:300;background:#020a14e6;display:flex;align-items:center;justify-content:center;padding:16px}
+.mdlB{width:100%;max-width:440px;max-height:100%;overflow:auto;background:#0b2238;border:1px solid #2a8fc0;border-radius:18px;padding:16px;color:#eaf6ff;font-weight:600}
+.mdlB h2{margin:0 0 4px;font-size:20px}.mdlB p,.mdlB li{font-size:15px;line-height:1.45;color:#cfe6f5}
+.mdlB button{width:100%;margin-top:12px;padding:13px;border-radius:12px;border:1px solid #4a7ea3;background:#15314a;color:#fff;font:inherit;font-weight:800}
+.sumG{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.sumG div{background:#0f3150;border-radius:12px;padding:8px 10px}.sumG small{display:block;color:#9fd3ef;font-size:12px;text-transform:uppercase}.sumG b{font-size:22px}
+#sumBars{display:flex;align-items:flex-end;gap:4px;height:70px;margin:8px 0;padding:6px;background:#081a2c;border-radius:10px}
+#sumBars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:10px;color:#9fd3ef}
+#sumBars i{display:block;width:100%;border-radius:3px;background:#3ddc84}#sumBars i.v{background:#ff5c6c}#sumBars i.d{background:#ffa53c}
+.sumTip{background:#123a5c;border-left:4px solid #19c3e6;padding:8px 10px;border-radius:8px;font-size:15px}
+.sumLeg{font-size:12px;color:#9fd3ef}
 input[readonly]{opacity:.6}
 #ov{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));background:radial-gradient(circle at 50% 0,#12406a,#07182b 70%);color:#eaf6ff;overflow:hidden;font-weight:650}
 body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
 #ov button{width:auto;font-family:inherit}
 #ov button:disabled{opacity:.35}
 .ovHead{display:flex;align-items:center;gap:12px;border-bottom:1px solid #2a6a96;padding-bottom:8px}
-.ovHead b{font-size:20px;letter-spacing:.03em;text-transform:uppercase}
+.ovHead b{font-size:clamp(14px,4.6vw,20px);letter-spacing:.02em;text-transform:uppercase}
 .ovHead span{font-size:16px;color:#9fd3ef}
 .ovLoad{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:15px}
 .ovLoad .lb2{color:#9fd3ef;white-space:nowrap}
@@ -107,8 +128,8 @@ body{overflow:hidden}
 .vside .lb b{font-weight:800}
 .wTitle{text-align:center;font-size:20px;font-weight:800;letter-spacing:.05em;margin-top:6px}
 .wSub{text-align:center;color:#9fd3ef;font-size:14px}
-.wBig{text-align:center;font-size:clamp(52px,19vw,104px);font-weight:800;line-height:1.05;margin:6px 0}
-.wList{margin:0;padding-left:22px;font-size:15px;line-height:1.5;flex:1;min-height:0;overflow:auto}
+.wBig{text-align:center;font-size:clamp(40px,min(19vw,9vh),104px);font-weight:800;line-height:1;margin:2px 0}
+.wList{margin:0;padding-left:22px;font-size:14px;line-height:1.4;flex:1;min-height:0;overflow:auto}
 .wMsg{text-align:center;min-height:34px;font-size:14px;color:#9fd3ef;display:flex;align-items:center;justify-content:center}
 #welcome,#resume{position:fixed;inset:0;z-index:360;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px}
 #welcome .gBox,#resume .gBox{border-radius:18px;max-height:none;padding:18px;gap:10px;align-items:stretch}
@@ -131,7 +152,7 @@ body{overflow:hidden}
 #ov .endbtn{width:100%;padding:9px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;background:#0a2d4a;border:1px solid #2a8fc0;color:#eaf6ff;flex:none}
 /* compatto per schermi piccoli */
 #ov{gap:8px}
-.ovHead b{font-size:18px}
+.ovHead b{font-size:clamp(14px,4.4vw,18px)}
 .ovHead span{font-size:14px}
 #ov .logo{width:46px;height:46px}
 .ovLoad{font-size:13px;gap:4px}
@@ -191,6 +212,7 @@ body{overflow:hidden}
 #sheet button{width:100%;font-size:16px;padding:13px;background:#0d3a5c;border:1px solid #2a8fc0;color:#eaf6ff}
 #sheet button.dl{background:#3b0d15;border:2px solid #ff4a5a;color:#ffeaee}
 /* schermata iniziale */
+#splash .logo{position:relative}#splVer{position:absolute;right:12px;bottom:10px;font:700 13px/1 -apple-system,system-ui,sans-serif;color:#9fd3ef;letter-spacing:.04em;opacity:.9}
 #splash{position:fixed;inset:0;z-index:300;background:#000;display:flex;align-items:center;justify-content:center;animation:spl 3s ease forwards}
 @keyframes spl{0%{opacity:0}18%{opacity:1}82%{opacity:1}100%{opacity:0;visibility:hidden}}
 #splash .logo{width:min(78vw,52vh);height:min(78vw,52vh);border-radius:28px;border:2px solid #2a8fc0;box-shadow:0 0 40px rgba(25,195,230,.35)}
@@ -204,7 +226,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 </style>
 </head>
 <body>
-<div id="splash"><div class="logo" role="img" aria-label="Logo VBT 20% by cr"></div></div>
+<div id="splash"><div class="logo" role="img" aria-label="Logo VBT 20% by cr"><span id="splVer"></span></div></div>
 <div id="settings" hidden>
 <main>
 <div class="row sthead"><div style="display:flex;align-items:center;gap:10px"><div class="logo sm" role="img" aria-label="Logo VBT 20% by cr"></div><h1 style="margin:0">Impostazioni</h1></div><button class="sec ib" id="btnSetClose">Chiudi impostazioni</button></div>
@@ -245,7 +267,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 
 <div class="card" id="stCard" hidden>
   <div class="mid" id="status">Pronto</div>
-  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep a bilanciere vuoto, con pausa in basso e in alto. Poi premi Avvia serie: nelle serie basta fermarsi circa 1 secondo in alto prima di partire.</div>
+  <div class="mut" id="hint">Fissa il telefono al bilanciere. Prima volta: premi Riscaldamento e fai 5 rep con il 30–40% del massimale, come in serie, con una pausa in alto. Poi premi Avvia serie: nelle serie basta fermarsi circa 1 secondo in alto prima di partire.</div>
 </div>
 
 <div class="grid" hidden>
@@ -316,6 +338,10 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="depAlarm" checked> Allarme profondità attivo</label>
   </div>
+  <div class="row" style="margin-top:8px">
+    <label class="chk"><input type="checkbox" id="voice" checked> Voce per le rep non valide</label>
+  </div>
+  <div class="mut" style="margin-top:4px">Rep valida: un segnale acustico. Rep non valida: una voce dice «Poco profonda», «Troppo lenta» o «Rep incompleta».</div>
   <div class="mut" style="margin-top:4px">Se lo disattivi, la profondità non viene controllata: niente suono e niente rosso, e le rep poco profonde vengono contate.</div>
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
@@ -359,14 +385,25 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   </div>
 </div>
 
+<div class="card" id="profCard">
+  <b>Il tuo profilo carico-velocità</b>
+  <p class="mut" style="margin:6px 0 8px">Si costruisce da solo con il riscaldamento e le serie: per ogni carico prende la rep più veloce. Servono almeno 3 serie con carichi diversi (distanti almeno il 20% del massimale).</p>
+  <div id="profTxt" class="mut"></div>
+  <label class="chk" style="margin-top:8px"><input type="checkbox" id="useProf" checked> Usa il mio profilo al posto della tabella degli studi (quando è pronto)</label>
+</div>
+
 <div class="card" id="shareCard">
   <b>Condividi i tuoi dati</b>
   <p class="mut" style="margin:6px 0 10px">Crea un file con il tuo nome, massimale, calibrazione e le tue serie (velocità di ogni rep), da inviare a chi gestisce l'app: serve a migliorarla. Il file nasce sul tuo telefono e sei tu a scegliere a chi mandarlo.</p>
   <button id="btnShare">Condividi</button>
   <div class="mut" id="shMsg2" style="margin-top:8px"></div>
+  <p class="mut" style="margin:12px 0 6px">Lo stesso file è anche il tuo <b>backup</b>: per ripristinarlo (per esempio dopo aver installato l'app sulla Home) usa Importa backup.</p>
+  <button class="sec" id="btnImp">Importa backup</button><input type="file" id="impF" accept=".json,application/json" hidden>
+  <button class="sec" id="btnInst" style="margin-top:8px">Installa sulla schermata Home</button>
 </div>
 
 <div class="mut">Prototipo: i valori sono indicativi e vanno bene per confrontare le rep tra loro. Per provare la direzione, solleva il telefono in verticale: la velocità live deve diventare positiva. Se è negativa, attiva «Inverti direzione».</div>
+<div class="mut" style="margin-top:10px;text-align:center">Versione <b id="appVer"></b></div>
 </main>
 </div>
 
@@ -440,16 +477,19 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 
   <div id="ovWarm" hidden>
     <div class="wTitle">RISCALDAMENTO</div>
-    <div class="wSub">Bilanciere vuoto: serve a misurare la tua corsa</div>
+    <div class="wSub">Con il 30–40% del massimale: serve a misurare la tua corsa</div>
+    <div class="wSub" style="margin-top:6px">Peso sul bilanciere: <input id="wKg" inputmode="decimal" style="width:70px;text-align:center;font:inherit;font-weight:700;padding:4px;border-radius:8px;border:1px solid #3a6a8a;background:#0c1a2a;color:#fff"> kg <span id="wKgTxt"></span></div>
     <div class="wBig" id="wCount">0 / 5</div>
     <ol class="wList">
       <li>Fissa il telefono al bilanciere.</li>
       <li>Premi <b>Avvia riscaldamento</b> e tieni fermo 2 secondi fino al segnale.</li>
-      <li>Fai 5 rep complete: scendi, breve pausa in basso, risali, breve pausa in alto.</li>
-      <li>Alla quinta rep l'app salva la calibrazione e passa alla schermata della serie.</li>
+      <li>Fai 5 rep come in serie, con pausa in alto (in basso facoltativa).</li>
+      <li>Alla quinta rep passi alla serie.</li>
     </ol>
     <div class="wMsg" id="wMsg"></div>
     <div class="ovBtns"><button class="go" id="wStart">Avvia riscaldamento</button><button class="no" id="wStop">Stop</button></div>
+    <button id="wSkip" style="width:100%;margin-top:10px;padding:12px;border-radius:14px;border:1px solid #4a7ea3;background:#15314a;color:#e6f2fb;font:inherit;font-weight:700;letter-spacing:.5px">Salta riscaldamento</button>
+    <div class="mut" id="wSkipTxt" style="font-size:13px;margin-top:6px;text-align:center"></div>
   </div>
 
   <div id="ovRun" hidden>
@@ -467,7 +507,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         <div class="vside">
           <div><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
           <div class="lb" style="color:#ffd23f">Limite<span class="lg"> rep lenta</span><br><b id="ovLimTxt"></b></div>
-          <div><div class="lb">N. rep</div><div class="ovBig" id="ovRep">0</div></div>
+          <div><div class="lb">N. rep</div><div class="ovBig" id="ovRep">0</div><div id="ovBars"></div></div>
           <div class="lb">Perdita <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
         </div>
       </div>
@@ -496,10 +536,34 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <button class="endbtn" id="ovEnd">Termina e salva sessione</button>
   </div>
 </div>
+<div class="mdl" id="sum" hidden><div class="mdlB">
+  <h2 id="sumT">Serie finita</h2><div class="sumLeg" id="sumS"></div>
+  <div id="sumBars"></div>
+  <div class="sumLeg">Verde: valida · Rosso: lenta o incompleta · Arancione: poco profonda</div>
+  <div class="sumG">
+    <div><small>Rep</small><b id="sumN"></b></div>
+    <div><small>Perdita</small><b id="sumL"></b></div>
+    <div><small>Più veloce</small><b id="sumB"></b></div>
+    <div><small>Ultima</small><b id="sumU"></b></div>
+  </div>
+  <div class="sumTip" id="sumTip"></div>
+  <div class="sumLeg" id="sumE" style="margin-top:8px"></div>
+  <button id="sumOk">Ok</button>
+</div></div>
+<div class="mdl" id="inst" hidden><div class="mdlB">
+  <h2>Non perdere i tuoi dati</h2>
+  <p>I dati dell'app (allenamenti, calibrazione, impostazioni) restano solo su questo telefono. <b>Safari può cancellarli</b> se non apri l'app per circa una settimana, o se cancelli i dati dei siti.</p>
+  <p><b>Installala sulla schermata Home</b>: così si apre a schermo intero come un'app e i dati sono più al sicuro.</p>
+  <ol><li>Apri questa pagina in <b>Safari</b>.</li><li>Tocca <b>Condividi</b> (il quadrato con la freccia in su).</li><li>Scegli <b>Aggiungi alla schermata Home</b>, poi <b>Aggiungi</b>.</li><li>D'ora in poi apri l'app dall'icona VBT 20%.</li></ol>
+  <p style="font-size:13px">Su Android con Chrome: menu ⋮ → <b>Aggiungi a schermata Home</b>.</p>
+  <p style="font-size:13px"><b>Attenzione:</b> l'app installata ha una memoria sua, separata da Safari. Se hai già dei dati, prima usa <b>Impostazioni → Condividi</b> per salvare il file, poi nell'app installata usa <b>Importa backup</b>. Ogni tanto salva un backup con Condividi.</p>
+  <button id="instOk">Ho capito</button>
+</div></div>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
+const APP_VER='2026.10.19-c';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -523,7 +587,34 @@ const PV=[[50,.90],[60,.80],[70,.675],[80,.525],[90,.40],[100,.30]];
 const HW=[[50,.05],[60,.05],[70,.025],[80,.025],[90,.02],[100,.02]];
 const VP=[[.30,100],[.40,90],[.525,80],[.675,70],[.80,60],[.90,50]];
 function interp(a,x){if(x<=a[0][0])return a[0][1];for(let i=1;i<a.length;i++){if(x<=a[i][0]){const p=a[i-1],q=a[i];return p[1]+(q[1]-p[1])*(x-p[0])/(q[0]-p[0])}}return a[a.length-1][1]}
-const mvAt=p=>p<50?null:interp(PV,Math.min(p,100));
+const mvTab=p=>p<50?null:interp(PV,Math.min(p,100));
+/* profilo carico-velocità personale: retta velocità = a + b·kg dalle rep più veloci di ogni serie */
+function lvPoints(){
+  const pts=[],lim=Date.now()-60*864e5,add=(kg,rs,ts)=>{if(!(kg>0)||!rs||!rs.length||ts<lim)return;const ok=rs.filter(r=>!r.bad&&r.mcv>0);if(!ok.length)return;pts.push([kg,Math.max(...ok.map(r=>r.mcv))])};
+  wk.filter(w=>w.aid===prof.id).forEach(w=>w.sets.forEach(x=>add(x.kg,x.reps,x.ts||0)));
+  sess.filter(x=>!x.saved&&(x.aid===prof.id||!x.aid)).forEach(x=>add(x.kg,x.reps,x.ts));
+  return pts;
+}
+function lvFit(){
+  if(!(prof.rm>0))return null;
+  const pts=lvPoints();if(pts.length<3)return null;
+  const ks=pts.map(p=>p[0]),span=Math.max(...ks)-Math.min(...ks);if(span<prof.rm*0.2)return null;
+  const n=pts.length,mx=ks.reduce((a,b)=>a+b,0)/n,my=pts.reduce((a,p)=>a+p[1],0)/n;
+  let sxy=0,sxx=0,syy=0;pts.forEach(([x,y])=>{sxy+=(x-mx)*(y-my);sxx+=(x-mx)**2;syy+=(y-my)**2});
+  const b=sxy/sxx,a=my-b*mx,r2=syy?(sxy*sxy)/(sxx*syy):0;
+  if(!(b<0)||r2<0.5)return {bad:true,n,r2};
+  return {a,b,r2,n,e1rm:(0.30-a)/b,min:Math.min(...ks),max:Math.max(...ks)};
+}
+function useLv(){const f=$('useProf')&&$('useProf').checked?lvFit():null;return f&&!f.bad?f:null}
+function mvAt(p){const f=useLv();if(f&&prof.rm>0){const v=f.a+f.b*prof.rm*p/100;return v>0.12?v:0.12}return mvTab(p)}
+function renderProf(){
+  const f=lvFit(),pts=lvPoints();
+  if(!f){$('profTxt').innerHTML='Non ancora pronto: '+pts.length+' serie utili negli ultimi 60 giorni. Fai serie con carichi diversi (per esempio riscaldamento al 35%, poi 60%, 75%).';return}
+  if(f.bad){$('profTxt').innerHTML='Dati poco coerenti ('+f.n+' serie): continua ad allenarti, il profilo si sistema con più serie.';return}
+  const row=pc=>{const kg=prof.rm*pc/100,v=f.a+f.b*kg;return '<tr><td>'+pc+'%</td><td>'+(Math.round(kg/2.5)*2.5)+' kg</td><td>'+(v>0?v.toFixed(2):'–')+'</td><td>'+(mvTab(pc)?mvTab(pc).toFixed(2):'–')+'</td></tr>'};
+  $('profTxt').innerHTML='Pronto, da '+f.n+' serie (affidabilità '+Math.round(f.r2*100)+'%). Massimale stimato: <b>'+Math.round(f.e1rm)+' kg</b> (impostato '+prof.rm+' kg).'+
+   '<div class="wrap" style="margin-top:6px"><table><thead><tr><th>%1RM</th><th>kg</th><th>Tua m/s</th><th>Studi m/s</th></tr></thead><tbody>'+[40,50,60,70,80,90].map(row).join('')+'</tbody></table></div>';
+}
 const pctAt=mv=>mv>.92?null:interp(VP,mv);
 function saveAts(){store('ats',JSON.stringify(ats));store('athCur',cur)}
 function renderAth(){$('athSel').innerHTML=ats.map(a=>'<option value="'+a.id+'">'+esc(a.name||'Senza nome')+'</option>').join('');$('athSel').value=cur}
@@ -606,7 +697,7 @@ function saveWorkout(){
     const day=dayKey(s.ts),at=ats.find(x=>x.id===s.aid)||ats.find(x=>x.name===(s.ath||''))||prof;
     let w=wk.find(x=>x.day===day&&x.aid===at.id);
     if(!w){w={day:day,aid:at.id,ath:at.name,rm:at.rm||0,sets:[]};wk.push(w)}
-    w.sets.push({ts:s.ts,kg:s.kg||0,pct:s.pct||0,thr:s.thr,why:s.why,reps:s.reps.map(r=>({mcv:r.mcv,peak:r.peak,rom:r.rom,loss:r.loss}))});
+    w.sets.push({ts:s.ts,kg:s.kg||0,pct:s.pct||0,thr:s.thr,why:s.why,reps:s.reps.map(r=>({mcv:r.mcv,peak:r.peak,rom:r.rom,loss:r.loss,bad:r.bad||''}))});
     s.saved=true;
   });
   saveSess();saveWk();renderSess();renderWk();
@@ -640,7 +731,7 @@ function setKg(k){
 $('ovMinus').onclick=()=>setKg((prof.kg||0)-2.5);
 $('ovPlus').onclick=()=>setKg((prof.kg||0)+2.5);
 $('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilanciere (kg)',prof.kg||'');if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(k>0)setKg(k)};
-let tbKey='',limStart=0,segWas=false,restStart=+(localStorage.getItem('restStart')||0);
+let barKey='',tbKey='',limStart=0,segWas=false,restStart=+(localStorage.getItem('restStart')||0);
 function ovUpdate(){
   const run=state==='run',lr=reps[reps.length-1];
   $('ovAth').textContent=prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
@@ -651,7 +742,7 @@ function ovUpdate(){
   const ref=lossRef()||(mvAt(Math.max(prof.pct||0,50))||0.5);
   const lim=ref*(1-thr/100),val=(seg&&seg.n)?seg.sum/seg.n:(lr?lr.mcv:0);
   if(seg&&!segWas)limStart=(reps.length||$('lossBase').value==='table')?lim:0;segWas=!!seg;
-  const slow=!seg&&!!lr&&limStart>0&&lr.mcv<limStart-1e-6;
+  const slow=!seg&&!!lr&&reps.length>1&&limStart>0&&lr.mcv<limStart-1e-6;
   const limS=slow?limStart:lim;
   $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'(imposta %)';
   $('ovVal').textContent=val.toFixed(2);
@@ -680,14 +771,16 @@ function ovUpdate(){
    else sub='parte alla fine serie';
    $('ovTimer').textContent=tt;$('ovTimerSub').textContent=sub}
   $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep&&depOn());
+  const bk=reps.map(r=>r.mcv.toFixed(2)+(r.bad||'')).join();
+  if(bk!==barKey){barKey=bk;const mx=Math.max(0.01,...reps.map(r=>r.mcv));$('ovBars').innerHTML=reps.slice(-14).map(r=>'<i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(12,r.mcv/mx*100)+'%"></i>').join('')}
   /* tabella dell'allenamento di oggi */
-  const rows=sess.map(s=>[s.kg||0,s.reps.length]);
+  const rows=sess.map(s=>[s.kg||0,s.reps.length,s.why==='warm',s.reps.filter(r=>r.bad).length]);
   const live=state!=='off'?[prof.kg||0,reps.length]:null;
   const key=JSON.stringify([rows,live]);
   if(key!==tbKey){
     tbKey=key;
-    let h=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
-    if(live)h+='<tr class="live"><td>'+(rows.length+1)+'</td><td>'+live[0]+'</td><td>'+live[1]+'</td></tr>';
+    let k=0,h=rows.map(r=>'<tr><td>'+(r[2]?'Risc.':++k)+'</td><td>'+r[0]+'</td><td>'+r[1]+(r[3]?'<span class="bdN">'+r[3]+'✕</span>':'')+'</td></tr>').join('');
+    if(live)h+='<tr class="live"><td>'+(k+1)+'</td><td>'+live[0]+'</td><td>'+live[1]+'</td></tr>';
     if(!h)h='<tr><td colspan="3" style="color:#7fb2d0">Nessuna serie ancora</td></tr>';
     $('ovTb').innerHTML=h;$('ovTw').scrollTop=$('ovTw').scrollHeight;
   }
@@ -700,7 +793,7 @@ $('ovPct').onclick=()=>{
 };
 function openSettings(){
   if(state!=='off'){if(!confirm('Una serie è in corso: fermarla e aprire le impostazioni?'))return;stop()}
-  fillLoad();renderSess();renderWk();$('settings').hidden=false;$('settings').scrollTop=0;
+  fillLoad();renderSess();renderWk();renderProf();$('settings').hidden=false;$('settings').scrollTop=0;
 }
 $('ovGear').onclick=openSettings;
 
@@ -714,6 +807,21 @@ $('btnRecal').onclick=()=>{
 };
 $('wStart').onclick=()=>{if(state==='off'){dpt=0;topLock=true;start('warm')}};
 $('wStop').onclick=()=>{if(state!=='off')stop()};
+function todayCal(){try{const c=JSON.parse(localStorage.getItem('calDay'));if(c&&c.day===dayKey(Date.now())&&c.cal)return c.cal}catch(e){}return null}
+function warmKgDef(){return prof.rm?Math.max(20,Math.round(prof.rm*0.35/2.5)*2.5):20}
+function warmKgTxt(){const k=parseFloat(String($('wKg').value).replace(',','.'));$('wKgTxt').textContent=(k>0&&prof.rm)?'('+(k/prof.rm*100).toFixed(0)+'% 1RM)':''}
+$('wKg').oninput=warmKgTxt;
+function skipTxt(){const t=todayCal();$('wSkipTxt').textContent=t?'Usa la calibrazione fatta oggi (corsa '+Math.round(t.rom*100)+' cm).':((prof.pct||0)<90?'Senza riscaldamento: la prima rep della serie fa da calibrazione.':'Sopra il 90% del massimale serve il riscaldamento.')}
+$('wSkip').onclick=()=>{
+  if(state!=='off')return;
+  const t=todayCal();
+  if(t){cal=t;msg('Calibrazione di oggi','Uso la corsa misurata nel riscaldamento di oggi.')}
+  else if((prof.pct||0)>=90){msg('Riscaldamento necessario','Sopra il 90% del massimale la prima rep non basta per calibrare: fai il riscaldamento con il 30–40% del massimale.');return}
+  else{cal={rom:0.45,peak:1,dur:0.6,ecc:0.45,prov:true};msg('Pronto: fai la rep','La prima rep fa da calibrazione: falla completa, fino alla profondità giusta.')}
+  store('cal',JSON.stringify(cal));
+  try{if(!localStorage.getItem('wkStart'))localStorage.setItem('wkStart',String(Date.now()))}catch(e){}
+  mode='set';warm=[];applyCal();showCal();ovUpdate();
+};
 /* benvenuto: nome e massimale al primo avvio */
 function showWelcome(){
   if(prof.name&&prof.rm>0)return;
@@ -724,9 +832,9 @@ $('wGo').onclick=()=>{
   if(!n){$('wErr').textContent='Inserisci il tuo nome.';return}
   if(!(r>0)){$('wErr').textContent='Inserisci il tuo massimale in kg.';return}
   prof.name=n;prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
-  $('welcome').hidden=true;unlockAudio();ovUpdate();showResume();
+  $('welcome').hidden=true;unlockAudio();setTimeout(maybeInst,300);if(!cal){$('wKg').value=warmKgDef();warmKgTxt()}ovUpdate();showResume();
 };
-$('ovStart').onclick=()=>{if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
+$('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
 setInterval(ovUpdate,50);
 
@@ -759,7 +867,7 @@ const G_HOW=`
 <ol>
 <li>Fissa bene il telefono al bilanciere e tienilo sempre nella stessa posizione.</li>
 <li>Premi <b>Avvia riscaldamento</b> e tieni fermo il bilanciere 2 secondi.</li>
-<li>Fai 5 rep a bilanciere vuoto: scendi, breve pausa in basso, risali, breve pausa in alto.</li>
+<li>Carica il 30–40% del massimale e fai 5 rep complete, come in serie, con una breve pausa in alto (la pausa in basso è facoltativa).</li>
 </ol>
 <p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono il riferimento per decidere se una rep è valida. Fai il riscaldamento alla stessa profondità delle serie vere.</p>
 <h3>3 · Scegli il carico</h3>
@@ -885,9 +993,9 @@ function shareJson(obj,name){
 }
 $('btnShare').onclick=()=>{
   const mine=wk.filter(w=>w.aid===prof.id);
-  const data={app:'VBT 20% by cr',format:2,exported:new Date().toISOString(),device:navigator.userAgent,
+  const data={app:'VBT 20% by cr',format:2,ver:APP_VER,exported:new Date().toISOString(),device:navigator.userAgent,
     athlete:{name:prof.name,rm:prof.rm,pct:prof.pct,kg:prof.kg},
-    settings:{lossBase:$('lossBase').value,depAlarm:$('depAlarm').checked,thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
+    settings:{lossBase:$('lossBase').value,depAlarm:$('depAlarm').checked,voice:$('voice').checked,useProf:$('useProf').checked,thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
     calibration:cal,workouts:mine,session:sess};
   const slug=String(prof.name||'utente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'utente';
   const name='vbt-dati-'+slug+'-'+new Date().toISOString().slice(0,10)+'.json';
@@ -895,6 +1003,34 @@ $('btnShare').onclick=()=>{
   $('shMsg2').textContent='File pronto: '+mine.length+' allenamenti salvati e '+sess.length+' serie della sessione ('+nSets+' serie in tutto). Invialo a chi gestisce l\'app.';
   shareJson(data,name);
 };
+
+/* backup: importa il file creato con Condividi */
+$('btnImp').onclick=()=>$('impF').click();
+$('impF').onchange=async()=>{
+  const f=$('impF').files[0];$('impF').value='';if(!f)return;
+  let d;try{d=JSON.parse(await f.text())}catch(e){$('shMsg2').textContent='File non valido.';return}
+  if(!d||d.app!=='VBT 20% by cr'||!Array.isArray(d.workouts)){$('shMsg2').textContent='Questo file non è un backup di VBT 20% by cr.';return}
+  if(!confirm('Importare '+d.workouts.length+' allenamenti di '+((d.athlete&&d.athlete.name)||'utente')+'? I dati attuali restano, si aggiungono quelli mancanti.'))return;
+  let ns=0;
+  d.workouts.forEach(w=>{let t=wk.find(x=>x.day===w.day&&x.aid===prof.id);if(!t){t={day:w.day,aid:prof.id,ath:prof.name,rm:w.rm||prof.rm,sets:[]};wk.push(t)}
+    (w.sets||[]).forEach(x=>{if(!t.sets.some(y=>y.ts===x.ts)){t.sets.push(x);ns++}});t.sets.sort((a,b)=>a.ts-b.ts)});
+  wk.sort((a,b)=>a.day<b.day?-1:1);saveWk();
+  if(d.athlete){if(!(prof.rm>0)&&d.athlete.rm)prof.rm=d.athlete.rm;if(!prof.name&&d.athlete.name)prof.name=d.athlete.name;saveAts();renderAth();fillLoad();calcLoad()}
+  const st=d.settings||{};
+  if(st.lossBase){$('lossBase').value=st.lossBase;store('lossBase',st.lossBase)}
+  if(st.thr){$('thr').value=String(st.thr);store('thr',String(st.thr))}
+  if(st.minrom){$('minrom').value=String(st.minrom);store('minrom',String(st.minrom))}
+  if(typeof st.depAlarm==='boolean'){$('depAlarm').checked=st.depAlarm;store('depAlarm',st.depAlarm?'1':'0')}
+  if(typeof st.inv==='boolean'){$('inv').checked=st.inv;store('inv',st.inv?'1':'0')}
+  renderWk();renderProf();applyCal();showCal();
+  $('shMsg2').textContent='Backup importato: '+ns+' serie aggiunte.';
+};
+function isStandalone(){try{return navigator.standalone===true||matchMedia('(display-mode: standalone)').matches}catch(e){return false}}
+$('btnInst').onclick=()=>{$('inst').hidden=false};
+$('instOk').onclick=()=>{$('inst').hidden=true;store('instSeen','1')};
+function maybeInst(){if(navigator.webdriver)return;if(!isStandalone()&&store('instSeen')!=='1'&&$('welcome').hidden)$('inst').hidden=false}
+setTimeout(maybeInst,4200);
+try{const bi=getComputedStyle(document.querySelector('.logo')).backgroundImage.match(/url\("?(.*?)"?\)/);if(bi){const l=document.createElement('link');l.rel='apple-touch-icon';l.href=bi[1];document.head.appendChild(l)}}catch(e){}
 
 /* Fine allenamento e ripresa dopo la chiusura */
 function endWorkout(){
@@ -942,6 +1078,17 @@ function unlockAudio(){
     const b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start(0)}catch(e){}
 }
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
+/* voce per le rep non valide (sintesi vocale del telefono) */
+let voiceOk=false,itVoice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();itVoice=vs.find(v=>/^it/i.test(v.lang))||null}catch(e){}}
+try{if(window.speechSynthesis){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}}catch(e){}
+function unlockVoice(){if(voiceOk||!window.speechSynthesis)return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);voiceOk=true}catch(e){}}
+['touchend','click'].forEach(ev=>document.addEventListener(ev,unlockVoice,{passive:true}));
+function say(t){
+  if(!$('voice').checked||!window.speechSynthesis)return false;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';if(itVoice)u.voice=itVoice;u.rate=1.05;u.volume=1;speechSynthesis.speak(u);return true}catch(e){return false}
+}
+function badDepth(){tone(150,0,.12,'sawtooth',.18);if(!say('Poco profonda'))snd.depth()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx&&ctx.state!=='running')try{ctx.resume()}catch(e){}});
 
 /* Pressione lunga sul nome atleta: rinomina / elimina */
@@ -979,9 +1126,14 @@ $('lossBase').onchange=()=>{store('lossBase',$('lossBase').value);limStart=0;ovU
 $('depAlarm').checked=store('depAlarm')!=='0';
 $('depAlarm').onchange=()=>{store('depAlarm',$('depAlarm').checked?'1':'0');badDep=false;applyCal();ovUpdate()};
 const depOn=()=>$('depAlarm').checked;
+$('voice').checked=store('voice')!=='0';$('voice').onchange=()=>store('voice',$('voice').checked?'1':'0');
+$('useProf').checked=store('useProf')!=='0';$('useProf').onchange=()=>{store('useProf',$('useProf').checked?'1':'0');calcLoad();renderProf();ovUpdate()};
+$('appVer').textContent=APP_VER;try{$('splVer').textContent='v'+APP_VER}catch(e){}
 function lossRef(){
-  if($('lossBase').value==='table'){const m=prof.pct?mvAt(prof.pct):null;if(m)return m}
-  return reps.length?reps[0].mcv:null;
+  const m=prof.pct?mvAt(prof.pct):null,r0=reps.find(r=>!r.bad);
+  if($('lossBase').value==='table'&&m)return m;
+  if(r0&&m&&(r0.mcv<m*0.5||r0.mcv>m*1.8))return m;   /* prima rep fuori range: si usa la tabella */
+  return r0?r0.mcv:null;
 }
 const mr=store('minrom');if(mr)$('minrom').value=mr;
 $('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
@@ -1076,7 +1228,7 @@ function step(a,now){
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
     if(v<eseg.mn)eseg.mn=v;
-    if(cal&&eseg.d>cal.rom*1.5){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
+    if(cal&&eseg.d>(cal.prov?1.2:cal.rom*1.5)){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
     else if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
     else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
   }
@@ -1094,6 +1246,7 @@ function step(a,now){
   if(rec)rec.pts.push([Math.round(now-rec.t0),a,v]);
   $('live').textContent=v.toFixed(2);
 }
+function first(){return !reps.some(r=>!r.bad)}
 function countRep(s,bad){   /* una rep fatta conta sempre, anche se non valida per velocità o profondità */
   const mcv=s.n?s.sum/s.n:0,ref=lossRef()||mcv,loss=ref?Math.max(0,(ref-mcv)/ref*100):0;
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss,bad:bad});ui();
@@ -1108,42 +1261,51 @@ function endSeg(){
     if(setC){
       /* senza una vera discesa (stacco, passi, riappoggio, rimbalzo) si ignora in silenzio */
       if(real){
-        if(depOn()&&lastEcc<need){countRep(s,'dep');mark(0);badDep=true;snd.depth()}
-        else if(s.rom>=0.10){countRep(s,'vel');mark(0);badVel=true;alarm()}   /* rep bloccata/troppo lenta: la serie finisce (mai alla prima rep: può essere lo stacco) */
+        if(depOn()&&lastEcc<need&&!cal.prov){countRep(s,'dep');mark(0);badDep=true;badDepth()}
+        else if(s.rom>=0.10&&!cal.prov){countRep(s,'vel');mark(0);if(!first()){badVel=true;alarm('Rep incompleta. Serie finita')}}   /* rep bloccata/troppo lenta: la serie finisce (mai alla prima rep: può essere lo stacco) */
       }
       lastEcc=0;
     }else if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
     return}
-  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc,mcv:s.sum/s.n});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
   if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
-  if(setC&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
-  if(setC&&lastEcc<need){lastEcc=0;if(depOn()){countRep(s,'dep');badDep=true;mark(0);snd.depth()}return}
-  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;countRep(s,'vel');mark(0);badVel=true;alarm();return}   /* la salita non è tornata in alto: rep fallita, serie finita */
+  if(setC&&!cal.prov&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
+  if(setC&&!cal.prov&&lastEcc<need){lastEcc=0;if(depOn()){countRep(s,'dep');badDep=true;mark(0);badDepth()}return}
+  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;if(cal.prov)return;const f=first();countRep(s,'vel');mark(0);if(!f){badVel=true;alarm('Rep incompleta. Serie finita')}return}
+  if(setC&&cal.prov){   /* senza riscaldamento: la prima rep completa fa da calibrazione */
+    if(lastEcc<0.25||s.rom<0.25){lastEcc=0;return}
+    cal={rom:s.rom,peak:s.peak,dur:dur,ecc:lastEcc};store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));applyCal();showCal();
+  }   /* la salita non è tornata in alto: rep fallita, serie finita */
   lastEcc=0;
-  const mcv=s.sum/s.n,ref=lossRef()||mcv,loss=Math.max(0,(ref-mcv)/ref*100);
+  const f=first(),mcv=s.sum/s.n,ref=f?mcv:(lossRef()||mcv),loss=Math.max(0,(ref-mcv)/ref*100);
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
   ui();
   mark(1);
-  if(loss>=+$('thr').value){badVel=true;alarm()}else snd.ok();
+  if(!f&&loss>=+$('thr').value){reps[reps.length-1].bad='vel';badVel=true;alarm('Troppo lenta. Serie finita')}else snd.ok();   /* la prima rep è il riferimento: mai allarme di velocità */
 }
 function applyCal(){
   if(mode==='set'&&cal){MIN_ROM=depOn()?cal.rom*(+$('minrom').value/100):Math.max(0.15,cal.rom*0.4);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
   else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
-function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete a bilanciere vuoto: scendi, fai una breve pausa in basso, risali e fai una pausa in alto. La pausa in basso serve solo ora, per calibrare.')}
+function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete con il 30–40% del massimale, come in serie, con una pausa in alto. La pausa in basso è facoltativa: rende la calibrazione un po\' più precisa.')}
 function finishWarm(){
   cal={rom:med(warm.map(w=>w.rom)),peak:med(warm.map(w=>w.peak)),dur:med(warm.map(w=>w.dur)),ecc:med(warm.map(w=>w.ecc).filter(x=>x>0))||0};
-  store('cal',JSON.stringify(cal));
+  store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));
   try{if(!localStorage.getItem('wkStart'))localStorage.setItem('wkStart',String(Date.now()))}catch(e){}
   mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];rec=newRec();ui();showCal();
   $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
   beep(660,.12);setTimeout(()=>beep(990,.2),180);
   msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Scegli il carico e premi Avvia serie.');
   halt();rec=null;
+  /* le 5 rep del riscaldamento restano come serie di riscaldamento, con le loro velocità */
+  const wk0=parseFloat(String($('wKg').value).replace(',','.'))||0;
+  sess.push({ts:Date.now(),why:'warm',thr:+$('thr').value,dur:0,kg:wk0,pct:(wk0&&prof.rm)?+(wk0/prof.rm*100).toFixed(1):0,aid:prof.id,an:prof.name||'',saved:false,
+    reps:warm.map(x=>({mcv:+(x.mcv||0).toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom*100),loss:0,bad:''})),ev:[],pts:[]});
+  saveSess();renderSess();tbKey='';ovUpdate();
 }
-function showCal(){$('ovWarm').hidden=!!cal;$('ovRun').hidden=!cal;$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
-  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita a vuoto '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento a bilanciere vuoto.';
+function showCal(){try{skipTxt();if(!cal&&!warm.length){$('wKg').value=warmKgDef();warmKgTxt()}}catch(e){}$('ovWarm').hidden=!!cal;$('ovRun').hidden=!cal;$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
+  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita nel riscaldamento '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento con il 30–40% del massimale.';
 }
 function newRec(){return{t0:performance.now(),pts:[],ev:[]}}
 function mark(ok){if(rec)rec.ev.push([Math.round(performance.now()-rec.t0),ok])}
@@ -1173,33 +1335,60 @@ function endSeries(why){
     reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1),bad:x.bad||''})),
     ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
   if(sess.length>60)sess.shift();
-  saveSess();renderSess();suggest(reps);
+  saveSess();renderSess();suggest(reps);try{showSum(sess[sess.length-1])}catch(e){}
   restStart=Date.now();try{localStorage.setItem('restStart',String(restStart))}catch(e){}
 }
+function showSum(x){
+  if(!x||!x.reps.length||x.why==='warm')return;
+  const rs=x.reps,ok=rs.filter(r=>!r.bad),n=sess.filter(s=>s.why!=='warm').length,thr=+$('thr').value;
+  const mx=Math.max(...rs.map(r=>r.mcv),0.01),best=ok.length?Math.max(...ok.map(r=>r.mcv)):0,last=rs[rs.length-1];
+  const ml=Math.max(0,...rs.filter(r=>r.bad!=='dep').map(r=>r.loss)),nd=rs.filter(r=>r.bad==='dep').length,nv=rs.filter(r=>r.bad==='vel').length;
+  $('sumT').textContent='Serie '+n+(x.why==='limit'?' · fermata dal limite':' · terminata');
+  $('sumS').textContent=(x.kg?x.kg+' kg':'')+(x.pct?' · '+x.pct+'% 1RM':'')+' · limite perdita '+thr+'%';
+  $('sumBars').innerHTML=rs.map((r,i)=>'<div><i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(4,r.mcv/mx*100)+'%"></i>'+r.mcv.toFixed(2)+'</div>').join('');
+  $('sumN').innerHTML=rs.length+(nd||nv?'<span class="bdN">('+ok.length+' valide)</span>':'');
+  $('sumL').textContent=ml.toFixed(0)+'%';$('sumB').textContent=best?best.toFixed(2)+' m/s':'–';$('sumU').textContent=last.mcv.toFixed(2)+' m/s';
+  let tip;
+  if(nd)tip=nd+(nd>1?' rep poco profonde':' rep poco profonda')+': scendi fino alla profondità del riscaldamento.';
+  else if(x.why==='limit'&&ok.length<=2)tip='Perdita raggiunta dopo '+ok.length+' rep: per la prossima serie prova a scendere del 5% ('+(x.kg?Math.round(x.kg*0.95/2.5)*2.5+' kg':'−5%')+').';
+  else if(x.why!=='limit'&&ml<thr/2&&ok.length>=3)tip='Perdita bassa ('+ml.toFixed(0)+'%): puoi fare più rep o salire di carico ('+(x.kg?Math.round(x.kg*1.05/2.5)*2.5+' kg':'+5%')+').';
+  else tip='Serie nella norma: puoi ripetere lo stesso carico.';
+  $('sumTip').textContent=tip;
+  const f=useLv();$('sumE').textContent=f?'Massimale stimato dal tuo profilo: '+Math.round(f.e1rm)+' kg.':'';
+  $('sum').hidden=false;
+}
+$('sumOk').onclick=()=>{$('sum').hidden=true};
 function saveSess(){let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
 function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
 function renderSess(){
   const L=$('sessList');
-  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>Serie '+(i+1)+' · '+fmt(s.ts)+(ats.length>1&&s.an?' · '+esc(s.an):'')+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
+  L.innerHTML=sess.length?sess.map((s,i)=>{const best=Math.max(...s.reps.map(r=>r.mcv)),ml=Math.max(...s.reps.map(r=>r.loss));return '<button class="sec srow" data-i="'+i+'"><span>'+(s.why==='warm'?'Riscaldamento':'Serie '+(i+1))+' · '+fmt(s.ts)+(ats.length>1&&s.an?' · '+esc(s.an):'')+(s.saved?' ✓':'')+'</span><span>'+(s.kg?s.kg+' kg · ':'')+s.reps.length+' rep · '+best.toFixed(2)+' m/s · perdita '+ml.toFixed(0)+'%</span></button>'}).join(''):'<div class="mut">Nessuna serie salvata in questa sessione.</div>';
   L.querySelectorAll('button').forEach(b=>b.onclick=()=>openSer(+b.dataset.i));
 }
 function openSer(i){
   const s=sess[i];if(!s)return;
   $('sessDet').style.display='block';
   $('detT').textContent='Serie '+(i+1)+' · '+fmt(s.ts)+(s.why==='limit'?' · fermata dal limite':'');
-  $('detTb').innerHTML=s.reps.map((x,k)=>'<tr><td>'+(k+1)+'</td><td>'+x.mcv.toFixed(2)+'</td><td>'+x.peak.toFixed(2)+'</td><td>'+x.rom+'</td><td>'+x.loss.toFixed(0)+'%</td></tr>').join('');
+  $('detTb').innerHTML=s.reps.map((x,k)=>'<tr'+(x.bad?' style="color:'+(x.bad==='dep'?'#e07a00':'var(--bad)')+'"':'')+'><td>'+(k+1)+(x.bad?(x.bad==='dep'?' poco prof.':' lenta'):'')+'</td><td>'+x.mcv.toFixed(2)+'</td><td>'+x.peak.toFixed(2)+'</td><td>'+x.rom+'</td><td>'+x.loss.toFixed(0)+'%</td></tr>').join('');
   requestAnimationFrame(()=>{drawSeries($('cv2'),s.pts,s.ev,0,s.dur);$('sessDet').scrollIntoView({behavior:'smooth',block:'nearest'})});
 }
 function newSess(){
-  if(sess.length&&!confirm(sess.some(s=>!s.saved)?'Ci sono serie non salvate nello storico. Cancellarle comunque?':'Cancellare le serie di questa sessione?'))return;
-  sess=[];try{localStorage.removeItem('sess')}catch(e){}
-  $('sessDet').style.display='none';renderSess();
+  const ws=warm.slice();
+  if(!(sess.length&&!confirm(sess.some(s=>!s.saved)?'Ci sono serie non salvate nello storico. Cancellarle comunque?':'Cancellare le serie di questa sessione?'))){
+    sess=[];try{localStorage.removeItem('sess')}catch(e){}
+    $('sessDet').style.display='none';
+  }
+  /* le 5 rep del riscaldamento restano come serie di riscaldamento, con le loro velocità */
+  const wk0=parseFloat(String($('wKg').value).replace(',','.'))||0;
+  sess.push({ts:Date.now(),why:'warm',thr:+$('thr').value,dur:0,kg:wk0,pct:(wk0&&prof.rm)?+(wk0/prof.rm*100).toFixed(1):0,aid:prof.id,an:prof.name||'',saved:false,
+    reps:ws.map(x=>({mcv:+(x.mcv||0).toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom*100),loss:0,bad:''})),ev:[],pts:[]});
+  saveSess();renderSess();
 }
-function alarm(){
+function alarm(txt){
   alarmed=true;document.body.classList.add('alarm');
   endSeries('limit');halt();
   msg('STOP: serie finita','Perdita di velocità oltre la soglia. La serie è salvata nella sessione.');
-  snd.limit();
+  tone(1046,0,.15,'triangle',.4);if(!say(txt||'Troppo lenta. Serie finita'))snd.limit();
   try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}
 }
 function ui(){

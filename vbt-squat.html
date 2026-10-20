@@ -72,7 +72,7 @@ body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
 .ovLoad .ctl{display:flex;align-items:center;gap:16px}
 #ov .st{width:46px;height:46px;padding:0;font-size:26px;border-radius:12px;background:#0d3a5c;border:1px solid #2a8fc0;color:#eaf6ff}
 #ov .kgb{white-space:nowrap;min-width:110px;font-size:28px;font-weight:800;background:none;color:#eaf6ff;border:0;border-bottom:2px dashed #19c3e6;border-radius:0;padding:0 6px}
-.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:10px}
 .ovP{display:flex;flex-direction:column;min-height:0;border:1px solid #2a8fc0;border-radius:16px;background:#0a2d4acc;padding:10px;text-align:center}
 .ovP .lb{font-size:13px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
 .ovBig{font-size:clamp(34px,10vw,56px);font-weight:800;line-height:1.05}
@@ -140,8 +140,9 @@ body{overflow:hidden}
 .vside .ovBig{font-size:clamp(28px,8vw,40px)}
 #ovThr{display:none}
 #ov .ovSq.gearBtn{width:52px;height:52px;padding:0;border-radius:14px;display:flex;align-items:center;justify-content:center}
-.ovBot{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 auto}
-.ovBot .ovTbl{min-width:0}
+.ovBot{display:grid;grid-template-columns:1.618fr 1fr;gap:10px;flex:1 1 0;min-height:0}
+.ovBot .ovTbl{min-width:0;display:flex;flex-direction:column;min-height:0}.ovBot .ovTbl .tw{flex:1;min-height:0;max-height:none}
+@media (orientation:portrait){.ovMid{flex:1.618 1 0}.ovBot{flex:1 1 0;min-height:0}}
 .ovTbl td,.ovTbl th{padding:2px 2px}
 .ovTbl table{font-size:13px}
 .ovTimer{border:1px solid #2a8fc0;border-radius:14px;background:#0a2d4acc;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;min-width:0}
@@ -165,7 +166,8 @@ body{overflow:hidden}
 .ovRep{font-size:clamp(34px,10.5vw,64px);white-space:nowrap}
 .ovS{font-size:13px;line-height:1.55}
 .ovS b{font-size:15px}
-#ovMsg{font-size:12.5px!important;min-height:32px!important;display:flex;align-items:center;justify-content:center}
+#ovMsg{font-size:12.5px!important;min-height:0!important;line-height:1.25;display:flex;align-items:center;justify-content:center}#ovMsg:empty{display:none}
+#ovRun .ovBtns{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:10px}
 #ov .ovBtns button{font-size:16px;padding:13px}
 #ov .ovClose{padding:10px;font-size:14px}
 .ovP{padding:10px 8px}
@@ -227,6 +229,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .info p{margin:0 0 6px;font-size:14px}
 .info td:last-child,.info th:last-child{text-align:left}
 .wkA{width:auto;padding:5px 8px;font-size:12px;margin:1px}
+@media (max-width:360px){.ph{gap:6px}.ph .trk{width:34px}.bx{width:42px;height:42px;font-size:8px}.bx i{font-size:18px}.rh{font-size:11px}.rs{font-size:11px}#ov .ovBtns button{font-size:14px;padding:12px 6px}.ovP.vp{gap:8px}.ovP.vp .vtrk{width:24px}#ovLimTxt{font-size:15px!important}}
 </style>
 </head>
 <body>
@@ -541,7 +544,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         <div class="sub" id="ovTimerSub">dalla fine serie</div>
       </div>
     </div>
-    <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef;min-height:20px"></div>
+    <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef"></div>
     <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Fine serie</button></div>
     <button class="endbtn" id="ovEnd">Termina e salva sessione</button>
   </div>
@@ -573,7 +576,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.20-c';
+const APP_VER='2026.10.20-e';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -769,7 +772,7 @@ function ovUpdate(){
   const f=$('ovFill');f.style.height=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
   const lp=Math.min(100,limS/SM*100)+'%';
-  $('ovZone').style.height=ref?lp:'0%';$('ovLim').style.bottom=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo la 1ª rep';
+  $('ovZone').style.height=ref?lp:'0%';$('ovLim').style.bottom=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo 1ª rep';
   const mn=(+$('minrom').value)/100,df=Math.max(0,Math.min(1.1,R?dpt/R:0));
   $('ovDf').style.height=Math.min(100,df*100)+'%';
   $('ovDf').style.background=df>=mn?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#27e0f0,#1470e0)';

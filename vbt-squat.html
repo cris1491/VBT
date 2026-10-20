@@ -147,6 +147,8 @@ body{overflow:hidden}
 .ovTimer .lb{font-size:11px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
 .ovTimer .tm{font-size:clamp(28px,9vw,42px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
 .ovTimer .sub{font-size:11px;color:#7fb2d0}
+.sexR{display:flex;gap:14px;padding:8px 0;font-size:16px}.sexR label{display:flex;align-items:center;gap:6px}.sexR input{width:20px;height:20px}
+#hello{position:fixed;inset:0;z-index:320;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#eaf6ff;font-weight:800;font-size:clamp(28px,8vw,52px);text-align:center;padding:20px;animation:scr 2s ease forwards}#hello b{color:#19c3e6;font-size:1.25em;margin-top:6px}
 #scarso{position:fixed;inset:0;z-index:320;background:#000;display:flex;align-items:center;justify-content:center;color:#ff3b4a;font-weight:900;font-size:clamp(48px,17vw,120px);letter-spacing:.04em;text-align:center;animation:scr 2s ease forwards}
 @keyframes scr{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0;visibility:hidden}}
 #ov .endbtn{width:100%;padding:9px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;background:#0a2d4a;border:1px solid #2a8fc0;color:#eaf6ff;flex:none}
@@ -285,7 +287,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <button class="sec" id="btnAddAth" aria-label="Aggiungi atleta" style="width:auto;padding:8px 18px;font-size:22px;line-height:1.2">+</button>
   </div>
   <div class="row" style="margin-top:12px;align-items:flex-end">
-    <div class="fld"><label class="mut" for="ath">Il tuo nome</label><input type="text" id="ath" autocomplete="name" placeholder="Nome"></div>
+    <input type="hidden" id="ath"><div class="fld"><label class="mut" for="athF">Nome</label><input type="text" id="athF" autocomplete="given-name" placeholder="Nome"></div><div class="fld"><label class="mut" for="athL">Cognome</label><input type="text" id="athL" autocomplete="family-name" placeholder="Cognome"></div>
+    <div class="fld" style="flex-basis:100%"><label class="mut">Sesso</label><div class="sexR"><label><input type="radio" name="athS" value="M"> Maschio</label><label><input type="radio" name="athS" value="F"> Femmina</label></div></div>
     <div class="fld"><label class="mut" for="rm">Massimale 1RM (kg)</label><input type="number" id="rm" inputmode="decimal" min="0" step="2.5" placeholder="es. 140"></div>
   </div>
   <div hidden style="margin-top:16px"><b>Prossima serie</b>
@@ -331,19 +334,17 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <label for="minrom">Rep valida se la corsa supera</label>
     <select id="minrom"><option>60</option><option>70</option><option>75</option><option>80</option><option selected>85</option><option>90</option><option>95</option><option>100</option></select>
   </div>
-  <div class="row" style="margin-top:10px">
-    <label for="lossBase">Perdita di velocità calcolata su</label>
-    <select id="lossBase"><option value="first" selected>Prima rep della serie</option><option value="table">Tabella degli studi</option></select>
-  </div>
-  <div class="mut" style="margin-top:4px">Prima rep: la perdita si misura rispetto alla tua prima rep. Tabella: rispetto alla velocità prevista per il carico (% del massimale).</div>
+  <select id="lossBase" hidden><option value="first" selected>Rep più veloce</option></select>
+  <div class="mut" style="margin-top:10px">La perdita di velocità si calcola sempre sulla <b>tua rep più veloce della serie</b> (di solito la prima): ognuno parte dal proprio livello. La tabella degli studi serve solo come confronto.</div>
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="depAlarm" checked> Allarme profondità attivo</label>
   </div>
+
+  <div class="mut" style="margin-top:4px">Se lo disattivi, la profondità non viene controllata: niente suono e niente rosso, e le rep poco profonde vengono contate.</div>
   <div class="row" style="margin-top:8px">
     <label class="chk"><input type="checkbox" id="voice" checked> Voce per le rep non valide</label>
   </div>
   <div class="mut" style="margin-top:4px">Rep valida: un segnale acustico. Rep non valida: una voce dice «Poco profonda», «Troppo lenta» o «Rep incompleta».</div>
-  <div class="mut" style="margin-top:4px">Se lo disattivi, la profondità non viene controllata: niente suono e niente rosso, e le rep poco profonde vengono contate.</div>
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
     <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
@@ -455,9 +456,10 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 <div id="welcome" hidden>
   <div class="gBox" role="dialog" aria-modal="true">
     <div class="logo" role="img" aria-label="Logo VBT 20% by cr" style="align-self:center;width:84px;height:84px"></div>
-    <div style="text-align:center;font-size:20px;font-weight:800">Benvenuto!</div>
-    <p style="margin:0;text-align:center;font-size:15px">Inserisci il tuo nome e il tuo massimale nello squat (1RM). Se non lo conosci, metti una stima: potrai cambiarli nelle impostazioni.</p>
-    <div class="fld"><label class="mut" for="wName">Il tuo nome</label><input type="text" id="wName" autocomplete="name" placeholder="Nome"></div>
+    <div style="text-align:center;font-size:20px;font-weight:800">Benvenuto in VBT 20%!</div>
+    <p style="margin:0;text-align:center;font-size:15px">Inserisci nome, cognome, sesso e il tuo massimale nello squat (1RM). Se non conosci il massimale, metti una stima: potrai cambiare tutto nelle impostazioni.</p>
+    <div class="row" style="gap:8px"><div class="fld" style="flex:1"><label class="mut" for="wName">Nome</label><input type="text" id="wName" autocomplete="given-name" placeholder="Nome"></div><div class="fld" style="flex:1"><label class="mut" for="wLast">Cognome</label><input type="text" id="wLast" autocomplete="family-name" placeholder="Cognome"></div></div>
+    <div class="fld"><label class="mut">Sesso</label><div class="sexR"><label><input type="radio" name="wSex" value="M"> Maschio</label><label><input type="radio" name="wSex" value="F"> Femmina</label></div></div>
     <div class="fld"><label class="mut" for="wRm">Massimale 1RM (kg)</label><input type="number" id="wRm" inputmode="decimal" min="0" step="2.5" placeholder="es. 140"></div>
     <div id="wErr" style="color:var(--bad);font-size:14px;min-height:18px"></div>
     <button id="wGo">Inizia</button>
@@ -473,6 +475,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   </div>
 </div>
 <div id="scarso" hidden>SCARSO!</div>
+<div id="hello" hidden></div>
 <div id="ov">
   <div class="ovHead">
     <div class="logo" role="img" aria-label="Logo VBT 20% by cr"></div>
@@ -547,10 +550,10 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <div id="sumBars"></div>
   <div class="sumLeg">Verde: valida · Rosso: lenta o incompleta · Arancione: poco profonda</div>
   <div class="sumG">
-    <div><small>Rep</small><b id="sumN"></b></div>
-    <div><small>Perdita</small><b id="sumL"></b></div>
-    <div><small>Più veloce</small><b id="sumB"></b></div>
-    <div><small>Ultima</small><b id="sumU"></b></div>
+    <div><small id="sumLN">Rep</small><b id="sumN"></b></div>
+    <div><small id="sumLL">Perdita</small><b id="sumL"></b></div>
+    <div><small id="sumLB">Più veloce</small><b id="sumB"></b></div>
+    <div><small id="sumLU">Ultima</small><b id="sumU"></b></div>
   </div>
   <div class="sumTip" id="sumTip"></div>
   <div class="sumLeg" id="sumE" style="margin-top:8px"></div>
@@ -569,7 +572,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.19-e';
+const APP_VER='2026.10.20-b';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -589,11 +592,13 @@ prof=ats.find(isProt)||ats.find(a=>a.id===cur)||ats[0];cur=prof.id;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const r25=x=>Math.round(x/2.5)*2.5;
 /* Tabella carico-velocità dagli studi (squat) */
-const PV=[[50,.90],[60,.80],[70,.675],[80,.525],[90,.40],[100,.30]];
-const HW=[[50,.05],[60,.05],[70,.025],[80,.025],[90,.02],[100,.02]];
+const PV=[[30,1.10],[40,1.00],[50,.90],[60,.80],[70,.675],[80,.525],[90,.40],[100,.30]];
+const HW=[[30,.05],[40,.05],[50,.05],[60,.05],[70,.025],[80,.025],[90,.02],[100,.02]];
 const VP=[[.30,100],[.40,90],[.525,80],[.675,70],[.80,60],[.90,50]];
 function interp(a,x){if(x<=a[0][0])return a[0][1];for(let i=1;i<a.length;i++){if(x<=a[i][0]){const p=a[i-1],q=a[i];return p[1]+(q[1]-p[1])*(x-p[0])/(q[0]-p[0])}}return a[a.length-1][1]}
-const mvTab=p=>p<50?null:interp(PV,Math.min(p,100));
+/* donne: a parità di %1RM velocità un po' più basse, soprattutto con carichi leggeri (stima dagli studi su differenze tra sessi) */
+const PVF=[[30,.98],[40,.89],[50,.82],[60,.73],[70,.625],[80,.485],[90,.38],[100,.29]];
+const mvTab=p=>p<30?null:interp(prof.sex==='F'?PVF:PV,Math.min(p,100));
 /* profilo carico-velocità personale: retta velocità = a + b·kg dalle rep più veloci di ogni serie */
 function lvPoints(){
   const pts=[],lim=Date.now()-60*864e5,add=(kg,rs,ts)=>{if(!(kg>0)||!rs||!rs.length||ts<lim)return;const ok=rs.filter(r=>!r.bad&&r.mcv>0);if(!ok.length)return;pts.push([kg,Math.max(...ok.map(r=>r.mcv))])};
@@ -619,17 +624,21 @@ function renderProf(){
   if(f.bad){$('profTxt').innerHTML='Dati poco coerenti ('+f.n+' serie): continua ad allenarti, il profilo si sistema con più serie.';return}
   const row=pc=>{const kg=prof.rm*pc/100,v=f.a+f.b*kg;return '<tr><td>'+pc+'%</td><td>'+(Math.round(kg/2.5)*2.5)+' kg</td><td>'+(v>0?v.toFixed(2):'–')+'</td><td>'+(mvTab(pc)?mvTab(pc).toFixed(2):'–')+'</td></tr>'};
   $('profTxt').innerHTML='Pronto, da '+f.n+' serie (affidabilità '+Math.round(f.r2*100)+'%). Massimale stimato: <b>'+Math.round(f.e1rm)+' kg</b> (impostato '+prof.rm+' kg).'+
-   '<div class="wrap" style="margin-top:6px"><table><thead><tr><th>%1RM</th><th>kg</th><th>Tua m/s</th><th>Studi m/s</th></tr></thead><tbody>'+[40,50,60,70,80,90].map(row).join('')+'</tbody></table></div>';
+   '<div class="wrap" style="margin-top:6px"><table><thead><tr><th>%1RM</th><th>kg</th><th>Tua m/s</th><th>Studi m/s ('+(prof.sex==='F'?'donne':'uomini')+')</th></tr></thead><tbody>'+[30,40,50,60,70,80,90,100].map(row).join('')+'</tbody></table></div>';
 }
 const pctAt=mv=>mv>.92?null:interp(VP,mv);
 function saveAts(){store('ats',JSON.stringify(ats));store('athCur',cur)}
 function renderAth(){$('athSel').innerHTML=ats.map(a=>'<option value="'+a.id+'">'+esc(a.name||'Senza nome')+'</option>').join('');$('athSel').value=cur}
 function applyMode(){const k=prof.mode==='kg';$('kg').readOnly=!k;$('pct').readOnly=k;$('mKg').className=k?'':'sec';$('mPct').className=k?'sec':''}
+function sexOf(nm){const r=document.querySelector('input[name="'+nm+'"]:checked');return r?r.value:''}
+function setSex(nm,v){document.querySelectorAll('input[name="'+nm+'"]').forEach(r=>r.checked=r.value===v)}
+function splitName(){if(!prof.first&&prof.name){const p=prof.name.trim().split(/\s+/);prof.first=p[0]||'';prof.last=p.slice(1).join(' ')}}
+function fullName(){prof.name=((prof.first||'')+' '+(prof.last||'')).trim()}
 function refreshCreator(){
   if(isProt(prof)){try{localStorage.setItem('creator','1')}catch(e){}}
   $('btnTrain').hidden=localStorage.getItem('creator')!=='1';
 }
-function fillLoad(){$('ath').value=prof.name||'';$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode();
+function fillLoad(){splitName();$('ath').value=prof.name||'';$('athF').value=prof.first||'';$('athL').value=prof.last||'';setSex('athS',prof.sex||'');$('rm').value=prof.rm||'';$('pct').value=prof.pct||'';$('kg').value=prof.kg||'';applyMode();
   $('ath').readOnly=false;refreshCreator()}
 function recompute(){
   if(prof.mode==='kg'){
@@ -643,7 +652,7 @@ function recompute(){
 function calcLoad(){
   updOvBtn();
   const p=prof.pct,m=p?mvAt(p):null;
-  if(m==null){tLo=0;$('zone').textContent=p?'Sotto il 50%: fuori dalla tabella degli studi':'Imposta massimale e carico';$('tgt').textContent='–';$('tgtSub').textContent='';ui();return}
+  if(m==null){tLo=0;$('zone').textContent=p?'Sotto il 30%: fuori dalla tabella degli studi':'Imposta massimale e carico';$('tgt').textContent='–';$('tgtSub').textContent='';ui();return}
   const hw=p>=100?0:interp(HW,p),lo=m-hw,hi=m+hw,vl=p>80?15:20;
   tLo=lo;
   $('zone').textContent=p<=65?'Zona: velocità / potenza':p<=80?'Zona: forza base / ipertrofia':'Zona: forza massima / peaking';
@@ -673,7 +682,9 @@ $('btnAddAth').onclick=()=>{
   const a={id:'a'+Date.now().toString(36),name:n.trim(),rm:0,pct:80,kg:0,mode:'pct'};
   ats.push(a);selectAth(a.id);
 };
-$('ath').oninput=()=>{prof.name=$('ath').value.trim();saveAts();renderAth();refreshCreator();ovUpdate()};
+const onNm=()=>{prof.first=$('athF').value.trim();prof.last=$('athL').value.trim();fullName();saveAts();renderAth();refreshCreator();ovUpdate()};
+$('athF').oninput=onNm;$('athL').oninput=onNm;
+document.querySelectorAll('input[name="athS"]').forEach(r=>r.onchange=()=>{prof.sex=sexOf('athS');saveAts();calcLoad();try{renderProf()}catch(e){}ovUpdate()});
 $('rm').oninput=()=>{prof.rm=+$('rm').value||0;recompute();saveAts();calcLoad()};
 $('pct').oninput=()=>{prof.pct=+$('pct').value||0;recompute();saveAts();calcLoad()};
 $('kg').oninput=()=>{prof.kg=+$('kg').value||0;recompute();saveAts();calcLoad()};
@@ -741,14 +752,14 @@ $('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilancie
 let barKey='',tbKey='',limStart=0,segWas=false,restStart=+(localStorage.getItem('restStart')||0);
 function ovUpdate(){
   const run=state==='run',lr=reps[reps.length-1];
-  $('ovAth').textContent=prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
+  $('ovAth').textContent=prof.first||prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
   $('ovStart').disabled=state!=='off';$('ovStop').disabled=state==='off';
   $('wStart').disabled=state!=='off';$('wStop').disabled=state==='off';
   if(!cal){$('wCount').textContent=warm.length+' / '+WARM_N;return}
   const R=cal.rom,thr=+$('thr').value,SM=1.2;
-  const ref=lossRef()||(mvAt(Math.max(prof.pct||0,50))||0.5);
+  const ref=lossRef()||0;
   const lim=ref*(1-thr/100),val=(seg&&seg.n)?seg.sum/seg.n:(lr?lr.mcv:0);
-  if(seg&&!segWas)limStart=(reps.length||$('lossBase').value==='table')?lim:0;segWas=!!seg;
+  if(seg&&!segWas)limStart=ref?lim:0;segWas=!!seg;
   const slow=!seg&&!!lr&&reps.length>1&&limStart>0&&lr.mcv<limStart-1e-6;
   const limS=slow?limStart:lim;
   $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'(imposta %)';
@@ -757,7 +768,7 @@ function ovUpdate(){
   const f=$('ovFill');f.style.height=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
   const lp=Math.min(100,limS/SM*100)+'%';
-  $('ovZone').style.height=lp;$('ovLim').style.bottom=lp;$('ovLimTxt').textContent=limS.toFixed(2)+' m/s';
+  $('ovZone').style.height=ref?lp:'0%';$('ovLim').style.bottom=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo la 1ª rep';
   const mn=(+$('minrom').value)/100,df=Math.max(0,Math.min(1.1,R?dpt/R:0));
   $('ovDf').style.height=Math.min(100,df*100)+'%';
   $('ovDf').style.background=df>=mn?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#27e0f0,#1470e0)';
@@ -831,14 +842,18 @@ $('wSkip').onclick=()=>{
 };
 /* benvenuto: nome e massimale al primo avvio */
 function showWelcome(){
-  if(prof.name&&prof.rm>0)return;
-  $('wName').value=prof.name||'';$('wRm').value=prof.rm||'';$('wErr').textContent='';$('welcome').hidden=false;
+  splitName();
+  if(prof.first&&prof.last&&prof.sex&&prof.rm>0)return;
+  $('wLast').value=prof.last||'';setSex('wSex',prof.sex||'');
+  $('wName').value=prof.first||'';$('wRm').value=prof.rm||'';$('wErr').textContent='';$('welcome').hidden=false;
 }
 $('wGo').onclick=()=>{
-  const n=$('wName').value.trim(),r=parseFloat(String($('wRm').value).replace(',','.'));
+  const n=$('wName').value.trim(),l=$('wLast').value.trim(),sx=sexOf('wSex'),r=parseFloat(String($('wRm').value).replace(',','.'));
   if(!n){$('wErr').textContent='Inserisci il tuo nome.';return}
+  if(!l){$('wErr').textContent='Inserisci il tuo cognome.';return}
+  if(!sx){$('wErr').textContent='Scegli Maschio o Femmina.';return}
   if(!(r>0)){$('wErr').textContent='Inserisci il tuo massimale in kg.';return}
-  prof.name=n;prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
+  prof.first=n;prof.last=l;prof.sex=sx;fullName();prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
   $('welcome').hidden=true;unlockAudio();setTimeout(maybeInst,300);if(!cal){$('wKg').value=warmKgDef();warmKgTxt()}ovUpdate();showResume();
 };
 $('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
@@ -878,7 +893,7 @@ const G_HOW=`
 </ol>
 <p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono il riferimento per decidere se una rep è valida. Fai il riscaldamento alla stessa profondità delle serie vere.</p>
 <h3>3 · Scegli il carico</h3>
-<p class="mut">In Impostazioni scegli se la perdita di velocità si calcola sulla tua prima rep o sulla tabella degli studi, e se tenere attivo l'allarme di profondità.</p>
+<p class="mut">La perdita di velocità si calcola sempre sulla tua rep più veloce della serie: ognuno ha il proprio punto di partenza. Dopo il riscaldamento vedi la tua velocità confrontata con quella attesa dagli studi per il tuo sesso e il tuo carico. In Impostazioni puoi disattivare l'allarme di profondità.</p>
 <p>Nella schermata della serie usa − e + (passi da 2,5 kg) oppure tocca il peso o la % per scriverli: l'altro valore lo calcola l'app. Si cambia tra una serie e l'altra.</p>
 <h3>4 · Fai la serie</h3>
 <ol>
@@ -1001,7 +1016,7 @@ function shareJson(obj,name){
 $('btnShare').onclick=()=>{
   const mine=wk.filter(w=>w.aid===prof.id);
   const data={app:'VBT 20% by cr',format:2,ver:APP_VER,exported:new Date().toISOString(),device:navigator.userAgent,
-    athlete:{name:prof.name,rm:prof.rm,pct:prof.pct,kg:prof.kg},
+    athlete:{name:prof.name,first:prof.first||'',last:prof.last||'',sex:prof.sex||'',rm:prof.rm,pct:prof.pct,kg:prof.kg},
     settings:{lossBase:$('lossBase').value,depAlarm:$('depAlarm').checked,voice:$('voice').checked,useProf:$('useProf').checked,thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
     calibration:cal,workouts:mine,session:sess};
   const slug=String(prof.name||'utente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'utente';
@@ -1022,9 +1037,9 @@ $('impF').onchange=async()=>{
   d.workouts.forEach(w=>{let t=wk.find(x=>x.day===w.day&&x.aid===prof.id);if(!t){t={day:w.day,aid:prof.id,ath:prof.name,rm:w.rm||prof.rm,sets:[]};wk.push(t)}
     (w.sets||[]).forEach(x=>{if(!t.sets.some(y=>y.ts===x.ts)){t.sets.push(x);ns++}});t.sets.sort((a,b)=>a.ts-b.ts)});
   wk.sort((a,b)=>a.day<b.day?-1:1);saveWk();
-  if(d.athlete){if(!(prof.rm>0)&&d.athlete.rm)prof.rm=d.athlete.rm;if(!prof.name&&d.athlete.name)prof.name=d.athlete.name;saveAts();renderAth();fillLoad();calcLoad()}
+  if(d.athlete){if(!(prof.rm>0)&&d.athlete.rm)prof.rm=d.athlete.rm;if(!prof.name&&d.athlete.name)prof.name=d.athlete.name;if(!prof.first&&d.athlete.first){prof.first=d.athlete.first;prof.last=d.athlete.last||''}if(!prof.sex&&d.athlete.sex)prof.sex=d.athlete.sex;saveAts();renderAth();fillLoad();calcLoad()}
   const st=d.settings||{};
-  if(st.lossBase){$('lossBase').value=st.lossBase;store('lossBase',st.lossBase)}
+  
   if(st.thr){$('thr').value=String(st.thr);store('thr',String(st.thr))}
   if(st.minrom){$('minrom').value=String(st.minrom);store('minrom',String(st.minrom))}
   if(typeof st.depAlarm==='boolean'){$('depAlarm').checked=st.depAlarm;store('depAlarm',st.depAlarm?'1':'0')}
@@ -1062,7 +1077,7 @@ function whenTxt(ts){
   return 'il '+d.toLocaleDateString('it-IT',{day:'numeric',month:'long'})+' alle '+hm;
 }
 function showResume(){
-  if(!cal||!(prof.name&&prof.rm>0)||state!=='off'||!$('welcome').hidden)return;
+  if(!cal||!(prof.first&&prof.sex&&prof.rm>0)||state!=='off'||!$('welcome').hidden)return;
   const ws=+localStorage.getItem('wkStart')||0,n=sess.length;
   $('rsTxt').textContent='Hai un allenamento'+(ws?' iniziato '+whenTxt(ws):' in corso')+', con '+n+' serie. Vuoi continuare da dove eri o iniziarne uno nuovo?';
   $('resume').hidden=false;
@@ -1117,7 +1132,7 @@ $('shRen').onclick=()=>{
   if(isProt(prof))return;
   const n=prompt('Nuovo nome atleta',prof.name||'');if(n===null||!n.trim())return;
   if(n.trim().toLowerCase()===PROT.toLowerCase()){alert('Nome riservato.');return}
-  prof.name=n.trim();
+  prof.name=n.trim();prof.first='';prof.last='';splitName();
   wk.forEach(w=>{if(w.aid===prof.id)w.ath=prof.name});saveWk();
   sess.forEach(s=>{if(s.aid===prof.id)s.an=prof.name});saveSess();
   saveAts();renderAth();fillLoad();renderWk();renderSess();ovUpdate();
@@ -1128,7 +1143,7 @@ const t0=store('thr'); if(t0)$('thr').value=t0;
 if(store('inv')==='1')$('inv').checked=true;
 $('thr').onchange=()=>{$('auto').checked=false;store('auto','0');store('thr',$('thr').value);ui()};
 $('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
-const lb0=store('lossBase');if(lb0)$('lossBase').value=lb0;
+
 $('lossBase').onchange=()=>{store('lossBase',$('lossBase').value);limStart=0;ovUpdate()};
 $('depAlarm').checked=store('depAlarm')!=='0';
 $('depAlarm').onchange=()=>{store('depAlarm',$('depAlarm').checked?'1':'0');badDep=false;applyCal();ovUpdate()};
@@ -1137,10 +1152,9 @@ $('voice').checked=store('voice')!=='0';$('voice').onchange=()=>store('voice',$(
 $('useProf').checked=store('useProf')!=='0';$('useProf').onchange=()=>{store('useProf',$('useProf').checked?'1':'0');calcLoad();renderProf();ovUpdate()};
 $('appVer').textContent=APP_VER;try{$('splVer').textContent='v'+APP_VER}catch(e){}
 function lossRef(){
-  const m=prof.pct?mvAt(prof.pct):null,r0=reps.find(r=>!r.bad);
-  if($('lossBase').value==='table'&&m)return m;
-  if(r0&&m&&(r0.mcv<m*0.5||r0.mcv>m*1.8))return m;   /* prima rep fuori range: si usa la tabella */
-  return r0?r0.mcv:null;
+  /* riferimento: la rep valida più veloce della serie (velocità plausibile tra 0,1 e 2,5 m/s) */
+  const ok=reps.filter(r=>!r.bad&&r.mcv>=0.1&&r.mcv<=2.5);
+  return ok.length?Math.max(...ok.map(r=>r.mcv)):null;
 }
 const mr=store('minrom');if(mr)$('minrom').value=mr;
 $('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
@@ -1309,7 +1323,7 @@ function finishWarm(){
   const wk0=parseFloat(String($('wKg').value).replace(',','.'))||0;
   sess.push({ts:Date.now(),why:'warm',thr:+$('thr').value,dur:0,kg:wk0,pct:(wk0&&prof.rm)?+(wk0/prof.rm*100).toFixed(1):0,aid:prof.id,an:prof.name||'',saved:false,
     reps:warm.map(x=>({mcv:+(x.mcv||0).toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom*100),loss:0,bad:''})),ev:[],pts:[]});
-  saveSess();renderSess();tbKey='';ovUpdate();
+  saveSess();renderSess();tbKey='';ovUpdate();try{showWarmSum(warm,wk0)}catch(e){}
 }
 function showCal(){try{skipTxt();if(!cal&&!warm.length){$('wKg').value=warmKgDef();warmKgTxt()}}catch(e){}$('ovWarm').hidden=!!cal;$('ovRun').hidden=!cal;$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
   $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita nel riscaldamento '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento con il 30–40% del massimale.';
@@ -1350,6 +1364,7 @@ function showSum(x){
   const rs=x.reps,ok=rs.filter(r=>!r.bad),n=sess.filter(s=>s.why!=='warm').length,thr=+$('thr').value;
   const mx=Math.max(...rs.map(r=>r.mcv),0.01),best=ok.length?Math.max(...ok.map(r=>r.mcv)):0,last=rs[rs.length-1];
   const ml=Math.max(0,...rs.filter(r=>r.bad!=='dep').map(r=>r.loss)),nd=rs.filter(r=>r.bad==='dep').length,nv=rs.filter(r=>r.bad==='vel').length;
+  $('sumLN').textContent='Rep';$('sumLL').textContent='Perdita';$('sumLB').textContent='Più veloce';$('sumLU').textContent='Ultima';$('sumBars').nextElementSibling.style.display='';
   $('sumT').textContent='Serie '+n+(x.why==='limit'?' · fermata dal limite':' · terminata');
   $('sumS').textContent=(x.kg?x.kg+' kg':'')+(x.pct?' · '+x.pct+'% 1RM':'')+' · limite perdita '+thr+'%';
   $('sumBars').innerHTML=rs.map((r,i)=>'<div><i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(4,r.mcv/mx*100)+'%"></i>'+r.mcv.toFixed(2)+'</div>').join('');
@@ -1365,6 +1380,24 @@ function showSum(x){
   $('sum').hidden=false;
 }
 $('sumOk').onclick=()=>{$('sum').hidden=true};
+function showWarmSum(ws,kg){
+  if(!ws.length)return;
+  const vs=ws.map(w=>w.mcv||0),mv=med(vs),pct=(kg&&prof.rm)?kg/prof.rm*100:0,ex=pct?mvTab(Math.min(100,pct)):null,mx=Math.max(...vs,0.01);
+  $('sumT').textContent='Riscaldamento completato';
+  $('sumS').textContent=(kg?kg+' kg':'')+(pct?' · '+pct.toFixed(0)+'% 1RM':'')+' · corsa '+Math.round(cal.rom*100)+' cm';
+  $('sumBars').innerHTML=vs.map(x=>'<div><i style="height:'+Math.max(4,x/mx*100)+'%"></i>'+x.toFixed(2)+'</div>').join('');
+  $('sumLN').textContent='Rep';$('sumN').textContent=ws.length;
+  $('sumLL').textContent='Corsa';$('sumL').textContent=Math.round(cal.rom*100)+' cm';
+  $('sumLB').textContent='Tua velocità';$('sumB').textContent=mv.toFixed(2)+' m/s';
+  $('sumLU').textContent='Attesa ('+(prof.sex==='F'?'donne':'uomini')+')';$('sumU').textContent=ex?ex.toFixed(2)+' m/s':'–';
+  let tip;
+  if(!ex)tip=pct?'Carico sotto il 30% del massimale: la tabella degli studi parte dal 30%.':'Inserisci il peso del riscaldamento per il confronto con gli studi.';
+  else{const d=(mv-ex)/ex*100;tip=Math.abs(d)<=7?'Velocità in linea con la media degli studi per il tuo sesso a questo carico.':d>0?'Sei più veloce della media degli studi del '+d.toFixed(0)+'%: buona giornata o massimale da aggiornare al rialzo.':'Sei più '+(prof.sex==='F'?'lenta':'lento')+' della media degli studi del '+(-d).toFixed(0)+'%: può essere stanchezza o un massimale impostato troppo alto.'}
+  $('sumTip').textContent=tip;
+  $('sumE').textContent='È solo un confronto: la perdita di velocità nelle serie si calcola sempre sulla tua rep più veloce.';
+  $('sumBars').nextElementSibling.style.display='none';
+  $('sum').hidden=false;
+}
 function saveSess(){if(!sess.length){try{localStorage.removeItem('sess')}catch(e){}return}let n=sess.length;while(n>0){try{localStorage.setItem('sess',JSON.stringify(sess.slice(-n)));return}catch(e){n=Math.floor(n/2)}}}
 function fmt(ts){return new Date(ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}
 function renderSess(){
@@ -1376,7 +1409,7 @@ function renderSess(){
 function editSet(x,a,rm){
   if(a==='kg'){const n=prompt('Peso della serie (kg)',x.kg||'');if(n===null)return false;const k=parseFloat(String(n).replace(',','.'));if(!(k>=0))return false;x.kg=Math.round(k*10)/10;x.pct=(rm||prof.rm)?+(x.kg/(rm||prof.rm)*100).toFixed(1):0;return true}
   if(a==='rep'){if(!x.reps.length)return false;const n=prompt('Quale rep eliminare? (da 1 a '+x.reps.length+')\n'+x.reps.map((r,j)=>(j+1)+': '+r.mcv.toFixed(2)+' m/s').join('\n'),String(x.reps.length));if(n===null)return false;const j=parseInt(n,10)-1;if(!(j>=0&&j<x.reps.length))return false;x.reps.splice(j,1);
-    const r0=x.reps.find(r=>!r.bad);if(r0&&x.why!=='warm')x.reps.forEach(r=>r.loss=+Math.max(0,(r0.mcv-r.mcv)/r0.mcv*100).toFixed(1));return true}
+    const ok=x.reps.filter(r=>!r.bad);if(ok.length&&x.why!=='warm'){let best=0;x.reps.forEach(r=>{const ref=best||r.mcv;r.loss=+Math.max(0,(ref-r.mcv)/ref*100).toFixed(1);if(!r.bad&&r.mcv>best)best=r.mcv})}return true}
   if(a==='del')return confirm('Eliminare questa serie?');
   return false;
 }
@@ -1429,9 +1462,13 @@ function reset(){
   if(state==='run')msg('Pronto: fai la rep','Nuova serie iniziata.');
 }
 $('btnStart').onclick=()=>start('set');$('btnWarm').onclick=()=>start('warm');$('btnSess').onclick=newSess;$('btnClose').onclick=()=>{$('sessDet').style.display='none'};renderAth();fillLoad();calcLoad();showCal();renderSess();renderWk();setInterval(drawChart,100);ovUpdate();{
-    const fed=String(prof.name||'').trim().toLowerCase()==='federico rigo';
-    if(fed){setTimeout(()=>{$('scarso').hidden=false},3100);setTimeout(()=>{$('scarso').hidden=true},5150)}
-    setTimeout(()=>{showWelcome();showResume()},fed?5250:3150);
+    splitName();
+    const fed=((prof.first||'')+' '+(prof.last||'')).trim().toLowerCase()==='federico rigo'||String(prof.name||'').trim().toLowerCase()==='federico rigo';
+    const back=!fed&&!!(prof.first&&prof.sex);
+    if(back)$('hello').innerHTML=(prof.sex==='F'?'Bentornata':'Bentornato')+'<b></b>',$('hello').querySelector('b').textContent=prof.first;
+    const el=fed?'scarso':back?'hello':null;
+    if(el){setTimeout(()=>{$(el).hidden=false},3100);setTimeout(()=>{$(el).hidden=true},5150)}
+    setTimeout(()=>{showWelcome();showResume()},el?5250:3150);
   }
 })();
 </script>

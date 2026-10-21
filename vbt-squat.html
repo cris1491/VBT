@@ -234,19 +234,19 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .ovHead span{color:#8EA2BF;font-size:13px}
 #ov .ovSq{border:0;background:#131E36;color:#C5D2E6}
 #ov .ovSq.wide{background:transparent;color:#8EA2BF}
-.ovLoad{background:#1A3A63;border-radius:20px;padding:14px 16px;align-items:stretch;gap:0}
+.ovLoad{background:#1A3A63;border-radius:20px;padding:clamp(8px,1.8vh,14px) 16px;flex:none;align-items:stretch;gap:0}
 .ovLoad .ctl{justify-content:space-between;gap:8px}
 .ovKgCol{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
-#ov .st{width:48px;height:48px;border:0;border-radius:24px;background:rgba(255,255,255,.12);color:#F2F5FA}
-#ov .kgb{border:0;border-radius:0;min-width:0;font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.1;padding:0}
+#ov .st{width:clamp(40px,7vh,48px);height:clamp(40px,7vh,48px);border:0;border-radius:24px;background:rgba(255,255,255,.12);color:#F2F5FA}
+#ov .kgb{border:0;border-radius:0;min-width:0;font-size:clamp(26px,min(10vw,5.4vh),36px);font-weight:700;letter-spacing:-.5px;line-height:1.1;padding:0}
 #ov .lnk{border:0;color:#A9C8EE;font-size:13px;font-weight:600;padding:0}
-.ovMid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:22px;grid-template-columns:none}
+.ovMid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,2.4vh,22px);grid-template-columns:none}
 .ovP{border:0;background:transparent;box-shadow:none;padding:8px 0;border-radius:16px;text-align:left}
 .ovP.bad{background:#c2192d;box-shadow:none;border:0;padding:8px 12px;margin:0 -12px}
 .ovP .lb,.rh{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF;text-transform:uppercase}
 #ovPV{text-align:center}
-#ovVal{font-size:clamp(64px,22vw,96px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:4px}
-.htrk{position:relative;flex:none;min-height:0;height:20px;border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:14px}
+#ovVal{font-size:clamp(46px,min(22vw,11.5vh),96px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:4px}
+.htrk{position:relative;flex:none;min-height:0;height:clamp(12px,2.6vh,20px);border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:clamp(8px,1.6vh,14px)}
 .htrk .fill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .zone{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
@@ -254,17 +254,17 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .vz{top:0;bottom:0;right:0;height:auto}
 .htrk .vl{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
-.repLoss{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:16px;text-align:left}
+.repLoss{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:clamp(8px,2vh,16px);text-align:left}
 .rlL{text-align:left}.rlR{text-align:right}
 #ovBars{flex:1;min-width:0;margin:0 0 8px}
-#ovRep,#ovLoss{font-size:40px;font-weight:700;line-height:1.1;margin-top:2px}
+#ovRep,#ovLoss{font-size:clamp(28px,min(10vw,5.6vh),40px);font-weight:700;line-height:1.1;margin-top:2px}
 #ovPD .rh{display:flex;justify-content:space-between;align-items:baseline}
 #ovPD .rh span{font-size:18px;font-weight:700;color:#F2F5FA;letter-spacing:0;text-transform:none}
-#ovPD .htrk{height:16px;border-radius:8px;margin-top:10px}
-.ovBot{display:flex;flex-direction:column;gap:12px;grid-template-columns:none}
+#ovPD .htrk{height:clamp(10px,2.2vh,16px);border-radius:8px;margin-top:8px}
+.ovBot{display:flex;flex-direction:column;gap:clamp(6px,1.5vh,12px);grid-template-columns:none;flex:none}
 .ovTbl{border:0;background:transparent;padding:0}
 .ovTbl .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
-.ovTbl .tw{max-height:clamp(60px,14vh,140px)}
+.ovTbl .tw{max-height:clamp(36px,8vh,140px)}
 .ovTbl th{background:#0A1222;color:#8EA2BF}
 .ovTbl td{border-top:1px solid #16233f}
 .ovTimer{border:0;background:transparent;flex-direction:row;justify-content:space-between;align-items:baseline;padding:0}
@@ -273,8 +273,35 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .ovTimer .sub{display:none}
 #ov .go{background:#4ADE80;border:0;color:#06210F;border-radius:16px}
 #ov .no{background:#3b1520;border:0;color:#ffd5da;border-radius:16px}
-#ov .ovBtns button{height:56px;padding:0}
+#ov .ovBtns button{height:clamp(46px,7.4vh,56px);padding:0}
 #ov .endbtn{background:transparent;border:0;color:#8EA2BF;font-size:14px;letter-spacing:0;text-transform:none;padding:8px}
+
+/* adattamento a schermi diversi */
+#ov>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto}
+#ovRun,#ovWarm{min-height:0}
+.ovP{flex:none}
+@media (max-height:720px){
+  #ov{gap:6px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+  #ov .logo{width:40px;height:40px}
+  .ovHead{padding-bottom:0}
+  .ovP{padding:2px 0}
+  .ovP.bad{padding:2px 12px}
+  #ovMsg{min-height:16px!important;font-size:12px!important}
+  #ov .endbtn{padding:4px}
+  .ovLoad .ctl{gap:6px}
+}
+@media (max-height:620px){
+  #ov .ovSq.wide{display:none}
+  .ovTbl .lb{display:none}
+  .ovTbl .tw{max-height:30px}
+  #ovMsg{display:none!important}
+  .ovTimer .lb,.ovTimer .tm{font-size:15px}
+  #ovBars{display:none}
+}
+@media (max-width:340px){
+  #ov{padding-left:10px;padding-right:10px}
+  .ovLoad{padding-left:10px;padding-right:10px}
+}
 </style>
 </head>
 <body>

@@ -249,7 +249,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .htrk{position:relative;flex:none;min-height:0;height:clamp(12px,2.6vh,20px);border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:clamp(8px,1.6vh,14px)}
 .htrk .fill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .zone{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
-.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
+.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px;background:#ff3b4a;box-shadow:0 0 6px #ff3b4a99}
+.htrk .lastMk{position:absolute;top:0;bottom:0;left:0;width:5px;margin-left:-2px;border-radius:2px;background:#ffd23f;box-shadow:0 0 6px #ffd23f99;display:none;pointer-events:none}
 .htrk .mk{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
 .htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .vz{top:0;bottom:0;right:0;height:auto}
@@ -592,7 +593,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
       <div class="ovP" id="ovPV">
         <div class="lb">Velocità m/s</div>
         <div class="ovBig" id="ovVal">0.00</div>
-        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
         <div class="repLoss">
           <div class="rlL"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
           <div id="ovBars"></div>
@@ -648,7 +649,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.21-a';
+const APP_VER='2026.10.21-b';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -840,6 +841,7 @@ function ovUpdate(){
   const limS=slow?limStart:lim;
   $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?prof.pct+'% 1RM':'imposta %';
   $('ovVal').textContent=val.toFixed(2);
+  const lk=$('ovLast');if(lr&&lr.mcv>0){lk.style.display='block';lk.style.left=Math.min(100,lr.mcv/SM*100)+'%'}else lk.style.display='none';
   const mk=$('ovMk');mk.style.display=seg?'block':'none';mk.style.left=Math.min(100,Math.max(0,v)/SM*100)+'%';
   const f=$('ovFill');f.style.width=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
@@ -935,6 +937,10 @@ $('wGo').onclick=()=>{
 $('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
 setInterval(ovUpdate,50);
+function relayout(){const o=$('ov');if(!o)return;o.style.display='none';void o.offsetHeight;o.style.display='';ovUpdate()}
+['resize','orientationchange','pageshow'].forEach(e=>window.addEventListener(e,()=>{relayout();setTimeout(relayout,250)}));
+try{if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>relayout())}catch(e){}
+[300,1200,3300].forEach(t=>setTimeout(relayout,t));
 
 /* Guide: cos'è la VBT / come funziona l'app */
 const G_WHAT=`
@@ -979,7 +985,7 @@ const G_HOW=`
 </ol>
 <h3>5 · Leggere lo schermo</h3>
 <ul>
-<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
+<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la barretta gialla la velocità media dell'ultima rep (resta visibile), la riga rossa il limite sotto cui la rep è troppo lenta.</li>
 <li><b>Rep</b> a sinistra: ripetizioni della serie; <b>Perdita</b> a destra: calo di velocità.</li>
 <li><b>Barra corsa</b>: si riempie da sinistra in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi.</li>
 <li><b>Allenamento</b>: serie, peso e rep dell'allenamento attuale. <b>Recupero</b>: tempo dalla fine dell'ultima serie.</li>

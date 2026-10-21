@@ -277,11 +277,23 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 #ov .ovBtns button{height:clamp(46px,7.4vh,56px);padding:0}
 #ov .endbtn{background:transparent;border:0;color:#8EA2BF;font-size:14px;letter-spacing:0;text-transform:none;padding:8px}
 
+/* spaziature uniformi (2026.10.21-c) */
+.ovMid{justify-content:space-evenly;min-height:min-content;gap:12px;padding:6px 0}
+.ovBot{margin-top:4px}
+.ovBot .ovTbl .lb{margin-bottom:2px}
+#ovMsg:empty{display:none}
 /* adattamento a schermi diversi */
 #ov>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto}
 #ovRun,#ovWarm{min-height:0}
 .ovP{flex:none}
 @media (max-height:720px){
+  #ov{gap:8px}
+  #ovVal{font-size:clamp(44px,min(20vw,9vh),84px);letter-spacing:-2px}
+  .htrk{margin-top:8px}
+  .repLoss{margin-top:8px}
+  #ovRep,#ovLoss{font-size:clamp(26px,5.2vh,36px)}
+  .ovMid{gap:10px;padding:4px 0}
+  .ovLoad{padding:8px 14px}
   #ov{gap:6px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
   #ov .logo{width:40px;height:40px}
   .ovHead{padding-bottom:0}
@@ -292,9 +304,15 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   .ovLoad .ctl{gap:6px}
 }
 @media (max-height:620px){
+  .ovMid{gap:4px;padding:0}
+  #ovVal{font-size:clamp(38px,8vh,52px);letter-spacing:-1px}
+  .repLoss,.htrk{margin-top:4px}
+  #ovRep,#ovLoss{font-size:24px}
+  .ovTbl .tw{max-height:50px}
+  .ovLoad{padding:6px 12px}
   #ov .ovSq.wide{display:none}
   .ovTbl .lb{display:none}
-  .ovTbl .tw{max-height:30px}
+  .ovTbl .tw{max-height:52px}
   #ovMsg{display:none!important}
   .ovTimer .lb,.ovTimer .tm{font-size:15px}
   #ovBars{display:none}
@@ -649,7 +667,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.21-b';
+const APP_VER='2026.10.21-c';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}

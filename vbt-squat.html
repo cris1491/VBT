@@ -72,7 +72,7 @@ body.alarm #ov{background:linear-gradient(#8b1020,#4a0810)}
 .ovLoad .ctl{display:flex;align-items:center;gap:16px}
 #ov .st{width:46px;height:46px;padding:0;font-size:26px;border-radius:12px;background:#0d3a5c;border:1px solid #2a8fc0;color:#eaf6ff}
 #ov .kgb{white-space:nowrap;min-width:110px;font-size:28px;font-weight:800;background:none;color:#eaf6ff;border:0;border-bottom:2px dashed #19c3e6;border-radius:0;padding:0 6px}
-.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:10px}
+.ovMid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ovP{display:flex;flex-direction:column;min-height:0;border:1px solid #2a8fc0;border-radius:16px;background:#0a2d4acc;padding:10px;text-align:center}
 .ovP .lb{font-size:13px;color:#9fd3ef;text-transform:uppercase;letter-spacing:.03em}
 .ovBig{font-size:clamp(34px,10vw,56px);font-weight:800;line-height:1.05}
@@ -140,9 +140,8 @@ body{overflow:hidden}
 .vside .ovBig{font-size:clamp(28px,8vw,40px)}
 #ovThr{display:none}
 #ov .ovSq.gearBtn{width:52px;height:52px;padding:0;border-radius:14px;display:flex;align-items:center;justify-content:center}
-.ovBot{display:grid;grid-template-columns:1.618fr 1fr;gap:10px;flex:1 1 0;min-height:0}
-.ovBot .ovTbl{min-width:0;display:flex;flex-direction:column;min-height:0}.ovBot .ovTbl .tw{flex:1;min-height:0;max-height:none}
-@media (orientation:portrait){.ovMid{flex:1.618 1 0}.ovBot{flex:1 1 0;min-height:0}}
+.ovBot{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 auto}
+.ovBot .ovTbl{min-width:0}
 .ovTbl td,.ovTbl th{padding:2px 2px}
 .ovTbl table{font-size:13px}
 .ovTimer{border:1px solid #2a8fc0;border-radius:14px;background:#0a2d4acc;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;min-width:0}
@@ -166,8 +165,7 @@ body{overflow:hidden}
 .ovRep{font-size:clamp(34px,10.5vw,64px);white-space:nowrap}
 .ovS{font-size:13px;line-height:1.55}
 .ovS b{font-size:15px}
-#ovMsg{font-size:12.5px!important;min-height:0!important;line-height:1.25;display:flex;align-items:center;justify-content:center}#ovMsg:empty{display:none}
-#ovRun .ovBtns{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr);gap:10px}
+#ovMsg{font-size:12.5px!important;min-height:32px!important;display:flex;align-items:center;justify-content:center}
 #ov .ovBtns button{font-size:16px;padding:13px}
 #ov .ovClose{padding:10px;font-size:14px}
 .ovP{padding:10px 8px}
@@ -229,7 +227,54 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .info p{margin:0 0 6px;font-size:14px}
 .info td:last-child,.info th:last-child{text-align:left}
 .wkA{width:auto;padding:5px 8px;font-size:12px;margin:1px}
-@media (max-width:360px){.ph{gap:6px}.ph .trk{width:34px}.bx{width:42px;height:42px;font-size:8px}.bx i{font-size:18px}.rh{font-size:11px}.rs{font-size:11px}#ov .ovBtns button{font-size:14px;padding:12px 6px}.ovP.vp{gap:8px}.ovP.vp .vtrk{width:24px}#ovLimTxt{font-size:15px!important}}
+
+/* redesign 2026.10.21: niente riquadri, barre orizzontali */
+#ov{background:#0A1222}
+.ovHead{border-bottom:0}
+.ovHead span{color:#8EA2BF;font-size:13px}
+#ov .ovSq{border:0;background:#131E36;color:#C5D2E6}
+#ov .ovSq.wide{background:transparent;color:#8EA2BF}
+.ovLoad{background:#1A3A63;border-radius:20px;padding:14px 16px;align-items:stretch;gap:0}
+.ovLoad .ctl{justify-content:space-between;gap:8px}
+.ovKgCol{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+#ov .st{width:48px;height:48px;border:0;border-radius:24px;background:rgba(255,255,255,.12);color:#F2F5FA}
+#ov .kgb{border:0;border-radius:0;min-width:0;font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.1;padding:0}
+#ov .lnk{border:0;color:#A9C8EE;font-size:13px;font-weight:600;padding:0}
+.ovMid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:22px;grid-template-columns:none}
+.ovP{border:0;background:transparent;box-shadow:none;padding:8px 0;border-radius:16px;text-align:left}
+.ovP.bad{background:#c2192d;box-shadow:none;border:0;padding:8px 12px;margin:0 -12px}
+.ovP .lb,.rh{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF;text-transform:uppercase}
+#ovPV{text-align:center}
+#ovVal{font-size:clamp(64px,22vw,96px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:4px}
+.htrk{position:relative;flex:none;min-height:0;height:20px;border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:14px}
+.htrk .fill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
+.htrk .zone{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
+.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
+.htrk .mk{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
+.htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
+.htrk .vz{top:0;bottom:0;right:0;height:auto}
+.htrk .vl{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
+.repLoss{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:16px;text-align:left}
+.rlL{text-align:left}.rlR{text-align:right}
+#ovBars{flex:1;min-width:0;margin:0 0 8px}
+#ovRep,#ovLoss{font-size:40px;font-weight:700;line-height:1.1;margin-top:2px}
+#ovPD .rh{display:flex;justify-content:space-between;align-items:baseline}
+#ovPD .rh span{font-size:18px;font-weight:700;color:#F2F5FA;letter-spacing:0;text-transform:none}
+#ovPD .htrk{height:16px;border-radius:8px;margin-top:10px}
+.ovBot{display:flex;flex-direction:column;gap:12px;grid-template-columns:none}
+.ovTbl{border:0;background:transparent;padding:0}
+.ovTbl .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
+.ovTbl .tw{max-height:clamp(60px,14vh,140px)}
+.ovTbl th{background:#0A1222;color:#8EA2BF}
+.ovTbl td{border-top:1px solid #16233f}
+.ovTimer{border:0;background:transparent;flex-direction:row;justify-content:space-between;align-items:baseline;padding:0}
+.ovTimer .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
+.ovTimer .tm{font-size:20px;font-weight:700;line-height:1.2}
+.ovTimer .sub{display:none}
+#ov .go{background:#4ADE80;border:0;color:#06210F;border-radius:16px}
+#ov .no{background:#3b1520;border:0;color:#ffd5da;border-radius:16px}
+#ov .ovBtns button{height:56px;padding:0}
+#ov .endbtn{background:transparent;border:0;color:#8EA2BF;font-size:14px;letter-spacing:0;text-transform:none;padding:8px}
 </style>
 </head>
 <body>
@@ -507,31 +552,31 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 
   <div id="ovRun" hidden>
     <div class="ovLoad">
-      <div class="lb2"><span>CARICO IN USO</span> <button class="lnk" id="ovPct"></button></div>
       <div class="ctl">
         <button class="st" id="ovMinus" aria-label="Meno 2,5 kg">−</button>
-        <button class="kgb" id="ovKg" aria-label="Modifica peso"></button>
+        <div class="ovKgCol">
+          <button class="kgb" id="ovKg" aria-label="Modifica peso"></button>
+          <button class="lnk" id="ovPct"></button>
+        </div>
         <button class="st" id="ovPlus" aria-label="Più 2,5 kg">+</button>
       </div>
     </div>
     <div class="ovMid">
-      <div class="ovP vp" id="ovPV">
-        <div class="trk vtrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
-        <div class="vside">
-          <div><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
-          <div class="lb" style="color:#ffd23f">Limite<span class="lg"> rep lenta</span><br><b id="ovLimTxt"></b></div>
-          <div><div class="lb">N. rep</div><div class="repRow"><div class="ovBig" id="ovRep">0</div><div id="ovBars"></div></div></div>
-          <div class="lb">Perdita <b id="ovLoss">0%</b> <span id="ovThr"></span></div>
+      <div class="ovP" id="ovPV">
+        <div class="lb">Velocità m/s</div>
+        <div class="ovBig" id="ovVal">0.00</div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
+        <div class="repLoss">
+          <div class="rlL"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
+          <div id="ovBars"></div>
+          <div class="rlR"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
         </div>
       </div>
       <div class="ovP" id="ovPD">
         <div class="rh"><b>Corsa</b><span id="ovRom"></span></div>
-        <div class="rs">valida oltre <b id="ovMin"></b></div>
-        <div class="ph">
-          <div class="trk"><div class="vz" id="ovVz"></div><div class="dfill" id="ovDf"></div><div class="vl" id="ovVl"><span id="ovVlTxt"></span></div><span class="endl">100%</span></div>
-          <div class="bxs"><div class="bx dn" id="ovDn"><i>↓</i>Discesa</div><div class="bx" id="ovUp"><i>↑</i>Risalita</div></div>
-        </div>
+        <div class="trk htrk"><div class="vz" id="ovVz"></div><div class="dfill" id="ovDf"></div><div class="vl" id="ovVl"></div></div>
       </div>
+      <div hidden><span id="ovLimTxt"></span><span id="ovThr"></span><span id="ovMin"></span><span id="ovVlTxt"></span><i id="ovDn"></i><i id="ovUp"></i></div>
     </div>
     <div class="ovBot">
       <div class="ovTbl">
@@ -544,7 +589,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
         <div class="sub" id="ovTimerSub">dalla fine serie</div>
       </div>
     </div>
-    <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef"></div>
+    <div id="ovMsg" style="text-align:center;font-size:14px;color:#9fd3ef;min-height:20px"></div>
     <div class="ovBtns"><button class="go" id="ovStart">Avvia serie</button><button class="no" id="ovStop">Fine serie</button></div>
     <button class="endbtn" id="ovEnd">Termina e salva sessione</button>
   </div>
@@ -576,7 +621,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.20-e';
+const APP_VER='2026.10.21-a';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -766,17 +811,17 @@ function ovUpdate(){
   if(seg&&!segWas)limStart=ref?lim:0;segWas=!!seg;
   const slow=!seg&&!!lr&&reps.length>1&&limStart>0&&lr.mcv<limStart-1e-6;
   const limS=slow?limStart:lim;
-  $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?'('+prof.pct+'% 1RM)':'(imposta %)';
+  $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?prof.pct+'% 1RM':'imposta %';
   $('ovVal').textContent=val.toFixed(2);
-  const mk=$('ovMk');mk.style.display=seg?'block':'none';mk.style.bottom=Math.min(100,Math.max(0,v)/SM*100)+'%';
-  const f=$('ovFill');f.style.height=Math.min(100,val/SM*100)+'%';
+  const mk=$('ovMk');mk.style.display=seg?'block':'none';mk.style.left=Math.min(100,Math.max(0,v)/SM*100)+'%';
+  const f=$('ovFill');f.style.width=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
   const lp=Math.min(100,limS/SM*100)+'%';
-  $('ovZone').style.height=ref?lp:'0%';$('ovLim').style.bottom=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo 1ª rep';
+  $('ovZone').style.width=ref?lp:'0%';$('ovLim').style.left=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo la 1ª rep';
   const mn=(+$('minrom').value)/100,df=Math.max(0,Math.min(1.1,R?dpt/R:0));
-  $('ovDf').style.height=Math.min(100,df*100)+'%';
+  $('ovDf').style.width=Math.min(100,df*100)+'%';
   $('ovDf').style.background=df>=mn?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#27e0f0,#1470e0)';
-  $('ovVl').style.top=(mn*100)+'%';$('ovVz').style.top=(mn*100)+'%';
+  $('ovVl').style.left=(mn*100)+'%';$('ovVz').style.left=(mn*100)+'%';
   const sp=$('ovVlTxt');sp.textContent=Math.round(mn*100)+'%';sp.style.top=mn>0.8?'auto':'3px';sp.style.bottom=mn>0.8?'3px':'auto';
   $('ovMin').textContent=Math.round(mn*100)+'%';
   $('ovDn').classList.toggle('on',run&&v<-0.05);$('ovUp').classList.toggle('on',run&&v>0.05);
@@ -908,9 +953,9 @@ const G_HOW=`
 <h3>5 · Leggere lo schermo</h3>
 <ul>
 <li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
-<li><b>N. rep</b>: ripetizioni della serie; sotto, la perdita di velocità.</li>
-<li><b>Barra corsa</b>: parte dall'alto e si riempie in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi. I quadrati Discesa e Risalita si illuminano in base al movimento.</li>
-<li><b>Tabella</b> (sotto la velocità): serie, peso e rep dell'allenamento attuale. <b>Recupero</b> (sotto la corsa): tempo dalla fine dell'ultima serie.</li>
+<li><b>Rep</b> a sinistra: ripetizioni della serie; <b>Perdita</b> a destra: calo di velocità.</li>
+<li><b>Barra corsa</b>: si riempie da sinistra in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi.</li>
+<li><b>Allenamento</b>: serie, peso e rep dell'allenamento attuale. <b>Recupero</b>: tempo dalla fine dell'ultima serie.</li>
 </ul>
 <h3>6 · Suoni e colori</h3>
 <ul>

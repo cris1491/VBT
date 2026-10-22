@@ -249,8 +249,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .htrk{position:relative;flex:none;min-height:0;height:clamp(12px,2.6vh,20px);border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:clamp(8px,1.6vh,14px)}
 .htrk .fill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .zone{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
-.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px;background:#ff3b4a;box-shadow:0 0 6px #ff3b4a99}
-.htrk .lastMk{position:absolute;top:0;bottom:0;left:0;width:5px;margin-left:-2px;border-radius:2px;background:#ffd23f;box-shadow:0 0 6px #ffd23f99;display:none;pointer-events:none}
+.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
 .htrk .mk{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
 .htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .vz{top:0;bottom:0;right:0;height:auto}
@@ -265,7 +264,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .ovBot{display:flex;flex-direction:column;gap:clamp(6px,1.5vh,12px);grid-template-columns:none;flex:none}
 .ovTbl{border:0;background:transparent;padding:0}
 .ovTbl .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
-.ovTbl .tw{max-height:clamp(36px,8vh,140px)}
+.ovTbl .tw{max-height:none;flex:1;min-height:0}
 .ovTbl th{background:#0A1222;color:#8EA2BF}
 .ovTbl td{border-top:1px solid #16233f}
 .ovTimer{border:0;background:transparent;flex-direction:row;justify-content:space-between;align-items:baseline;padding:0}
@@ -277,23 +276,11 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 #ov .ovBtns button{height:clamp(46px,7.4vh,56px);padding:0}
 #ov .endbtn{background:transparent;border:0;color:#8EA2BF;font-size:14px;letter-spacing:0;text-transform:none;padding:8px}
 
-/* spaziature uniformi (2026.10.21-c) */
-.ovMid{justify-content:space-evenly;min-height:min-content;gap:12px;padding:6px 0}
-.ovBot{margin-top:4px}
-.ovBot .ovTbl .lb{margin-bottom:2px}
-#ovMsg:empty{display:none}
 /* adattamento a schermi diversi */
 #ov>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto}
 #ovRun,#ovWarm{min-height:0}
 .ovP{flex:none}
 @media (max-height:720px){
-  #ov{gap:8px}
-  #ovVal{font-size:clamp(44px,min(20vw,9vh),84px);letter-spacing:-2px}
-  .htrk{margin-top:8px}
-  .repLoss{margin-top:8px}
-  #ovRep,#ovLoss{font-size:clamp(26px,5.2vh,36px)}
-  .ovMid{gap:10px;padding:4px 0}
-  .ovLoad{padding:8px 14px}
   #ov{gap:6px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
   #ov .logo{width:40px;height:40px}
   .ovHead{padding-bottom:0}
@@ -304,15 +291,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   .ovLoad .ctl{gap:6px}
 }
 @media (max-height:620px){
-  .ovMid{gap:4px;padding:0}
-  #ovVal{font-size:clamp(38px,8vh,52px);letter-spacing:-1px}
-  .repLoss,.htrk{margin-top:4px}
-  #ovRep,#ovLoss{font-size:24px}
-  .ovTbl .tw{max-height:50px}
-  .ovLoad{padding:6px 12px}
   #ov .ovSq.wide{display:none}
   .ovTbl .lb{display:none}
-  .ovTbl .tw{max-height:52px}
   #ovMsg{display:none!important}
   .ovTimer .lb,.ovTimer .tm{font-size:15px}
   #ovBars{display:none}
@@ -321,6 +301,22 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   #ov{padding-left:10px;padding-right:10px}
   .ovLoad{padding-left:10px;padding-right:10px}
 }
+
+/* velocità, rep e perdita sopra la barra; tabella più grande */
+#ovPV{text-align:left}
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.vc{display:flex;flex-direction:column;min-width:0}
+.vc.vr{text-align:right;align-items:flex-end}
+#ovVal{font-size:clamp(40px,min(15vw,8vh),64px);letter-spacing:-2px;margin-top:2px}
+#ovRep,#ovLoss{font-size:clamp(26px,min(8vw,4.6vh),36px);margin-top:2px}
+#ovBars{flex:1;min-width:0;height:clamp(24px,4.5vh,36px);margin:0 0 6px}
+.vhead .htrk{margin-top:0}
+.ovMid{flex:none;justify-content:flex-start;gap:clamp(10px,2.2vh,18px)}
+.ovBot{flex:1;min-height:0}
+.ovTbl{flex:1;min-height:0;display:flex;flex-direction:column}
+.ovTbl table{font-size:15px}
+.ovTbl td{padding:5px 2px}
+@media (max-width:360px){#ovBars{display:none}}
 </style>
 </head>
 <body>
@@ -609,14 +605,13 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     </div>
     <div class="ovMid">
       <div class="ovP" id="ovPV">
-        <div class="lb">Velocità m/s</div>
-        <div class="ovBig" id="ovVal">0.00</div>
-        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
-        <div class="repLoss">
-          <div class="rlL"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
+        <div class="vhead">
+          <div class="vc"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
           <div id="ovBars"></div>
-          <div class="rlR"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
+          <div class="vc"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
+          <div class="vc vr"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
         </div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
       </div>
       <div class="ovP" id="ovPD">
         <div class="rh"><b>Corsa</b><span id="ovRom"></span></div>
@@ -667,7 +662,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.21-c';
+const APP_VER='2026.10.22-a';
 const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
@@ -859,7 +854,6 @@ function ovUpdate(){
   const limS=slow?limStart:lim;
   $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?prof.pct+'% 1RM':'imposta %';
   $('ovVal').textContent=val.toFixed(2);
-  const lk=$('ovLast');if(lr&&lr.mcv>0){lk.style.display='block';lk.style.left=Math.min(100,lr.mcv/SM*100)+'%'}else lk.style.display='none';
   const mk=$('ovMk');mk.style.display=seg?'block':'none';mk.style.left=Math.min(100,Math.max(0,v)/SM*100)+'%';
   const f=$('ovFill');f.style.width=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
@@ -955,10 +949,6 @@ $('wGo').onclick=()=>{
 $('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
 setInterval(ovUpdate,50);
-function relayout(){const o=$('ov');if(!o)return;o.style.display='none';void o.offsetHeight;o.style.display='';ovUpdate()}
-['resize','orientationchange','pageshow'].forEach(e=>window.addEventListener(e,()=>{relayout();setTimeout(relayout,250)}));
-try{if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>relayout())}catch(e){}
-[300,1200,3300].forEach(t=>setTimeout(relayout,t));
 
 /* Guide: cos'è la VBT / come funziona l'app */
 const G_WHAT=`
@@ -1003,7 +993,7 @@ const G_HOW=`
 </ol>
 <h3>5 · Leggere lo schermo</h3>
 <ul>
-<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la barretta gialla la velocità media dell'ultima rep (resta visibile), la riga rossa il limite sotto cui la rep è troppo lenta.</li>
+<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
 <li><b>Rep</b> a sinistra: ripetizioni della serie; <b>Perdita</b> a destra: calo di velocità.</li>
 <li><b>Barra corsa</b>: si riempie da sinistra in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi.</li>
 <li><b>Allenamento</b>: serie, peso e rep dell'allenamento attuale. <b>Recupero</b>: tempo dalla fine dell'ultima serie.</li>

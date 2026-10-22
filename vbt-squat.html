@@ -249,7 +249,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .htrk{position:relative;flex:none;min-height:0;height:clamp(12px,2.6vh,20px);border:0;border-radius:10px;background:#131E36;overflow:hidden;margin-top:clamp(8px,1.6vh,14px)}
 .htrk .fill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .zone{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
-.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
+.htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px;background:#ff3b4a;box-shadow:0 0 6px #ff3b4a99}
+.htrk .lastMk{position:absolute;top:0;bottom:0;left:0;width:5px;margin-left:-2px;border-radius:2px;background:#ffd23f;box-shadow:0 0 6px #ffd23f99;display:none;pointer-events:none}
 .htrk .mk{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
 .htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
 .htrk .vz{top:0;bottom:0;right:0;height:auto}
@@ -264,7 +265,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .ovBot{display:flex;flex-direction:column;gap:clamp(6px,1.5vh,12px);grid-template-columns:none;flex:none}
 .ovTbl{border:0;background:transparent;padding:0}
 .ovTbl .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
-.ovTbl .tw{max-height:none;flex:1;min-height:0}
+.ovTbl .tw{max-height:clamp(36px,8vh,140px)}
 .ovTbl th{background:#0A1222;color:#8EA2BF}
 .ovTbl td{border-top:1px solid #16233f}
 .ovTimer{border:0;background:transparent;flex-direction:row;justify-content:space-between;align-items:baseline;padding:0}
@@ -276,11 +277,23 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 #ov .ovBtns button{height:clamp(46px,7.4vh,56px);padding:0}
 #ov .endbtn{background:transparent;border:0;color:#8EA2BF;font-size:14px;letter-spacing:0;text-transform:none;padding:8px}
 
+/* spaziature uniformi (2026.10.21-c) */
+.ovMid{justify-content:space-evenly;min-height:min-content;gap:12px;padding:6px 0}
+.ovBot{margin-top:4px}
+.ovBot .ovTbl .lb{margin-bottom:2px}
+#ovMsg:empty{display:none}
 /* adattamento a schermi diversi */
 #ov>*{width:100%;max-width:560px;margin-left:auto;margin-right:auto}
 #ovRun,#ovWarm{min-height:0}
 .ovP{flex:none}
 @media (max-height:720px){
+  #ov{gap:8px}
+  #ovVal{font-size:clamp(44px,min(20vw,9vh),84px);letter-spacing:-2px}
+  .htrk{margin-top:8px}
+  .repLoss{margin-top:8px}
+  #ovRep,#ovLoss{font-size:clamp(26px,5.2vh,36px)}
+  .ovMid{gap:10px;padding:4px 0}
+  .ovLoad{padding:8px 14px}
   #ov{gap:6px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
   #ov .logo{width:40px;height:40px}
   .ovHead{padding-bottom:0}
@@ -291,8 +304,15 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   .ovLoad .ctl{gap:6px}
 }
 @media (max-height:620px){
+  .ovMid{gap:4px;padding:0}
+  #ovVal{font-size:clamp(38px,8vh,52px);letter-spacing:-1px}
+  .repLoss,.htrk{margin-top:4px}
+  #ovRep,#ovLoss{font-size:24px}
+  .ovTbl .tw{max-height:50px}
+  .ovLoad{padding:6px 12px}
   #ov .ovSq.wide{display:none}
   .ovTbl .lb{display:none}
+  .ovTbl .tw{max-height:52px}
   #ovMsg{display:none!important}
   .ovTimer .lb,.ovTimer .tm{font-size:15px}
   #ovBars{display:none}
@@ -301,22 +321,6 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   #ov{padding-left:10px;padding-right:10px}
   .ovLoad{padding-left:10px;padding-right:10px}
 }
-
-/* velocità, rep e perdita sopra la barra; tabella più grande */
-#ovPV{text-align:left}
-.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
-.vc{display:flex;flex-direction:column;min-width:0}
-.vc.vr{text-align:right;align-items:flex-end}
-#ovVal{font-size:clamp(40px,min(15vw,8vh),64px);letter-spacing:-2px;margin-top:2px}
-#ovRep,#ovLoss{font-size:clamp(26px,min(8vw,4.6vh),36px);margin-top:2px}
-#ovBars{flex:1;min-width:0;height:clamp(24px,4.5vh,36px);margin:0 0 6px}
-.vhead .htrk{margin-top:0}
-.ovMid{flex:none;justify-content:flex-start;gap:clamp(10px,2.2vh,18px)}
-.ovBot{flex:1;min-height:0}
-.ovTbl{flex:1;min-height:0;display:flex;flex-direction:column}
-.ovTbl table{font-size:15px}
-.ovTbl td{padding:5px 2px}
-@media (max-width:360px){#ovBars{display:none}}
 </style>
 </head>
 <body>
@@ -605,13 +609,14 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     </div>
     <div class="ovMid">
       <div class="ovP" id="ovPV">
-        <div class="vhead">
-          <div class="vc"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
+        <div class="lb">Velocità m/s</div>
+        <div class="ovBig" id="ovVal">0.00</div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
+        <div class="repLoss">
+          <div class="rlL"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
           <div id="ovBars"></div>
-          <div class="vc"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
-          <div class="vc vr"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
+          <div class="rlR"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
         </div>
-        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="mk" id="ovMk"></div></div>
       </div>
       <div class="ovP" id="ovPD">
         <div class="rh"><b>Corsa</b><span id="ovRom"></span></div>
@@ -662,8 +667,9 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.22-a';
-const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
+const APP_VER='2026.10.22-d';
+const MCV_TRIM=0.15;   /* si scartano i primi 150 ms della salita: il cambio di direzione non è velocità della rep */function smcv(s){return s.n2>2?s.s2/s.n2:(s.n?s.sum/s.n:0)}
+const DESC_MAX=1.3;   /* discesa massima plausibile (m): le rep lente/pesanti, con spostamento stimato in eccesso, non vanno scartate */const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
 let badVel=false,badDep=false,dpt=0,topLock=true,tLo=0,ats=[],cur='',wk=[],prof;
@@ -841,19 +847,21 @@ $('ovPlus').onclick=()=>setKg((prof.kg||0)+2.5);
 $('ovKg').onclick=()=>{if(!ovEditable())return;const n=prompt('Peso sul bilanciere (kg)',prof.kg||'');if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(k>0)setKg(k)};
 let barKey='',tbKey='',limStart=0,segWas=false,restStart=+(localStorage.getItem('restStart')||0);
 function ovUpdate(){
-  const run=state==='run',lr=reps[reps.length-1];
+  const run=state==='run',warming=!cal&&mode==='warm'&&state!=='off',lr=warming?(warm.length?{mcv:warm[warm.length-1].mcv,loss:0}:undefined):reps[reps.length-1];
+  $('ovWarm').hidden=!!cal||warming;$('ovRun').hidden=!cal&&!warming;
   $('ovAth').textContent=prof.first||prof.name||'Atleta';$('ovRm').textContent='1RM '+(prof.rm||0)+' kg';
   $('ovStart').disabled=state!=='off';$('ovStop').disabled=state==='off';
   $('wStart').disabled=state!=='off';$('wStop').disabled=state==='off';
-  if(!cal){$('wCount').textContent=warm.length+' / '+WARM_N;return}
-  const R=cal.rom,thr=+$('thr').value,SM=1.2;
-  const ref=lossRef()||0;
+  if(!cal&&!warming){$('wCount').textContent=warm.length+' / '+WARM_N;return}
+  const R=cal?cal.rom:0.45,thr=+$('thr').value,SM=1.2;
+  const ref=warming?0:(lossRef()||0);
   const lim=ref*(1-thr/100),val=(seg&&seg.n)?seg.sum/seg.n:(lr?lr.mcv:0);
   if(seg&&!segWas)limStart=ref?lim:0;segWas=!!seg;
   const slow=!seg&&!!lr&&reps.length>1&&limStart>0&&lr.mcv<limStart-1e-6;
   const limS=slow?limStart:lim;
-  $('ovKg').textContent=(prof.kg||0)+' kg';$('ovPct').textContent=prof.pct?prof.pct+'% 1RM':'imposta %';
+  $('ovKg').textContent=(warming?(+String($('wKg').value).replace(',','.')||prof.kg||0):(prof.kg||0))+' kg';$('ovPct').textContent=warming?'riscaldamento':(prof.pct?prof.pct+'% 1RM':'imposta %');
   $('ovVal').textContent=val.toFixed(2);
+  const lk=$('ovLast');if(lr&&lr.mcv>0){lk.style.display='block';lk.style.left=Math.min(100,lr.mcv/SM*100)+'%'}else lk.style.display='none';
   const mk=$('ovMk');mk.style.display=seg?'block':'none';mk.style.left=Math.min(100,Math.max(0,v)/SM*100)+'%';
   const f=$('ovFill');f.style.width=Math.min(100,val/SM*100)+'%';
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
@@ -866,29 +874,30 @@ function ovUpdate(){
   const sp=$('ovVlTxt');sp.textContent=Math.round(mn*100)+'%';sp.style.top=mn>0.8?'auto':'3px';sp.style.bottom=mn>0.8?'3px':'auto';
   $('ovMin').textContent=Math.round(mn*100)+'%';
   $('ovDn').classList.toggle('on',run&&v<-0.05);$('ovUp').classList.toggle('on',run&&v>0.05);
-  $('ovRom').textContent=Math.round(R*100)+' cm';
-  $('ovRep').textContent=reps.length;
+  $('ovRom').textContent=warming?'da misurare':Math.round(R*100)+' cm';
+  $('ovRep').textContent=warming?warm.length+'/'+WARM_N:reps.length;
   const loss=lr?Math.max(0,lr.loss):0;
   $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=loss>=thr?'#ff7a86':'';
   $('ovThr').textContent='(max '+thr+'%)';
   const ed=ovEditable();$('ovMinus').disabled=!ed;$('ovPlus').disabled=!ed;$('ovKg').disabled=!ed;$('ovPct').disabled=!ed;
   $('ovEnd').disabled=state!=='off';
   {let tt='0:00',sub='dalla fine serie';
-   if(state!=='off'){tt='IN SERIE';sub=''}
+   if(state!=='off'){tt=warming?'RISCALDAMENTO':'IN SERIE';sub=''}
    else if(restStart){const s=Math.max(0,Math.floor((Date.now()-restStart)/1000));tt=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
    else sub='parte alla fine serie';
    $('ovTimer').textContent=tt;$('ovTimerSub').textContent=sub}
   $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep&&depOn());
-  const bk=reps.map(r=>r.mcv.toFixed(2)+(r.bad||'')).join();
-  if(bk!==barKey){barKey=bk;const mx=Math.max(0.01,...reps.map(r=>r.mcv));$('ovBars').innerHTML=reps.slice(-14).map(r=>'<i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(12,r.mcv/mx*100)+'%"></i>').join('')}
+  const RR=warming?warm.map(w=>({mcv:w.mcv,bad:''})):reps;
+  const bk=RR.map(r=>r.mcv.toFixed(2)+(r.bad||'')).join();
+  if(bk!==barKey){barKey=bk;const mx=Math.max(0.01,...RR.map(r=>r.mcv));$('ovBars').innerHTML=RR.slice(-14).map(r=>'<i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(12,r.mcv/mx*100)+'%"></i>').join('')}
   /* tabella dell'allenamento di oggi */
   const rows=sess.map(s=>[s.kg||0,s.reps.length,s.why==='warm',s.reps.filter(r=>r.bad).length]);
-  const live=state!=='off'?[prof.kg||0,reps.length]:null;
+  const live=state!=='off'?[warming?(+String($('wKg').value).replace(',','.')||prof.kg||0):(prof.kg||0),warming?warm.length:reps.length]:null;
   const key=JSON.stringify([rows,live]);
   if(key!==tbKey){
     tbKey=key;
     let k=0,h=rows.map(r=>'<tr><td>'+(r[2]?'Risc.':++k)+'</td><td>'+r[0]+'</td><td>'+r[1]+(r[3]?'<span class="bdN">'+r[3]+'✕</span>':'')+'</td></tr>').join('');
-    if(live)h+='<tr class="live"><td>'+(k+1)+'</td><td>'+live[0]+'</td><td>'+live[1]+'</td></tr>';
+    if(live)h+='<tr class="live"><td>'+(warming?'Risc.':k+1)+'</td><td>'+live[0]+'</td><td>'+live[1]+'</td></tr>';
     if(!h)h='<tr><td colspan="3" style="color:#7fb2d0">Nessuna serie ancora</td></tr>';
     $('ovTb').innerHTML=h;$('ovTw').scrollTop=$('ovTw').scrollHeight;
   }
@@ -949,6 +958,10 @@ $('wGo').onclick=()=>{
 $('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
 setInterval(ovUpdate,50);
+function relayout(){const o=$('ov');if(!o)return;o.style.display='none';void o.offsetHeight;o.style.display='';ovUpdate()}
+['resize','orientationchange','pageshow'].forEach(e=>window.addEventListener(e,()=>{relayout();setTimeout(relayout,250)}));
+try{if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>relayout())}catch(e){}
+[300,1200,3300].forEach(t=>setTimeout(relayout,t));
 
 /* Guide: cos'è la VBT / come funziona l'app */
 const G_WHAT=`
@@ -993,7 +1006,7 @@ const G_HOW=`
 </ol>
 <h3>5 · Leggere lo schermo</h3>
 <ul>
-<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la riga gialla il limite sotto cui la rep è troppo lenta.</li>
+<li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la barretta gialla la velocità media dell'ultima rep (resta visibile), la riga rossa il limite sotto cui la rep è troppo lenta.</li>
 <li><b>Rep</b> a sinistra: ripetizioni della serie; <b>Perdita</b> a destra: calo di velocità.</li>
 <li><b>Barra corsa</b>: si riempie da sinistra in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi.</li>
 <li><b>Allenamento</b>: serie, peso e rep dell'allenamento attuale. <b>Recupero</b>: tempo dalla fine dell'ultima serie.</li>
@@ -1285,6 +1298,7 @@ async function start(m){
   if(m==='set'){reps=[];badVel=false;badDep=false;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
   calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
   window.addEventListener('devicemotion',onMotion);
+  try{ovUpdate()}catch(e){}
   (m==='warm'?$('btnWarm'):$('btnStart')).textContent='Ferma';
   msg('Calibrazione…','Tieni il bilanciere fermo per 2 secondi.');
   setTimeout(()=>{if(!gotEvt&&state!=='off'){stop();msg('Nessun dato dai sensori','Il browser non invia i dati di movimento. Prova da Safari su iPhone o Chrome su Android.')}},2500);
@@ -1293,7 +1307,7 @@ function stop(){
   endSeries('manual');halt();msg('Fermo','Premi un pulsante per ricominciare.');
 }
 function halt(){
-  state='off';window.removeEventListener('devicemotion',onMotion);
+  state='off';window.removeEventListener('devicemotion',onMotion);try{ovUpdate()}catch(e){}
   $('btnStart').textContent='Avvia serie';$('btnWarm').textContent='Riscaldamento (5 rep)';
   try{wake&&wake.release()}catch(e){}wake=null;
 }
@@ -1339,13 +1353,13 @@ function step(a,now){
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
     if(v<eseg.mn)eseg.mn=v;
-    if(cal&&eseg.d>(cal.prov?1.2:cal.rom*1.5)){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
+    if(cal&&eseg.d>(cal.prov?1.2:Math.max(cal.rom*1.5,DESC_MAX))){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
     else if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
     else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
   }
   if(!seg&&v>0.08){seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};badVel=false}
   if(seg){
-    if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
+    if(v>0){seg.sum+=v;seg.n++;if(now-seg.t>=(window.__trim??MCV_TRIM)*1000){seg.s2=(seg.s2||0)+v;seg.n2=(seg.n2||0)+1}seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
     if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
     if(seg&&mode==='set'&&cal&&lastEcc>=0.10&&seg.n>5&&seg.rom>=lastEcc*0.98){endSeg();lockT=now+350}
   }
@@ -1359,7 +1373,7 @@ function step(a,now){
 }
 function first(){return !reps.some(r=>!r.bad)}
 function countRep(s,bad){   /* una rep fatta conta sempre, anche se non valida per velocità o profondità */
-  const mcv=s.n?s.sum/s.n:0,ref=lossRef()||mcv,loss=ref?Math.max(0,(ref-mcv)/ref*100):0;
+  const mcv=smcv(s),ref=lossRef()||mcv,loss=ref?Math.max(0,(ref-mcv)/ref*100):0;
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss,bad:bad});ui();
 }
 function endSeg(){
@@ -1372,23 +1386,23 @@ function endSeg(){
     if(setC){
       /* senza una vera discesa (stacco, passi, riappoggio, rimbalzo) si ignora in silenzio */
       if(real){
-        if(depOn()&&lastEcc<need&&!cal.prov){countRep(s,'dep');mark(0);badDep=true;badDepth()}
+        if(depOn()&&lastEcc<need&&!cal.prov){if(s.rom>=0.10){countRep(s,'dep');mark(0);badDep=true;badDepth()}}
         else if(s.rom>=0.10&&!cal.prov){countRep(s,'vel');mark(0);if(!first()){badVel=true;alarm('Rep incompleta. Serie finita')}}   /* rep bloccata/troppo lenta: la serie finisce (mai alla prima rep: può essere lo stacco) */
       }
       lastEcc=0;
     }else if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
     return}
-  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc,mcv:s.sum/s.n});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc,mcv:smcv(s)});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
   if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
   if(setC&&!cal.prov&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
   if(setC&&!cal.prov&&lastEcc<need){lastEcc=0;if(depOn()){countRep(s,'dep');badDep=true;mark(0);badDepth()}return}
-  if(setC&&s.rom<lastEcc*0.7){lastEcc=0;if(cal.prov)return;const f=first();countRep(s,'vel');mark(0);if(!f){badVel=true;alarm('Rep incompleta. Serie finita')}return}
+  /* corsa di salita e di discesa sono solo dati: le stime non sono precise, quindi non bloccano mai la rep né fermano la serie */
   if(setC&&cal.prov){   /* senza riscaldamento: la prima rep completa fa da calibrazione */
     if(lastEcc<0.25||s.rom<0.25){lastEcc=0;return}
     cal={rom:s.rom,peak:s.peak,dur:dur,ecc:lastEcc};store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));applyCal();showCal();
   }   /* la salita non è tornata in alto: rep fallita, serie finita */
   lastEcc=0;
-  const f=first(),mcv=s.sum/s.n,ref=f?mcv:(lossRef()||mcv),loss=Math.max(0,(ref-mcv)/ref*100);
+  const f=first(),mcv=smcv(s),ref=f?mcv:(lossRef()||mcv),loss=Math.max(0,(ref-mcv)/ref*100);
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
   ui();
   mark(1);
@@ -1415,7 +1429,7 @@ function finishWarm(){
     reps:warm.map(x=>({mcv:+(x.mcv||0).toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom*100),loss:0,bad:''})),ev:[],pts:[]});
   saveSess();renderSess();tbKey='';ovUpdate();try{showWarmSum(warm,wk0)}catch(e){}
 }
-function showCal(){try{skipTxt();if(!cal&&!warm.length){$('wKg').value=warmKgDef();warmKgTxt()}}catch(e){}$('ovWarm').hidden=!!cal;$('ovRun').hidden=!cal;$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
+function showCal(){try{skipTxt();if(!cal&&!warm.length){$('wKg').value=warmKgDef();warmKgTxt()}}catch(e){}{const wg=!cal&&mode==='warm'&&state!=='off';$('ovWarm').hidden=!!cal||wg;$('ovRun').hidden=!cal&&!wg}$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
   $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita nel riscaldamento '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento con il 30–40% del massimale.';
 }
 function newRec(){return{t0:performance.now(),pts:[],ev:[]}}

@@ -43,7 +43,6 @@ th{font-weight:600;color:var(--mut)}
 .wrap{overflow-x:auto}
 label.chk{display:flex;gap:8px;align-items:center}
 [hidden]{display:none!important}
-#ovPD.bad{background:#d9700f;border-color:#ffd29a;box-shadow:0 0 20px #ff9a3ccc}
 .repRow{display:flex;align-items:flex-end;gap:8px;min-width:0}#ovBars{flex:1;min-width:0;display:flex;align-items:flex-end;justify-content:flex-start;gap:3px;height:32px;margin:0 0 6px;overflow:hidden}#ovBars:empty{display:none}
 #ovBars i{flex:0 1 9px;min-height:3px;border-radius:2px;background:#3ddc84}
 #ovBars i.v{background:#ff5c6c}#ovBars i.d{background:#ffa53c}
@@ -252,16 +251,10 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .htrk .lim{top:0;bottom:0;left:0;right:auto;height:auto;width:3px;background:#ff3b4a;box-shadow:0 0 6px #ff3b4a99}
 .htrk .lastMk{position:absolute;top:0;bottom:0;left:0;width:5px;margin-left:-2px;border-radius:2px;background:#ffd23f;box-shadow:0 0 6px #ffd23f99;display:none;pointer-events:none}
 .htrk .mk{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
-.htrk .dfill{top:0;bottom:0;left:0;right:auto;height:auto;width:0}
-.htrk .vz{top:0;bottom:0;right:0;height:auto}
-.htrk .vl{top:0;bottom:0;left:0;right:auto;height:auto;width:3px}
 .repLoss{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:clamp(8px,2vh,16px);text-align:left}
 .rlL{text-align:left}.rlR{text-align:right}
 #ovBars{flex:1;min-width:0;margin:0 0 8px}
 #ovRep,#ovLoss{font-size:clamp(28px,min(10vw,5.6vh),40px);font-weight:700;line-height:1.1;margin-top:2px}
-#ovPD .rh{display:flex;justify-content:space-between;align-items:baseline}
-#ovPD .rh span{font-size:18px;font-weight:700;color:#F2F5FA;letter-spacing:0;text-transform:none}
-#ovPD .htrk{height:clamp(10px,2.2vh,16px);border-radius:8px;margin-top:8px}
 .ovBot{display:flex;flex-direction:column;gap:clamp(6px,1.5vh,12px);grid-template-columns:none;flex:none}
 .ovTbl{border:0;background:transparent;padding:0}
 .ovTbl .lb{font-size:12px;font-weight:600;letter-spacing:1.2px;color:#8EA2BF}
@@ -322,22 +315,22 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   .ovLoad{padding-left:10px;padding-right:10px}
 }
 
-/* 2026.10.22-e: dati velocità sopra la barra */
-#ovPV{text-align:left}
-#ovPV .repLoss{margin-top:0;align-items:flex-end;gap:14px}
-.rlV{flex:1;min-width:0;text-align:left}
-.rlL,.rlR{flex:none}
-#ovPV #ovBars{margin:6px 0 0;height:22px}
-#ovPV .htrk{margin-top:8px}
-#ovVal{font-size:clamp(44px,min(17vw,9.5vh),84px);letter-spacing:-2px}
-.ovTbl .tw{max-height:clamp(52px,15vh,220px)}
-@media (max-height:720px){.ovTbl .tw{max-height:clamp(48px,13vh,120px)}#ovVal{font-size:clamp(40px,min(15vw,8vh),68px)}}
-@media (max-height:620px){#ovPV #ovBars{display:none}.ovTbl .tw{max-height:60px}#ovVal{font-size:clamp(36px,8vh,48px)}}
-@media (max-width:340px){#ovVal{font-size:40px}#ovRep,#ovLoss{font-size:24px}.rlV .lb{font-size:10px}}
 .ovMid{flex:0 0 auto;justify-content:flex-start;gap:clamp(10px,2vh,18px)}
 .ovBot{flex:1 1 auto;min-height:0}
 .ovBot .ovTbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 .ovBot .ovTbl .tw{flex:1 1 0;min-height:36px;max-height:none}
+/* 2026.10.25-a: perdita di velocità = numero principale */
+#ovPV{text-align:left}
+#ovPV .lossRow{display:flex;align-items:baseline;gap:12px}
+#ovLoss{font-size:clamp(56px,min(24vw,12.5vh),104px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:2px}
+#ovLimN{font-size:15px;color:#8EA2BF;font-weight:600}
+#ovPV .htrk{margin-top:10px}
+#ovPV .twoCol{display:flex;justify-content:space-between;gap:14px;margin-top:10px;align-items:flex-end}
+#ovVal,#ovRep{font-size:clamp(28px,min(10vw,5.6vh),40px);font-weight:700;letter-spacing:0;line-height:1.1;margin-top:2px}
+#ovPV .rlR{text-align:right}
+#ovPV #ovBars{margin:8px 0 0;height:22px}
+@media (max-height:720px){#ovLoss{font-size:clamp(46px,min(20vw,10vh),80px)}#ovVal,#ovRep{font-size:clamp(24px,4.8vh,34px)}}
+@media (max-height:620px){#ovLoss{font-size:clamp(38px,9vh,56px)}#ovPV #ovBars{display:none}}
 </style>
 </head>
 <body>
@@ -442,21 +435,12 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     <label for="thr">Ferma la serie oltre</label>
     <select id="thr"><option>10</option><option>15</option><option selected>20</option><option>25</option><option>30</option><option>40</option></select>
   </div>
-  <div class="row" style="margin-top:10px">
-    <label for="minrom">Rep valida se la corsa supera</label>
-    <select id="minrom"><option>60</option><option>70</option><option>75</option><option>80</option><option selected>85</option><option>90</option><option>95</option><option>100</option></select>
-  </div>
   <select id="lossBase" hidden><option value="first" selected>Rep più veloce</option></select>
   <div class="mut" style="margin-top:10px">La perdita di velocità si calcola sempre sulla <b>tua rep più veloce della serie</b> (di solito la prima): ognuno parte dal proprio livello. La tabella degli studi serve solo come confronto.</div>
-  <div class="row" style="margin-top:10px">
-    <label class="chk"><input type="checkbox" id="depAlarm" checked> Allarme profondità attivo</label>
-  </div>
-
-  <div class="mut" style="margin-top:4px">Se lo disattivi, la profondità non viene controllata: niente suono e niente rosso, e le rep poco profonde vengono contate.</div>
   <div class="row" style="margin-top:8px">
     <label class="chk"><input type="checkbox" id="voice" checked> Voce per le rep non valide</label>
   </div>
-  <div class="mut" style="margin-top:4px">Rep valida: un segnale acustico. Rep non valida: una voce dice «Poco profonda», «Troppo lenta» o «Rep incompleta».</div>
+  <div class="mut" style="margin-top:4px">Rep valida: un segnale acustico. Rep troppo lenta: una voce dice «Troppo lenta. Serie finita».</div>
   <div class="row" style="margin-top:10px">
     <label class="chk"><input type="checkbox" id="inv"> Inverti direzione</label>
     <span class="mut">Velocità live: <span id="live">0.00</span> m/s</span>
@@ -626,19 +610,16 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     </div>
     <div class="ovMid">
       <div class="ovP" id="ovPV">
-        <div class="repLoss">
-          <div class="rlV"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
-          <div class="rlL"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
-          <div class="rlR"><div class="lb">Perdita</div><div class="ovBig" id="ovLoss">0%</div></div>
+        <div class="lb">Perdita di velocità</div>
+        <div class="lossRow"><div class="ovBig" id="ovLoss">0%</div><div id="ovLimN">max 20%</div></div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
+        <div class="twoCol">
+          <div class="rlL"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
+          <div class="rlR"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
         </div>
         <div id="ovBars"></div>
-        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
       </div>
-      <div class="ovP" id="ovPD">
-        <div class="rh"><b>Corsa</b><span id="ovRom"></span></div>
-        <div class="trk htrk"><div class="vz" id="ovVz"></div><div class="dfill" id="ovDf"></div><div class="vl" id="ovVl"></div></div>
-      </div>
-      <div hidden><span id="ovLimTxt"></span><span id="ovThr"></span><span id="ovMin"></span><span id="ovVlTxt"></span><i id="ovDn"></i><i id="ovUp"></i></div>
+      <div hidden><span id="ovLimTxt"></span><span id="ovLimN2"></span><i id="ovDn"></i><i id="ovUp"></i></div>
     </div>
     <div class="ovBot">
       <div class="ovTbl">
@@ -659,7 +640,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 <div class="mdl" id="sum" hidden><div class="mdlB">
   <h2 id="sumT">Serie finita</h2><div class="sumLeg" id="sumS"></div>
   <div id="sumBars"></div>
-  <div class="sumLeg">Verde: valida · Rosso: lenta o incompleta · Arancione: poco profonda</div>
+  <div class="sumLeg">Verde: valida · Rosso: troppo lenta</div>
   <div class="sumG">
     <div><small id="sumLN">Rep</small><b id="sumN"></b></div>
     <div><small id="sumLL">Perdita</small><b id="sumL"></b></div>
@@ -683,12 +664,12 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.22-e';
+const APP_VER='2026.10.25-a';
 const MCV_TRIM=0.15;   /* si scartano i primi 150 ms della salita: il cambio di direzione non è velocità della rep */function smcv(s){return s.n2>2?s.s2/s.n2:(s.n?s.sum/s.n:0)}
 const DESC_MAX=1.3;   /* discesa massima plausibile (m): le rep lente/pesanti, con spostamento stimato in eccesso, non vanno scartate */const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
 function store(k,val){try{if(val===undefined)return localStorage.getItem(k);localStorage.setItem(k,val)}catch(e){return null}}
-let badVel=false,badDep=false,dpt=0,topLock=true,tLo=0,ats=[],cur='',wk=[],prof;
+let badVel=false,dpt=0,topLock=true,tLo=0,ats=[],cur='',wk=[],prof;
 try{ats=JSON.parse(localStorage.getItem('ats'))||[]}catch(e){ats=[]}
 try{wk=JSON.parse(localStorage.getItem('wk'))||[]}catch(e){wk=[]}
 cur=store('athCur')||'';
@@ -883,18 +864,11 @@ function ovUpdate(){
   f.style.background=(seg||!lr)?'linear-gradient(#27e0f0,#1470e0)':(slow?'linear-gradient(#ff7a86,#d7263d)':'linear-gradient(#5bf0a0,#14a05a)');
   const lp=Math.min(100,limS/SM*100)+'%';
   $('ovZone').style.width=ref?lp:'0%';$('ovLim').style.left=lp;$('ovLim').style.display=ref?'':'none';$('ovLimTxt').textContent=ref?limS.toFixed(2)+' m/s':'dopo la 1ª rep';
-  const mn=(+$('minrom').value)/100,df=Math.max(0,Math.min(1.1,R?dpt/R:0));
-  $('ovDf').style.width=Math.min(100,df*100)+'%';
-  $('ovDf').style.background=df>=mn?'linear-gradient(#5bf0a0,#14a05a)':'linear-gradient(#27e0f0,#1470e0)';
-  $('ovVl').style.left=(mn*100)+'%';$('ovVz').style.left=(mn*100)+'%';
-  const sp=$('ovVlTxt');sp.textContent=Math.round(mn*100)+'%';sp.style.top=mn>0.8?'auto':'3px';sp.style.bottom=mn>0.8?'3px':'auto';
-  $('ovMin').textContent=Math.round(mn*100)+'%';
   $('ovDn').classList.toggle('on',run&&v<-0.05);$('ovUp').classList.toggle('on',run&&v>0.05);
-  $('ovRom').textContent=warming?'da misurare':Math.round(R*100)+' cm';
   $('ovRep').textContent=warming?warm.length+'/'+WARM_N:reps.length;
   const loss=lr?Math.max(0,lr.loss):0;
-  $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=loss>=thr?'#ff7a86':'';
-  $('ovThr').textContent='(max '+thr+'%)';
+  $('ovLoss').textContent=loss.toFixed(0)+'%';$('ovLoss').style.color=(loss>=thr&&!(badVel||slow))?'#ff4a5a':'';
+  $('ovLimN').textContent='max '+thr+'%';
   const ed=ovEditable();$('ovMinus').disabled=!ed;$('ovPlus').disabled=!ed;$('ovKg').disabled=!ed;$('ovPct').disabled=!ed;
   $('ovEnd').disabled=state!=='off';
   {let tt='0:00',sub='dalla fine serie';
@@ -902,7 +876,7 @@ function ovUpdate(){
    else if(restStart){const s=Math.max(0,Math.floor((Date.now()-restStart)/1000));tt=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
    else sub='parte alla fine serie';
    $('ovTimer').textContent=tt;$('ovTimerSub').textContent=sub}
-  $('ovPV').classList.toggle('bad',badVel||slow);$('ovPD').classList.toggle('bad',badDep&&depOn());
+  $('ovPV').classList.toggle('bad',badVel||slow);
   const RR=warming?warm.map(w=>({mcv:w.mcv,bad:''})):reps;
   const bk=RR.map(r=>r.mcv.toFixed(2)+(r.bad||'')).join();
   if(bk!==barKey){barKey=bk;const mx=Math.max(0.01,...RR.map(r=>r.mcv));$('ovBars').innerHTML=RR.slice(-14).map(r=>'<i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(12,r.mcv/mx*100)+'%"></i>').join('')}
@@ -950,7 +924,7 @@ $('wSkip').onclick=()=>{
   const t=todayCal();
   if(t){cal=t;msg('Calibrazione di oggi','Uso la corsa misurata nel riscaldamento di oggi.')}
   else if((prof.pct||0)>=90){msg('Riscaldamento necessario','Sopra il 90% del massimale la prima rep non basta per calibrare: fai il riscaldamento con il 30–40% del massimale.');return}
-  else{cal={rom:0.45,peak:1,dur:0.6,ecc:0.45,prov:true};msg('Pronto: fai la rep','La prima rep fa da calibrazione: falla completa, fino alla profondità giusta.')}
+  else{cal={rom:0.45,peak:1,dur:0.6,ecc:0.45,prov:true};msg('Pronto: fai la rep','La prima rep fa da calibrazione: falla completa, e completa.')}
   store('cal',JSON.stringify(cal));
   try{if(!localStorage.getItem('wkStart'))localStorage.setItem('wkStart',String(Date.now()))}catch(e){}
   mode='set';warm=[];applyCal();showCal();ovUpdate();
@@ -971,7 +945,7 @@ $('wGo').onclick=()=>{
   prof.first=n;prof.last=l;prof.sex=sx;fullName();prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
   $('welcome').hidden=true;unlockAudio();setTimeout(maybeInst,300);if(!cal){$('wKg').value=warmKgDef();warmKgTxt()}ovUpdate();showResume();
 };
-$('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;badDep=false;start('set')}};
+$('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;start('set')}};
 $('ovStop').onclick=()=>{if(state!=='off')stop()};
 setInterval(ovUpdate,50);
 function relayout(){const o=$('ov');if(!o)return;o.style.display='none';void o.offsetHeight;o.style.display='';ovUpdate()}
@@ -1010,9 +984,9 @@ const G_HOW=`
 <li>Premi <b>Avvia riscaldamento</b> e tieni fermo il bilanciere 2 secondi.</li>
 <li>Carica il 30–40% del massimale e fai 5 rep complete, come in serie, con una breve pausa in alto (la pausa in basso è facoltativa).</li>
 </ol>
-<p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono il riferimento per decidere se una rep è valida. Fai il riscaldamento alla stessa profondità delle serie vere.</p>
+<p>L'app ricava la <b>corsa</b> (es. 50 cm) e la durata della salita: sono solo dati di riferimento, non servono a giudicare le rep.</p>
 <h3>3 · Scegli il carico</h3>
-<p class="mut">La perdita di velocità si calcola sempre sulla tua rep più veloce della serie: ognuno ha il proprio punto di partenza. Dopo il riscaldamento vedi la tua velocità confrontata con quella attesa dagli studi per il tuo sesso e il tuo carico. In Impostazioni puoi disattivare l'allarme di profondità.</p>
+<p class="mut">La perdita di velocità si calcola sempre sulla tua rep più veloce della serie: ognuno ha il proprio punto di partenza. Dopo il riscaldamento vedi la tua velocità confrontata con quella attesa dagli studi per il tuo sesso e il tuo carico.</p>
 <p>Nella schermata della serie usa − e + (passi da 2,5 kg) oppure tocca il peso o la % per scriverli: l'altro valore lo calcola l'app. Si cambia tra una serie e l'altra.</p>
 <h3>4 · Fai la serie</h3>
 <ol>
@@ -1022,18 +996,16 @@ const G_HOW=`
 </ol>
 <h3>5 · Leggere lo schermo</h3>
 <ul>
+<li><b>Perdita di velocità</b>: il numero grande è il calo dell'ultima rep rispetto alla più veloce; accanto vedi il limite. Diventa rosso quando lo raggiungi.</li>
 <li><b>Barra velocità</b>: velocità media della rep in corso; il trattino bianco è la velocità istantanea, la barretta gialla la velocità media dell'ultima rep (resta visibile), la riga rossa il limite sotto cui la rep è troppo lenta.</li>
-<li><b>Rep</b> a sinistra: ripetizioni della serie; <b>Perdita</b> a destra: calo di velocità.</li>
-<li><b>Barra corsa</b>: si riempie da sinistra in discesa; la riga gialla è la profondità minima valida e il riempimento diventa verde quando la raggiungi.</li>
+<li><b>Velocità</b> a sinistra e <b>Rep</b> a destra; sotto, le barrette delle singole rep.</li>
 <li><b>Allenamento</b>: serie, peso e rep dell'allenamento attuale. <b>Recupero</b>: tempo dalla fine dell'ultima serie.</li>
 </ul>
 <h3>6 · Suoni e colori</h3>
 <ul>
-<li><b>Due colpi gravi e ruvidi</b>: problema di <b>profondità</b> (rep troppo alta o discesa incompleta).</li>
-<li>Riquadro <b>corsa</b> rosso: rep troppo alta o discesa incompleta (si può disattivare in Impostazioni).</li>
-<li>Riquadro <b>velocità</b> rosso: rep troppo lenta, serie finita.</li>
-<li><b>Triplo allarme acuto</b> e sfondo rosso: problema di <b>velocità</b> (rep troppo lenta o perdita oltre il limite). La serie finisce.</li>
 <li>Tono acuto singolo: rep valida.</li>
+<li><b>Triplo allarme acuto</b> e sfondo rosso: la perdita ha raggiunto il limite (rep troppo lenta). La serie finisce.</li>
+<li><b>La profondità la giudichi tu</b>: scendi sotto il parallelo. L'app conta ogni rep con una discesa vera e non controlla la profondità.</li>
 </ul>
 <h3>7 · Termina e salva</h3>
 <p>Finito l'allenamento premi <b>Termina e salva sessione</b> in fondo alla schermata (a serie ferma): le serie finiscono nello storico («Allenamenti passati» in Impostazioni) e al prossimo allenamento si riparte dal riscaldamento.</p>
@@ -1136,7 +1108,7 @@ $('btnShare').onclick=()=>{
   const mine=wk.filter(w=>w.aid===prof.id);
   const data={app:'VBT 20% by cr',format:2,ver:APP_VER,exported:new Date().toISOString(),device:navigator.userAgent,
     athlete:{name:prof.name,first:prof.first||'',last:prof.last||'',sex:prof.sex||'',rm:prof.rm,pct:prof.pct,kg:prof.kg},
-    settings:{lossBase:$('lossBase').value,depAlarm:$('depAlarm').checked,voice:$('voice').checked,useProf:$('useProf').checked,thr:+$('thr').value,minrom:+$('minrom').value,auto:$('auto').checked,inv:$('inv').checked},
+    settings:{lossBase:$('lossBase').value,voice:$('voice').checked,useProf:$('useProf').checked,thr:+$('thr').value,auto:$('auto').checked,inv:$('inv').checked},
     calibration:cal,workouts:mine,session:sess};
   const slug=String(prof.name||'utente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'utente';
   const name='vbt-dati-'+slug+'-'+new Date().toISOString().slice(0,10)+'.json';
@@ -1160,8 +1132,6 @@ $('impF').onchange=async()=>{
   const st=d.settings||{};
   
   if(st.thr){$('thr').value=String(st.thr);store('thr',String(st.thr))}
-  if(st.minrom){$('minrom').value=String(st.minrom);store('minrom',String(st.minrom))}
-  if(typeof st.depAlarm==='boolean'){$('depAlarm').checked=st.depAlarm;store('depAlarm',st.depAlarm?'1':'0')}
   if(typeof st.inv==='boolean'){$('inv').checked=st.inv;store('inv',st.inv?'1':'0')}
   renderWk();renderProf();applyCal();showCal();
   $('shMsg2').textContent='Backup importato: '+ns+' serie aggiunte.';
@@ -1179,7 +1149,7 @@ function endWorkout(){
   saveWorkout();
   sess=[];try{localStorage.removeItem('sess')}catch(e){}
   cal=null;try{localStorage.removeItem('cal');localStorage.removeItem('wkStart')}catch(e){}
-  warm=[];reps=[];tbKey='';badVel=false;badDep=false;limStart=0;dpt=0;topLock=true;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}
+  warm=[];reps=[];tbKey='';badVel=false;limStart=0;dpt=0;topLock=true;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}
   renderSess();renderWk();showCal();ui();
   msg('Allenamento salvato','Premi Avvia riscaldamento per iniziare un nuovo allenamento.');
   ovUpdate();
@@ -1229,7 +1199,6 @@ function say(t){
   if(!$('voice').checked||!window.speechSynthesis)return false;
   try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';if(itVoice)u.voice=itVoice;u.rate=1.05;u.volume=1;speechSynthesis.speak(u);return true}catch(e){return false}
 }
-function badDepth(){tone(150,0,.12,'sawtooth',.18);if(!say('Poco profonda'))snd.depth()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ctx&&ctx.state!=='running')try{ctx.resume()}catch(e){}});
 
 /* Pressione lunga sul nome atleta: rinomina / elimina */
@@ -1264,19 +1233,14 @@ $('thr').onchange=()=>{$('auto').checked=false;store('auto','0');store('thr',$('
 $('inv').onchange=()=>store('inv',$('inv').checked?'1':'0');
 
 $('lossBase').onchange=()=>{store('lossBase',$('lossBase').value);limStart=0;ovUpdate()};
-$('depAlarm').checked=store('depAlarm')!=='0';
-$('depAlarm').onchange=()=>{store('depAlarm',$('depAlarm').checked?'1':'0');badDep=false;applyCal();ovUpdate()};
-const depOn=()=>$('depAlarm').checked;
 $('voice').checked=store('voice')!=='0';$('voice').onchange=()=>store('voice',$('voice').checked?'1':'0');
 $('useProf').checked=store('useProf')!=='0';$('useProf').onchange=()=>{store('useProf',$('useProf').checked?'1':'0');calcLoad();renderProf();ovUpdate()};
 $('appVer').textContent=APP_VER;try{$('splVer').textContent='v'+APP_VER}catch(e){}
 function lossRef(){
-  /* riferimento: la rep valida più veloce della serie (velocità plausibile tra 0,1 e 2,5 m/s) */
-  const ok=reps.filter(r=>!r.bad&&r.mcv>=0.1&&r.mcv<=2.5);
+  /* riferimento: la rep contata più veloce della serie (velocità plausibile tra 0,1 e 2,5 m/s) */
+  const ok=reps.filter(r=>r.mcv>=0.1&&r.mcv<=2.5);
   return ok.length?Math.max(...ok.map(r=>r.mcv)):null;
 }
-const mr=store('minrom');if(mr)$('minrom').value=mr;
-$('minrom').onchange=()=>{store('minrom',$('minrom').value);applyCal();showCal()};
 const tw0=store('tw');if(tw0)$('tw').value=tw0;
 $('tw').onchange=()=>store('tw',$('tw').value);
 try{sess=JSON.parse(localStorage.getItem('sess'))||[]}catch(e){sess=[]}
@@ -1311,7 +1275,7 @@ async function start(m){
   try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume&&ctx.resume()}catch(e){}
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}
   mode=m;warm=[];lastEcc=0;eseg=null;applyCal();
-  if(m==='set'){reps=[];badVel=false;badDep=false;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
+  if(m==='set'){reps=[];badVel=false;restStart=0;try{localStorage.removeItem('restStart')}catch(e){}alarmed=false;document.body.classList.remove('alarm');$('sugg').hidden=true;ui()}
   calBuf=[];calStart=performance.now();gotEvt=false;state='cal';
   window.addEventListener('devicemotion',onMotion);
   try{ovUpdate()}catch(e){}
@@ -1365,11 +1329,11 @@ function step(a,now){
     v+=a*dt;
   }
   if(now<lockT)v=0;
-  if(!eseg&&v<-0.08){eseg={d:0,low:0,mn:0};topLock=false;badDep=false}
+  if(!eseg&&v<-0.08){eseg={d:0,low:0,mn:0};topLock=false}
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
     if(v<eseg.mn)eseg.mn=v;
-    if(cal&&eseg.d>(cal.prov?1.2:Math.max(cal.rom*1.5,DESC_MAX))){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
+    if(cal&&eseg.d>DESC_MAX){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
     else if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
     else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
   }
@@ -1387,7 +1351,7 @@ function step(a,now){
   if(rec)rec.pts.push([Math.round(now-rec.t0),a,v]);
   $('live').textContent=v.toFixed(2);
 }
-function first(){return !reps.some(r=>!r.bad)}
+function first(){return !reps.length}
 function countRep(s,bad){   /* una rep fatta conta sempre, anche se non valida per velocità o profondità */
   const mcv=smcv(s),ref=lossRef()||mcv,loss=ref?Math.max(0,(ref-mcv)/ref*100):0;
   reps.push({mcv,peak:s.peak,rom:s.rom*100,loss,bad:bad});ui();
@@ -1396,23 +1360,13 @@ function endSeg(){
   const s=seg;seg=null;v=0;topLock=true;if(!s)return;
   const dur=(performance.now()-s.t)/1000;
   const setC=mode==='set'&&cal;
-  const need=setC?(depOn()?cal.rom*(+$('minrom').value/100):0.10):0;
-  const real=!setC||lastEcc>=(depOn()?cal.rom*0.3:0.10);
+  /* una rep conta se prima c'è stata una discesa vera (>=10 cm) e la salita dura almeno MIN_DUR: la profondità la giudica l'atleta */
+  const real=!setC||lastEcc>=0.10;
   if(s.peak<MIN_PEAK||dur<MIN_DUR||!s.n||(!setC&&s.rom<MIN_ROM)){
-    if(setC){
-      /* senza una vera discesa (stacco, passi, riappoggio, rimbalzo) si ignora in silenzio */
-      if(real){
-        if(depOn()&&lastEcc<need&&!cal.prov){if(s.rom>=0.10){countRep(s,'dep');mark(0);badDep=true;badDepth()}}
-        else if(s.rom>=0.10&&!cal.prov){countRep(s,'vel');mark(0);if(!first()){badVel=true;alarm('Rep incompleta. Serie finita')}}   /* rep bloccata/troppo lenta: la serie finisce (mai alla prima rep: può essere lo stacco) */
-      }
-      lastEcc=0;
-    }else if(s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
-    return}
+    if(!setC&&s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
+    lastEcc=0;return}
   if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc,mcv:smcv(s)});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
   if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
-  if(setC&&!cal.prov&&s.rom>cal.rom*1.6){lastEcc=0;return}          /* corsa impossibile (urto, riappoggio): ignorata */
-  if(setC&&!cal.prov&&lastEcc<need){lastEcc=0;if(depOn()){countRep(s,'dep');badDep=true;mark(0);badDepth()}return}
-  /* corsa di salita e di discesa sono solo dati: le stime non sono precise, quindi non bloccano mai la rep né fermano la serie */
   if(setC&&cal.prov){   /* senza riscaldamento: la prima rep completa fa da calibrazione */
     if(lastEcc<0.25||s.rom<0.25){lastEcc=0;return}
     cal={rom:s.rom,peak:s.peak,dur:dur,ecc:lastEcc};store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));applyCal();showCal();
@@ -1425,7 +1379,7 @@ function endSeg(){
   if(!f&&loss>=+$('thr').value){reps[reps.length-1].bad='vel';badVel=true;alarm('Troppo lenta. Serie finita')}else snd.ok();   /* la prima rep è il riferimento: mai allarme di velocità */
 }
 function applyCal(){
-  if(mode==='set'&&cal){MIN_ROM=depOn()?cal.rom*(+$('minrom').value/100):Math.max(0.15,cal.rom*0.4);MIN_PEAK=0.12;MIN_DUR=cal.dur*0.5}
+  if(mode==='set'&&cal){MIN_ROM=0;MIN_PEAK=0.12;MIN_DUR=0.25}
   else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
@@ -1437,7 +1391,7 @@ function finishWarm(){
   mode='set';applyCal();v=0;seg=null;eseg=null;reps=[];rec=newRec();ui();showCal();
   $('btnWarm').textContent='Riscaldamento (5 rep)';$('btnStart').textContent='Ferma';
   beep(660,.12);setTimeout(()=>beep(990,.2),180);
-  msg('Calibrazione completata','Corsa '+Math.round(cal.rom*100)+' cm. Scegli il carico e premi Avvia serie.');
+  msg(cal.rom>0.9?'Calibrazione anomala':'Calibrazione completata',cal.rom>0.9?'Calibrazione anomala, rifai il riscaldamento con il telefono ben fisso.':'Corsa '+Math.round(cal.rom*100)+' cm. Scegli il carico e premi Avvia serie.');
   halt();rec=null;
   /* le 5 rep del riscaldamento restano come serie di riscaldamento, con le loro velocità */
   const wk0=parseFloat(String($('wKg').value).replace(',','.'))||0;
@@ -1446,7 +1400,7 @@ function finishWarm(){
   saveSess();renderSess();tbKey='';ovUpdate();try{showWarmSum(warm,wk0)}catch(e){}
 }
 function showCal(){try{skipTxt();if(!cal&&!warm.length){$('wKg').value=warmKgDef();warmKgTxt()}}catch(e){}{const wg=!cal&&mode==='warm'&&state!=='off';$('ovWarm').hidden=!!cal||wg;$('ovRun').hidden=!cal&&!wg}$('btnInfo').hidden=!cal;if(!cal)$('info').hidden=true;
-  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita nel riscaldamento '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. Una rep vale se la corsa supera il '+$('minrom').value+'% e la discesa prima è completa.':'Nessuna calibrazione: fai il riscaldamento con il 30–40% del massimale.';
+  $('calInfo').textContent=cal?'Calibrazione salvata: corsa '+Math.round(cal.rom*100)+' cm, salita nel riscaldamento '+cal.dur.toFixed(1)+' s, picco '+cal.peak.toFixed(2)+' m/s. '+(cal.rom>0.9?'Calibrazione anomala, rifai il riscaldamento con il telefono ben fisso.':''):'Nessuna calibrazione: fai il riscaldamento con il 30–40% del massimale.';
 }
 function newRec(){return{t0:performance.now(),pts:[],ev:[]}}
 function mark(ok){if(rec)rec.ev.push([Math.round(performance.now()-rec.t0),ok])}
@@ -1483,16 +1437,15 @@ function showSum(x){
   if(!x||!x.reps.length||x.why==='warm')return;
   const rs=x.reps,ok=rs.filter(r=>!r.bad),n=sess.filter(s=>s.why!=='warm').length,thr=+$('thr').value;
   const mx=Math.max(...rs.map(r=>r.mcv),0.01),best=ok.length?Math.max(...ok.map(r=>r.mcv)):0,last=rs[rs.length-1];
-  const ml=Math.max(0,...rs.filter(r=>r.bad!=='dep').map(r=>r.loss)),nd=rs.filter(r=>r.bad==='dep').length,nv=rs.filter(r=>r.bad==='vel').length;
+  const ml=Math.max(0,...rs.map(r=>r.loss)),nv=rs.filter(r=>r.bad==='vel').length;
   $('sumLN').textContent='Rep';$('sumLL').textContent='Perdita';$('sumLB').textContent='Più veloce';$('sumLU').textContent='Ultima';$('sumBars').nextElementSibling.style.display='';
   $('sumT').textContent='Serie '+n+(x.why==='limit'?' · fermata dal limite':' · terminata');
   $('sumS').textContent=(x.kg?x.kg+' kg':'')+(x.pct?' · '+x.pct+'% 1RM':'')+' · limite perdita '+thr+'%';
   $('sumBars').innerHTML=rs.map((r,i)=>'<div><i class="'+(r.bad==='vel'?'v':r.bad==='dep'?'d':'')+'" style="height:'+Math.max(4,r.mcv/mx*100)+'%"></i>'+r.mcv.toFixed(2)+'</div>').join('');
-  $('sumN').innerHTML=rs.length+(nd||nv?'<span class="bdN">('+ok.length+' valide)</span>':'');
+  $('sumN').innerHTML=rs.length+(nv?'<span class="bdN">('+ok.length+' valide)</span>':'');
   $('sumL').textContent=ml.toFixed(0)+'%';$('sumB').textContent=best?best.toFixed(2)+' m/s':'–';$('sumU').textContent=last.mcv.toFixed(2)+' m/s';
   let tip;
-  if(nd)tip=nd+(nd>1?' rep poco profonde':' rep poco profonda')+': scendi fino alla profondità del riscaldamento.';
-  else if(x.why==='limit'&&ok.length<=2)tip='Perdita raggiunta dopo '+ok.length+' rep: per la prossima serie prova a scendere del 5% ('+(x.kg?Math.round(x.kg*0.95/2.5)*2.5+' kg':'−5%')+').';
+  if(x.why==='limit'&&ok.length<=2)tip='Perdita raggiunta dopo '+ok.length+' rep: per la prossima serie prova a scendere del 5% ('+(x.kg?Math.round(x.kg*0.95/2.5)*2.5+' kg':'−5%')+').';
   else if(x.why!=='limit'&&ml<thr/2&&ok.length>=3)tip='Perdita bassa ('+ml.toFixed(0)+'%): puoi fare più rep o salire di carico ('+(x.kg?Math.round(x.kg*1.05/2.5)*2.5+' kg':'+5%')+').';
   else tip='Serie nella norma: puoi ripetere lo stesso carico.';
   $('sumTip').textContent=tip;

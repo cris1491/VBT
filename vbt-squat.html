@@ -319,18 +319,22 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 .ovBot{flex:1 1 auto;min-height:0}
 .ovBot .ovTbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 .ovBot .ovTbl .tw{flex:1 1 0;min-height:36px;max-height:none}
-/* 2026.10.25-a: perdita di velocità = numero principale */
+/* 2026.10.25-c: perdita a sinistra, velocità a destra, rep sotto la barra */
 #ovPV{text-align:left}
-#ovPV .lossRow{display:flex;align-items:baseline;gap:12px}
-#ovLoss{font-size:clamp(56px,min(24vw,12.5vh),104px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:2px}
-#ovLimN{font-size:15px;color:#8EA2BF;font-weight:600}
+#ovPV .topRow{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+#ovPV .topRow .rlL{min-width:0}#ovPV .topRow .rlR{flex:none;text-align:right}
+#ovPV .lossRow{display:flex;align-items:baseline;gap:8px}
+#ovLoss{font-size:clamp(46px,min(17vw,11vh),88px);font-weight:800;letter-spacing:-3px;line-height:1;margin-top:2px}
+#ovLimN{font-size:13px;color:#8EA2BF;font-weight:600;white-space:nowrap}
 #ovPV .htrk{margin-top:10px}
-#ovPV .twoCol{display:flex;justify-content:space-between;gap:14px;margin-top:10px;align-items:flex-end}
+#ovPV .repBlk{margin-top:10px;text-align:left}
 #ovVal,#ovRep{font-size:clamp(28px,min(10vw,5.6vh),40px);font-weight:700;letter-spacing:0;line-height:1.1;margin-top:2px}
-#ovPV .rlR{text-align:right}
 #ovPV #ovBars{margin:8px 0 0;height:22px}
-@media (max-height:720px){#ovLoss{font-size:clamp(46px,min(20vw,10vh),80px)}#ovVal,#ovRep{font-size:clamp(24px,4.8vh,34px)}}
-@media (max-height:620px){#ovLoss{font-size:clamp(38px,9vh,56px)}#ovPV #ovBars{display:none}}
+@media (max-height:720px){#ovLoss{font-size:clamp(42px,min(16vw,9.5vh),70px)}#ovVal,#ovRep{font-size:clamp(24px,4.8vh,34px)}}
+@media (max-height:620px){#ovLoss{font-size:clamp(36px,8.5vh,52px)}#ovPV #ovBars{display:none}}
+@media (max-width:340px){#ovLoss{font-size:40px}#ovLimN{font-size:11px}}
+#prScreen{position:fixed;inset:0;z-index:330;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#ffd23f;font-weight:900;font-size:clamp(34px,10vw,64px);letter-spacing:.03em;text-align:center;padding:20px;animation:scr 2s ease forwards}
+#prScreen span{color:#eaf6ff;font-size:.6em}#prScreen b{color:#4ADE80;font-size:1.8em}
 </style>
 </head>
 <body>
@@ -415,6 +419,12 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
   <div id="sugg" hidden style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)">
     <div id="suggT" class="mut"></div>
   </div>
+</div>
+
+<div class="card" id="rmCard">
+  <b>Storico del massimale</b>
+  <div class="wrap" style="margin-top:6px"><table><thead><tr><th>Data</th><th>Massimale (kg)</th><th></th></tr></thead><tbody id="rmTb"></tbody></table></div>
+  <canvas id="cvRm" style="width:100%;height:150px;display:block;margin-top:8px"></canvas>
 </div>
 
 <div class="card" hidden style="margin-top:12px">
@@ -572,6 +582,8 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 </div>
 <div id="scarso" hidden>SCARSO!</div>
 <div id="hello" hidden></div>
+<div id="prScreen" hidden><div>NUOVO MASSIMALE!</div><span id="prSub"></span><b id="prKg"></b></div>
+<div class="mdl" id="prAsk" hidden><div class="mdlB"><h2 id="prQ"></h2><button id="prYes">Sì, aggiorna</button><button id="prNo">No, lascia com'è</button></div></div>
 <div id="ov">
   <div class="ovHead">
     <div class="logo" role="img" aria-label="Logo VBT 20% by cr"></div>
@@ -610,13 +622,12 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
     </div>
     <div class="ovMid">
       <div class="ovP" id="ovPV">
-        <div class="lb">Perdita di velocità</div>
-        <div class="lossRow"><div class="ovBig" id="ovLoss">0%</div><div id="ovLimN">max 20%</div></div>
-        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
-        <div class="twoCol">
-          <div class="rlL"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
-          <div class="rlR"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
+        <div class="topRow">
+          <div class="rlL"><div class="lb">Perdita di velocità</div><div class="lossRow"><div class="ovBig" id="ovLoss">0%</div><div id="ovLimN">max 20%</div></div></div>
+          <div class="rlR"><div class="lb">Velocità m/s</div><div class="ovBig" id="ovVal">0.00</div></div>
         </div>
+        <div class="trk htrk"><div class="fill" id="ovFill"></div><div class="zone" id="ovZone"></div><div class="lim" id="ovLim"></div><div class="lastMk" id="ovLast"></div><div class="mk" id="ovMk"></div></div>
+        <div class="rlL repBlk"><div class="lb">Rep</div><div class="ovBig" id="ovRep">0</div></div>
         <div id="ovBars"></div>
       </div>
       <div hidden><span id="ovLimTxt"></span><span id="ovLimN2"></span><i id="ovDn"></i><i id="ovUp"></i></div>
@@ -664,7 +675,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.25-a';
+const APP_VER='2026.10.25-c';
 const MCV_TRIM=0.15;   /* si scartano i primi 150 ms della salita: il cambio di direzione non è velocità della rep */function smcv(s){return s.n2>2?s.s2/s.n2:(s.n?s.sum/s.n:0)}
 const DESC_MAX=1.3;   /* discesa massima plausibile (m): le rep lente/pesanti, con spostamento stimato in eccesso, non vanno scartate */const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
@@ -682,6 +693,11 @@ const PROT='Cristian Rigo',isProt=a=>!!a&&String(a.name||'').trim().toLowerCase(
 })();
 if(!ats.length)ats.push({id:'p1',name:'',rm:0,pct:80,kg:0,mode:'pct'});
 prof=ats.find(isProt)||ats.find(a=>a.id===cur)||ats[0];cur=prof.id;
+function todayK(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function sortHist(a){a.rmHist.sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:0)}
+function ensureHist(a){if(!Array.isArray(a.rmHist))a.rmHist=[];if(!a.rmHist.length&&a.rm>0)a.rmHist.push({d:todayK(),rm:a.rm});sortHist(a)}
+function recordRm(a,val){ensureHist(a);const l=a.rmHist[a.rmHist.length-1];if(l&&l.rm===val)return;const d=todayK(),t=a.rmHist.find(x=>x.d===d);if(t)t.rm=val;else a.rmHist.push({d:d,rm:val});sortHist(a)}
+ats.forEach(ensureHist);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const r25=x=>Math.round(x/2.5)*2.5;
 /* Tabella carico-velocità dagli studi (squat) */
@@ -755,7 +771,7 @@ function calcLoad(){
   ui();
 }
 function selectAth(id){
-  cur=id;prof=ats.find(a=>a.id===id)||ats[0];saveAts();renderAth();fillLoad();calcLoad();
+  cur=id;prof=ats.find(a=>a.id===id)||ats[0];ensureHist(prof);saveAts();renderAth();fillLoad();calcLoad();
   $('sugg').hidden=true;$('wkDet').hidden=true;renderWk();
 }
 $('athSel').onchange=()=>selectAth($('athSel').value);
@@ -778,7 +794,11 @@ $('btnAddAth').onclick=()=>{
 const onNm=()=>{prof.first=$('athF').value.trim();prof.last=$('athL').value.trim();fullName();saveAts();renderAth();refreshCreator();ovUpdate()};
 $('athF').oninput=onNm;$('athL').oninput=onNm;
 document.querySelectorAll('input[name="athS"]').forEach(r=>r.onchange=()=>{prof.sex=sexOf('athS');saveAts();calcLoad();try{renderProf()}catch(e){}ovUpdate()});
-$('rm').oninput=()=>{prof.rm=+$('rm').value||0;recompute();saveAts();calcLoad()};
+function setRm(val){prof.rm=val;recordRm(prof,val);recompute();saveAts();fillLoad();calcLoad();renderRmHist();ovUpdate()}
+$('rm').onchange=()=>{const v=parseFloat(String($('rm').value).replace(',','.'))||0;if(v===(prof.rm||0))return;
+  if(prof.rm>0&&!confirm('Se modifichi il massimale, diventa il tuo nuovo massimale di riferimento. Vuoi continuare?')){$('rm').value=prof.rm||'';return}
+  if(!(v>0)){$('rm').value=prof.rm||'';return}
+  setRm(v)};
 $('pct').oninput=()=>{prof.pct=+$('pct').value||0;recompute();saveAts();calcLoad()};
 $('kg').oninput=()=>{prof.kg=+$('kg').value||0;recompute();saveAts();calcLoad()};
 $('mKg').onclick=()=>{prof.mode='kg';applyMode();saveAts()};
@@ -898,9 +918,42 @@ $('ovPct').onclick=()=>{
   const x=parseFloat(String(n).replace(',','.'));
   if(x>=20&&x<=110){prof.mode='pct';prof.pct=Math.round(x*10)/10;recompute();fillLoad();saveAts();calcLoad();ovUpdate()}
 };
+function fmtKg(x){return String(Math.round(x*10)/10)}
+function applyHistEdit(){const h=prof.rmHist;sortHist(prof);const lt=h[h.length-1];if(lt){prof.rm=lt.rm;recompute()}saveAts();fillLoad();calcLoad();renderRmHist();ovUpdate()}
+function renderRmHist(){
+  ensureHist(prof);const h=prof.rmHist,tb=$('rmTb');if(!tb)return;
+  if(!h.length){tb.innerHTML='<tr><td colspan="3" class="mut" style="text-align:left">Nessun massimale ancora.</td></tr>'}
+  else tb.innerHTML=h.map((x,i)=>({x,i,df:i?x.rm-h[i-1].rm:null})).reverse().map(o=>'<tr><td>'+fmtDay(o.x.d)+'</td><td>'+fmtKg(o.x.rm)+(o.df?' <span class="mut">('+(o.df>0?'+':'')+fmtKg(o.df)+' kg)</span>':'')+'</td><td style="white-space:nowrap"><button class="sec wkA" data-a="ed" data-i="'+o.i+'">Modifica</button> <button class="sec wkA" data-a="dl" data-i="'+o.i+'" style="color:var(--bad)">✕</button></td></tr>').join('');
+  tb.querySelectorAll('.wkA').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i,x=prof.rmHist[i];if(!x)return;
+    if(b.dataset.a==='dl'){
+      if(prof.rmHist.length<2){alert("Non si può eliminare l'ultimo massimale rimasto.");return}
+      if(!confirm('Eliminare questo massimale?'))return;prof.rmHist.splice(i,1);applyHistEdit();return}
+    const n=prompt('Massimale (kg)',x.rm);if(n===null)return;const k=parseFloat(String(n).replace(',','.'));if(!(k>0)){alert('Valore non valido.');return}
+    const dd=prompt('Data (AAAA-MM-GG)',x.d);if(dd===null)return;const dm=dd.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(dm)||isNaN(new Date(dm+'T12:00:00'))){alert('Data non valida.');return}
+    if(prof.rmHist.some((y,j)=>j!==i&&y.d===dm)){alert('Esiste già un massimale con questa data.');return}
+    x.rm=k;x.d=dm;applyHistEdit()});
+  requestAnimationFrame(drawRm);
+}
+function drawRm(){
+  const c=$('cvRm');if(!c)return;const w=c.clientWidth,hh=c.clientHeight,d=window.devicePixelRatio||1;if(!w||!hh)return;
+  if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(hh*d)}
+  const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,hh);
+  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim(),h=prof.rmHist||[];if(!h.length)return;
+  const P=28,pl=40,T=h.map(q=>new Date(q.d+'T12:00:00').getTime()),V=h.map(q=>q.rm);
+  let t0=Math.min(...T),t1=Math.max(...T),v0=Math.min(...V),v1=Math.max(...V);if(t1===t0){t0-=864e5*3;t1+=864e5*3}if(v1===v0){v0-=5;v1+=5}else{const m=(v1-v0)*.15;v0-=m;v1+=m}
+  const X=t=>pl+(t-t0)/(t1-t0)*(w-pl-P/2),Y=v=>hh-P/2-(v-v0)/(v1-v0)*(hh-P-P/2);
+  x.font='11px -apple-system,sans-serif';x.fillStyle=col('--mut');x.strokeStyle=col('--bd');x.lineWidth=1;
+  [v0,(v0+v1)/2,v1].forEach(v=>{x.beginPath();x.moveTo(pl,Y(v));x.lineTo(w-4,Y(v));x.stroke();x.textAlign='right';x.fillText(String(Math.round(v)),pl-4,Y(v)+4)});
+  const dl=t=>{const q=new Date(t);return q.getDate()+'/'+(q.getMonth()+1)};
+  x.textAlign='left';x.fillText(dl(t0),pl,hh-4);x.textAlign='right';x.fillText(dl(t1),w-4,hh-4);
+  x.strokeStyle=col('--ac');x.fillStyle=col('--ac');x.lineWidth=2;x.beginPath();T.forEach((t,i)=>i?x.lineTo(X(t),Y(V[i])):x.moveTo(X(t),Y(V[i])));x.stroke();
+  T.forEach((t,i)=>{x.beginPath();x.arc(X(t),Y(V[i]),4,0,7);x.fill()});
+  if(h.length<2){x.fillStyle=col('--mut');x.textAlign='center';x.fillText('Servono almeno due valori per vedere l\'andamento',w/2,18)}
+}
 function openSettings(){
   if(state!=='off'){if(!confirm('Una serie è in corso: fermarla e aprire le impostazioni?'))return;stop()}
-  fillLoad();renderSess();renderWk();renderProf();$('settings').hidden=false;$('settings').scrollTop=0;
+  fillLoad();renderSess();renderWk();renderProf();$('settings').hidden=false;$('settings').scrollTop=0;renderRmHist();
 }
 $('ovGear').onclick=openSettings;
 
@@ -942,7 +995,7 @@ $('wGo').onclick=()=>{
   if(!l){$('wErr').textContent='Inserisci il tuo cognome.';return}
   if(!sx){$('wErr').textContent='Scegli Maschio o Femmina.';return}
   if(!(r>0)){$('wErr').textContent='Inserisci il tuo massimale in kg.';return}
-  prof.first=n;prof.last=l;prof.sex=sx;fullName();prof.rm=r;if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
+  prof.first=n;prof.last=l;prof.sex=sx;fullName();prof.rm=r;recordRm(prof,r);if(!prof.pct)prof.pct=80;prof.mode='pct';recompute();saveAts();renderAth();fillLoad();calcLoad();
   $('welcome').hidden=true;unlockAudio();setTimeout(maybeInst,300);if(!cal){$('wKg').value=warmKgDef();warmKgTxt()}ovUpdate();showResume();
 };
 $('ovStart').onclick=()=>{$('sum').hidden=true;if(state==='off'){dpt=0;topLock=true;badVel=false;start('set')}};
@@ -1107,7 +1160,7 @@ function shareJson(obj,name){
 $('btnShare').onclick=()=>{
   const mine=wk.filter(w=>w.aid===prof.id);
   const data={app:'VBT 20% by cr',format:2,ver:APP_VER,exported:new Date().toISOString(),device:navigator.userAgent,
-    athlete:{name:prof.name,first:prof.first||'',last:prof.last||'',sex:prof.sex||'',rm:prof.rm,pct:prof.pct,kg:prof.kg},
+    athlete:{name:prof.name,first:prof.first||'',last:prof.last||'',sex:prof.sex||'',rm:prof.rm,pct:prof.pct,kg:prof.kg,rmHist:prof.rmHist||[]},
     settings:{lossBase:$('lossBase').value,voice:$('voice').checked,useProf:$('useProf').checked,thr:+$('thr').value,auto:$('auto').checked,inv:$('inv').checked},
     calibration:cal,workouts:mine,session:sess};
   const slug=String(prof.name||'utente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'utente';
@@ -1128,7 +1181,15 @@ $('impF').onchange=async()=>{
   d.workouts.forEach(w=>{let t=wk.find(x=>x.day===w.day&&x.aid===prof.id);if(!t){t={day:w.day,aid:prof.id,ath:prof.name,rm:w.rm||prof.rm,sets:[]};wk.push(t)}
     (w.sets||[]).forEach(x=>{if(!t.sets.some(y=>y.ts===x.ts)){t.sets.push(x);ns++}});t.sets.sort((a,b)=>a.ts-b.ts)});
   wk.sort((a,b)=>a.day<b.day?-1:1);saveWk();
-  if(d.athlete){if(!(prof.rm>0)&&d.athlete.rm)prof.rm=d.athlete.rm;if(!prof.name&&d.athlete.name)prof.name=d.athlete.name;if(!prof.first&&d.athlete.first){prof.first=d.athlete.first;prof.last=d.athlete.last||''}if(!prof.sex&&d.athlete.sex)prof.sex=d.athlete.sex;saveAts();renderAth();fillLoad();calcLoad()}
+  if(d.athlete&&Array.isArray(d.athlete.rmHist)&&d.athlete.rmHist.length){
+    ensureHist(prof);const inc=d.athlete.rmHist.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.d)&&x.rm>0).slice().sort((a,b)=>a.d<b.d?-1:1),loc=prof.rmHist[prof.rmHist.length-1];
+    const newest=inc.length&&(!loc||inc[inc.length-1].d>loc.d)&&inc[inc.length-1].rm!==prof.rm;
+    if(!(newest&&prof.rm>0&&!confirm('Se modifichi il massimale, diventa il tuo nuovo massimale di riferimento. Vuoi continuare?'))){
+      inc.forEach(x=>{if(!prof.rmHist.some(y=>y.d===x.d))prof.rmHist.push({d:x.d,rm:x.rm})});sortHist(prof);
+      const lt=prof.rmHist[prof.rmHist.length-1];if(lt&&lt.rm!==prof.rm){prof.rm=lt.rm;recompute()}
+    }
+  }
+  if(d.athlete){if(!(prof.rm>0)&&d.athlete.rm){prof.rm=d.athlete.rm;recordRm(prof,prof.rm)}if(!prof.name&&d.athlete.name)prof.name=d.athlete.name;if(!prof.first&&d.athlete.first){prof.first=d.athlete.first;prof.last=d.athlete.last||''}if(!prof.sex&&d.athlete.sex)prof.sex=d.athlete.sex;saveAts();renderAth();fillLoad();calcLoad();renderRmHist()}
   const st=d.settings||{};
   
   if(st.thr){$('thr').value=String(st.thr);store('thr',String(st.thr))}
@@ -1430,7 +1491,8 @@ function endSeries(why){
     reps:reps.map(x=>({mcv:+x.mcv.toFixed(3),peak:+x.peak.toFixed(2),rom:Math.round(x.rom),loss:+Math.max(0,x.loss).toFixed(1),bad:x.bad||''})),
     ev:r.ev,pts:r.pts.filter((p,i)=>i%2===0).map(p=>[p[0],+p[1].toFixed(2),+p[2].toFixed(2)])});
   if(sess.length>60)sess.shift();
-  saveSess();renderSess();suggest(reps);try{showSum(sess[sess.length-1])}catch(e){}
+  saveSess();renderSess();suggest(reps);if(reps.length&&prof.rm>0&&(prof.kg||0)>prof.rm)pendPR=prof.kg;try{showSum(sess[sess.length-1])}catch(e){}
+  if(pendPR&&$('sum').hidden){const k=pendPR;pendPR=0;showPR(k)}
   restStart=Date.now();try{localStorage.setItem('restStart',String(restStart))}catch(e){}
 }
 function showSum(x){
@@ -1452,7 +1514,15 @@ function showSum(x){
   const f=useLv();$('sumE').textContent=f?'Massimale stimato dal tuo profilo: '+Math.round(f.e1rm)+' kg.':'';
   $('sum').hidden=false;
 }
-$('sumOk').onclick=()=>{$('sum').hidden=true};
+let pendPR=0;
+function showPR(kg){
+  $('prSub').textContent=prof.sex==='F'?'Che belva!':'Che bestia!';$('prKg').textContent=kg+' kg';
+  $('prScreen').hidden=false;
+  setTimeout(()=>{$('prScreen').hidden=true;$('prQ').textContent='Aggiorno il tuo massimale a '+kg+' kg?';$('prAsk').dataset.kg=kg;$('prAsk').hidden=false},2000);
+}
+$('sumOk').onclick=()=>{$('sum').hidden=true;if(pendPR){const k=pendPR;pendPR=0;showPR(k)}};
+$('prYes').onclick=()=>{const k=+$('prAsk').dataset.kg;$('prAsk').hidden=true;if(!(k>0))return;prof.mode='kg';prof.kg=k;setRm(k)};
+$('prNo').onclick=()=>{$('prAsk').hidden=true};
 function showWarmSum(ws,kg){
   if(!ws.length)return;
   const vs=ws.map(w=>w.mcv||0),mv=med(vs),pct=(kg&&prof.rm)?kg/prof.rm*100:0,ex=pct?mvTab(Math.min(100,pct)):null,mx=Math.max(...vs,0.01);

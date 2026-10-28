@@ -675,7 +675,7 @@ button.ib{width:auto;padding:6px 14px;border-radius:20px;font-size:14px}
 (function(){
 const $=id=>document.getElementById(id);
 let state='off',calBuf=[],calStart=0,u=[0,0,1],last=0,v=0,win=[],seg=null,reps=[],ctx=null,alarmed=false,gotEvt=false,wake=null;
-const APP_VER='2026.10.25-c';
+const APP_VER='2026.10.26-a';
 const MCV_TRIM=0.15;   /* si scartano i primi 150 ms della salita: il cambio di direzione non è velocità della rep */function smcv(s){return s.n2>2?s.s2/s.n2:(s.n?s.sum/s.n:0)}
 const DESC_MAX=1.3;   /* discesa massima plausibile (m): le rep lente/pesanti, con spostamento stimato in eccesso, non vanno scartate */const WARM_N=5;let wasStill=true,rec=null,shown=null,sess=[],MIN_PEAK=0.2,MIN_ROM=0.15,MIN_DUR=0.25,mode='set',cal=null,warm=[],lastEcc=0,eseg=null;try{cal=JSON.parse(localStorage.getItem('cal'))}catch(e){cal=null}
 
@@ -1355,7 +1355,7 @@ function halt(){
 function finishCal(){
   let s=[0,0,0];calBuf.forEach(a=>{s[0]+=a[0];s[1]+=a[1];s[2]+=a[2]});
   const n=calBuf.length||1,g=[s[0]/n,s[1]/n,s[2]/n],m=Math.hypot(g[0],g[1],g[2])||1;
-  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];seg=null;last=0;state='run';topLock=true;dpt=0;wasStill=true;rec=newRec();shown=null;
+  u=[g[0]/m,g[1]/m,g[2]/m];v=0;win=[];abuf=[];descOK=false;eseg=null;seg=null;last=0;state='run';topLock=true;dpt=0;wasStill=true;rec=newRec();shown=null;
   beep(660,.15);if(mode==='warm')updWarm();else msg('Pronto: fai la rep',cal?'Uso la calibrazione del riscaldamento.':'Nessun riscaldamento fatto: uso soglie standard.');
 }
 function onMotion(e){
@@ -1380,31 +1380,39 @@ function still(now,a){
   for(const w of win)if(Math.abs(w[1])>0.35)return false;
   return true;
 }
-let lockT=0;
-function step(a,now){
-  const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;
-  const s=still(now,a);
-  if(s){v=0;wasStill=true;if(seg)endSeg()}
-  else{
-    if(wasStill){v=0;for(let i=1;i<win.length-1;i++)v+=win[i][1]*(win[i][0]-win[i-1][0])/1000;wasStill=false}
-    v+=a*dt;
+const TAU=1.5;   /* integratore "leaky": la deriva decade da sola (1,0–2,5 s danno lo stesso conteggio) */
+let abuf=[],descOK=false,descT=0,lastNow=0;
+/* velocità media/picco/corsa della rep con correzione lineare della deriva sulla finestra: da 1,2 s prima della salita alla fine */
+function corr(s,tEnd){
+  const t0=s.t-1200,w=abuf.filter(x=>x[0]>=t0&&x[0]<=tEnd),N=w.length;
+  if(N<8)return null;
+  const dts=w.map((x,i)=>i?Math.min((x[0]-w[i-1][0])/1000,0.05):0.016),vk=[];let acc=0;
+  for(let i=0;i<N;i++){acc+=w[i][1]*dts[i];vk.push(acc)}
+  const ve=vk[N-1],tr=s.t+MCV_TRIM*1000;let sum=0,n=0,pk=0,rom=0;
+  for(let i=0;i<N;i++){
+    const v2=vk[i]-ve*(i/(N-1));
+    if(w[i][0]>=s.t&&v2>0){rom+=v2*dts[i];if(v2>pk)pk=v2;if(w[i][0]>=tr){sum+=v2;n++}}
   }
-  if(now<lockT)v=0;
-  if(!eseg&&v<-0.08){eseg={d:0,low:0,mn:0};topLock=false}
+  const mcv=n>2?sum/n:0;
+  return mcv>0.05&&mcv<3?{mcv,peak:pk,rom}:null;
+}
+function step(a,now){
+  const dt=last?Math.min((now-last)/1000,0.05):0.016;last=now;lastNow=now;
+  abuf.push([now,a]);while(abuf.length&&now-abuf[0][0]>6000)abuf.shift();
+  v+=(a-v/TAU)*dt;
+  /* discesa: inizia a v<-0.20, è valida se il minimo arriva a -0.25; finisce quando v torna sopra 0 */
+  if(!eseg&&v<-0.20){eseg={d:0,mn:0};topLock=false}
   if(eseg){
     if(v<0)eseg.d+=-v*dt;
     if(v<eseg.mn)eseg.mn=v;
-    if(cal&&eseg.d>DESC_MAX){eseg=null;lastEcc=0;v=0;lockT=now+400}   /* più di 1,5 volte la corsa: non è una discesa */
-    else if(eseg.mn<-0.2&&v>-0.03){lastEcc=eseg.d;eseg=null;v=0}
-    else if(v>-0.04){eseg.low+=dt;if(eseg.low>0.12){lastEcc=eseg.d;eseg=null}}else eseg.low=0;
+    if(v>0){if(eseg.mn<=-0.25&&eseg.d>=0.15){lastEcc=eseg.d;descOK=true;descT=now}eseg=null}   /* discesa reale: minimo -0.25 m/s e almeno 15 cm */
   }
-  if(!seg&&v>0.08){seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};badVel=false}
+  /* salita: inizia a v>0.15, finisce quando v torna sotto 0.04 (in cima) */
+  if(!seg&&v>0.15){seg={t:now,sum:0,n:0,peak:0,rom:0,low:0};badVel=false}
   if(seg){
-    if(v>0){seg.sum+=v;seg.n++;if(now-seg.t>=(window.__trim??MCV_TRIM)*1000){seg.s2=(seg.s2||0)+v;seg.n2=(seg.n2||0)+1}seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
+    if(v>0){seg.sum+=v;seg.n++;seg.peak=Math.max(seg.peak,v);seg.rom+=v*dt}
     if(v<0.04){seg.low+=dt;if(seg.low>0.12)endSeg()}else seg.low=0;
-    if(seg&&mode==='set'&&cal&&lastEcc>=0.10&&seg.n>5&&seg.rom>=lastEcc*0.98){endSeg();lockT=now+350}
   }
-  /* profondità dall'alto (m): discesa misurata, poi salita sottratta; a fine rep torna in alto */
   if(eseg)dpt=Math.min((cal?cal.rom:0.5)*1.2,eseg.d);
   else if(seg)dpt=Math.max(0,lastEcc-seg.rom);
   else if(topLock)dpt=0;
@@ -1419,29 +1427,29 @@ function countRep(s,bad){   /* una rep fatta conta sempre, anche se non valida p
 }
 function endSeg(){
   const s=seg;seg=null;v=0;topLock=true;if(!s)return;
-  const dur=(performance.now()-s.t)/1000;
+  const dur=(lastNow-s.t)/1000;
   const setC=mode==='set'&&cal;
-  /* una rep conta se prima c'è stata una discesa vera (>=10 cm) e la salita dura almeno MIN_DUR: la profondità la giudica l'atleta */
-  const real=!setC||lastEcc>=0.10;
+  /* una rep conta se prima c'è stata una discesa reale e la salita dura almeno MIN_DUR con picco almeno MIN_PEAK: la profondità la giudica l'atleta */
+  const real=!setC||(descOK&&lastNow-descT<8000);
   if(s.peak<MIN_PEAK||dur<MIN_DUR||!s.n||(!setC&&s.rom<MIN_ROM)){
     if(!setC&&s.rom>=0.10&&s.peak>=0.12){mark(0);snd.bad()}
-    lastEcc=0;return}
-  if(mode==='warm'){warm.push({rom:s.rom,peak:s.peak,dur,ecc:lastEcc,mcv:smcv(s)});lastEcc=0;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
-  if(setC&&!real){lastEcc=0;return}                     /* stacco, passi, riappoggio: ignorati in silenzio */
+    return}
+  const c=corr(s,lastNow)||{mcv:smcv(s),peak:s.peak,rom:s.rom};
+  if(mode==='warm'){warm.push({rom:c.rom,peak:c.peak,dur,ecc:lastEcc,mcv:c.mcv});lastEcc=0;descOK=false;mark(1);snd.ok();updWarm();if(warm.length>=WARM_N)finishWarm();return}
+  if(setC&&!real)return;                                  /* stacco, passi, riappoggio: ignorati in silenzio */
   if(setC&&cal.prov){   /* senza riscaldamento: la prima rep completa fa da calibrazione */
-    if(lastEcc<0.25||s.rom<0.25){lastEcc=0;return}
-    cal={rom:s.rom,peak:s.peak,dur:dur,ecc:lastEcc};store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));applyCal();showCal();
-  }   /* la salita non è tornata in alto: rep fallita, serie finita */
-  lastEcc=0;
-  const f=first(),mcv=smcv(s),ref=f?mcv:(lossRef()||mcv),loss=Math.max(0,(ref-mcv)/ref*100);
-  reps.push({mcv,peak:s.peak,rom:s.rom*100,loss});
+    if(lastEcc<0.25||c.rom<0.25){return}
+    cal={rom:c.rom,peak:c.peak,dur:dur,ecc:lastEcc};store('cal',JSON.stringify(cal));store('calDay',JSON.stringify({day:dayKey(Date.now()),cal}));applyCal();showCal();
+  }
+  lastEcc=0;descOK=false;
+  const f=first(),mcv=c.mcv,ref=f?mcv:(lossRef()||mcv),loss=Math.max(0,(ref-mcv)/ref*100);
+  reps.push({mcv,peak:c.peak,rom:c.rom*100,loss});
   ui();
   mark(1);
   if(!f&&loss>=+$('thr').value){reps[reps.length-1].bad='vel';badVel=true;alarm('Troppo lenta. Serie finita')}else snd.ok();   /* la prima rep è il riferimento: mai allarme di velocità */
 }
 function applyCal(){
-  if(mode==='set'&&cal){MIN_ROM=0;MIN_PEAK=0.12;MIN_DUR=0.25}
-  else{MIN_PEAK=0.2;MIN_ROM=0.15;MIN_DUR=0.25}
+  MIN_PEAK=0.30;MIN_DUR=0.45;MIN_ROM=(mode==='set'&&cal)?0:0.15
 }
 function med(a){const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]}
 function updWarm(){msg('Riscaldamento '+warm.length+'/'+WARM_N,'Rep complete con il 30–40% del massimale, come in serie, con una pausa in alto. La pausa in basso è facoltativa: rende la calibrazione un po\' più precisa.')}
